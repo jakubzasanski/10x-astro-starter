@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { AlertCircle } from "lucide-react";
+import { CircleAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const inputBase =
@@ -55,7 +55,7 @@ export function FormField({
       </div>
       {error ? (
         <p className="mt-1 text-xs text-red-300 flex items-center gap-1">
-          <AlertCircle className="size-3" />
+          <CircleAlert className="size-3" />
           {error}
         </p>
       ) : (

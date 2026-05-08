@@ -1,4 +1,4 @@
-import { AlertCircle } from "lucide-react";
+import { CircleAlert } from "lucide-react";
 
 interface ServerErrorProps {
   message?: string | null;
@@ -9,7 +9,7 @@ export function ServerError({ message }: ServerErrorProps) {
 
   return (
     <p className="text-sm text-red-300 bg-red-900/30 border border-red-500/30 rounded-lg px-3 py-2 flex items-center gap-2">
-      <AlertCircle className="size-4 shrink-0" />
+      <CircleAlert className="size-4 shrink-0" />
       {message}
     </p>
   );
