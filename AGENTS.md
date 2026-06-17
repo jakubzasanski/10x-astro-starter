@@ -26,7 +26,7 @@ No test runner is configured; `lint` + `build` are the only validation gates.
 
 ## Style
 
-TypeScript throughout, Node 22 (@.nvmrc). ESLint + Prettier (prettier-plugin-astro, prettier-plugin-tailwindcss) enforce style; the pre-commit hook runs `eslint --fix` on `*.{ts,tsx,astro}`. Validate API input with zod; export uppercase `GET`/`POST` handlers.
+TypeScript throughout, Node 24 (@.nvmrc). ESLint + Prettier (prettier-plugin-astro, prettier-plugin-tailwindcss) enforce style; the pre-commit hook runs `eslint --fix` on `*.{ts,tsx,astro}`. Validate API input with zod; export uppercase `GET`/`POST` handlers.
 
 ## Commits & CI
 
