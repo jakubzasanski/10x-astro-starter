@@ -78,6 +78,9 @@ const astroConfig = tseslint.config({
 
 export default tseslint.config(
   includeIgnoreFile(gitignorePath),
+  // Supabase-generated DB types are overwritten on every `supabase gen types` run, so
+  // linting them is futile (in-file fixes get wiped) and they don't match prettier/strict rules.
+  { ignores: ["src/db/database.types.ts"] },
   baseConfig,
   reactConfig,
   eslintPluginAstro.configs["flat/recommended"],
