@@ -286,14 +286,14 @@ The plan's original decision (Open Q#2) was OpenRouter via `fetch`. During Phase
 
 #### Automated
 
-- [x] 3.1 Lint passes: `npm run lint`
-- [x] 3.2 Build passes: `npm run build`
-- [x] 3.3 `npx astro check` passes
+- [x] 3.1 Lint passes: `npm run lint` — cd12898
+- [x] 3.2 Build passes: `npm run build` — cd12898
+- [x] 3.3 `npx astro check` passes — cd12898
 
 #### Manual
 
-- [x] 3.4 Signed in: paste → generate → candidates render; edit one, reject one, accept rest
-- [x] 3.5 Refresh mid-review restores candidates + decisions from localStorage
-- [x] 3.6 Save → "N cards saved", session cleared; saved cards exist in DB for the user
-- [x] 3.7 Unauthenticated `/generate` → redirected to `/auth/signin`
-- [x] 3.8 Over-cap input blocked client-side with limit shown; generation error shows clean inline message
+- [x] 3.4 Signed in: paste → generate → candidates render; edit one, reject one, accept rest — cd12898
+- [x] 3.5 Refresh mid-review restores candidates + decisions from localStorage — cd12898
+- [x] 3.6 Save → "N cards saved", session cleared; saved cards exist in DB for the user — cd12898
+- [x] 3.7 Unauthenticated `/generate` → redirected to `/auth/signin` — cd12898
+- [x] 3.8 Over-cap input blocked client-side with limit shown; generation error shows clean inline message — cd12898
