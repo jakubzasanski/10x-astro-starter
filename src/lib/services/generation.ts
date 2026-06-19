@@ -23,10 +23,14 @@ Rules:
 - Respond with ONLY a JSON object of the form {"cards":[{"question":"...","answer":"..."}]}. No prose, no markdown.`;
 
 // Typed error so the route can map it to a clean HTTP status without leaking internals.
+// `retryable` distinguishes transient faults (network/429/5xx, malformed output) worth a second
+// attempt from deterministic ones (config, 4xx like bad key/credits/policy) that would only fail
+// again — so we never waste a second provider round-trip on an error that can't succeed.
 export class GenerationError extends Error {
   constructor(
     message: string,
     readonly kind: "config" | "upstream" | "parse",
+    readonly retryable: boolean,
   ) {
     super(message);
     this.name = "GenerationError";
@@ -34,15 +38,15 @@ export class GenerationError extends Error {
 }
 
 // Shape the model is asked to return. Coerce defensively, then trim/cap downstream.
+// An empty `cards` array is valid output (text yielded nothing flashcard-worthy) — it flows
+// through as 200 {candidates:[]} rather than being treated as a parse failure.
 const modelOutputSchema = z.object({
-  cards: z
-    .array(
-      z.object({
-        question: z.string().min(1),
-        answer: z.string().min(1),
-      }),
-    )
-    .min(1),
+  cards: z.array(
+    z.object({
+      question: z.string().min(1),
+      answer: z.string().min(1),
+    }),
+  ),
 });
 
 interface ChatCompletion {
@@ -99,33 +103,37 @@ async function callOpenRouter(apiKey: string, model: string, sourceText: string)
       }),
     });
   } catch {
-    throw new GenerationError("Failed to reach the generation provider", "upstream");
+    // Network-level failure (DNS, connection reset, timeout) — transient.
+    throw new GenerationError("Failed to reach the generation provider", "upstream", true);
   }
 
   if (!response.ok) {
-    throw new GenerationError(`Generation provider returned ${response.status}`, "upstream");
+    // 429 (rate limit) and 5xx are transient; other 4xx (bad key, 402 credits, 403, content
+    // policy, rejected params) are deterministic and would only fail again on retry.
+    const retryable = response.status === 429 || response.status >= 500;
+    throw new GenerationError(`Generation provider returned ${response.status}`, "upstream", retryable);
   }
 
   let completion: ChatCompletion;
   try {
     completion = (await response.json()) as ChatCompletion;
   } catch {
-    throw new GenerationError("Generation provider returned malformed JSON", "parse");
+    throw new GenerationError("Generation provider returned malformed JSON", "parse", true);
   }
 
   const content = completion.choices?.[0]?.message?.content;
   if (!content) {
-    throw new GenerationError("Generation provider returned no content", "parse");
+    throw new GenerationError("Generation provider returned no content", "parse", true);
   }
 
   const parsed = extractJson(content);
   if (parsed === undefined) {
-    throw new GenerationError("Generated content was not valid JSON", "parse");
+    throw new GenerationError("Generated content was not valid JSON", "parse", true);
   }
 
   const result = modelOutputSchema.safeParse(parsed);
   if (!result.success) {
-    throw new GenerationError("Generated content did not match the expected shape", "parse");
+    throw new GenerationError("Generated content did not match the expected shape", "parse", true);
   }
 
   return result.data.cards.slice(0, MAX_CANDIDATES).map((c) => ({
@@ -138,20 +146,21 @@ async function callOpenRouter(apiKey: string, model: string, sourceText: string)
 // and rides out one transient failure (network/5xx/parse) before surfacing a clean error.
 export async function generateCandidates(sourceText: string): Promise<CandidateCard[]> {
   if (!OPENROUTER_API_KEY) {
-    throw new GenerationError("Generation is not configured", "config");
+    throw new GenerationError("Generation is not configured", "config", false);
   }
 
   const trimmed = sourceText.trim();
   if (!trimmed) {
-    throw new GenerationError("Source text is empty", "parse");
+    throw new GenerationError("Source text is empty", "parse", false);
   }
   const capped = trimmed.slice(0, MAX_SOURCE_CHARS);
 
   try {
     return await callOpenRouter(OPENROUTER_API_KEY, OPENROUTER_MODEL, capped);
   } catch (err) {
-    // Retry once on transient failures (network/5xx/parse); config errors are not transient.
-    if (err instanceof GenerationError && err.kind === "config") {
+    // Retry once, but only for transient faults (network/429/5xx/malformed output).
+    // Deterministic failures (config, 4xx) re-throw immediately — a second call can't help.
+    if (err instanceof GenerationError && !err.retryable) {
       throw err;
     }
     return await callOpenRouter(OPENROUTER_API_KEY, OPENROUTER_MODEL, capped);

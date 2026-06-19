@@ -249,16 +249,16 @@ No schema changes — reuses F-01's `flashcards`. New runtime config: `OPENROUTE
 
 #### Automated
 
-- [x] 1.1 `npx astro sync` succeeds after env edit
-- [x] 1.2 Lint passes: `npm run lint`
-- [x] 1.3 Build passes: `npm run build`
+- [x] 1.1 `npx astro sync` succeeds after env edit — d59d8d7
+- [x] 1.2 Lint passes: `npm run lint` — d59d8d7
+- [x] 1.3 Build passes: `npm run build` — d59d8d7
 
 #### Manual
 
-- [x] 1.4 Authenticated `POST /api/generate` returns ≤30 `{question,answer}` candidates (wrangler dev, real key)
-- [x] 1.5 Unauthenticated → 401; empty/oversized sourceText → 400
-- [x] 1.6 `wrangler tail` shows no source text during generation
-- [x] 1.7 Forced bad/oversized LLM response surfaces a clean error (no prompt leakage)
+- [x] 1.4 Authenticated `POST /api/generate` returns ≤30 `{question,answer}` candidates (wrangler dev, real key) — d59d8d7
+- [x] 1.5 Unauthenticated → 401; empty/oversized sourceText → 400 — d59d8d7
+- [x] 1.6 `wrangler tail` shows no source text during generation — d59d8d7
+- [x] 1.7 Forced bad/oversized LLM response surfaces a clean error (no prompt leakage) — d59d8d7
 
 ### Phase 2: Bulk-save /api/cards
 
