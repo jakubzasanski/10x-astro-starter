@@ -355,16 +355,16 @@ None — additive. New dev dependency (`vitest`, optionally `@stryker-mutator/*`
 
 #### Automated
 
-- [ ] 1.1 Vitest installed: `npm ls vitest` resolves to `4.x`
-- [ ] 1.2 Suite runs green: `npm test`
-- [ ] 1.3 Astro types synced: `npx astro sync`
-- [ ] 1.4 Lint clean (incl. test files): `npm run lint`
-- [ ] 1.5 Build unaffected: `npm run build`
+- [x] 1.1 Vitest installed: `npm ls vitest` resolves to `4.x`
+- [x] 1.2 Suite runs green: `npm test`
+- [x] 1.3 Astro types synced: `npx astro sync`
+- [x] 1.4 Lint clean (incl. test files): `npm run lint`
+- [x] 1.5 Build unaffected: `npm run build`
 
 #### Manual
 
-- [ ] 1.6 `npm test` shows smoke test passing, no `astro:env/server` resolution error
-- [ ] 1.7 `npm run test:watch` starts and re-runs on change
+- [x] 1.6 `npm test` shows smoke test passing, no `astro:env/server` resolution error
+- [x] 1.7 `npm run test:watch` starts and re-runs on change
 
 ### Phase 2: Risk #3 — Generation Degradation Suite
 
