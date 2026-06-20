@@ -408,10 +408,10 @@ None — additive. New dev dependency (`vitest`, optionally `@stryker-mutator/*`
 
 #### Automated
 
-- [x] 5.1 Markdown prettier-clean: `npx prettier --check context/foundation/test-plan.md`
-- [x] 5.2 `git diff` shows §6.1 no longer reads "TBD"
+- [x] 5.1 Markdown prettier-clean: `npx prettier --check context/foundation/test-plan.md` — 044a488
+- [x] 5.2 `git diff` shows §6.1 no longer reads "TBD" — 044a488
 
 #### Manual
 
-- [x] 5.3 A reader could add a new service test from §6.1 alone
-- [x] 5.4 Rollout §3 status and `change.md` agree
+- [x] 5.3 A reader could add a new service test from §6.1 alone — 044a488
+- [x] 5.4 Rollout §3 status and `change.md` agree — 044a488
