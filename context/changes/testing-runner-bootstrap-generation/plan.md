@@ -370,26 +370,26 @@ None — additive. New dev dependency (`vitest`, optionally `@stryker-mutator/*`
 
 #### Automated
 
-- [x] 2.1 Suite passes: `npm test`
-- [x] 2.2 Lint clean: `npm run lint`
-- [x] 2.3 No cross-test fetch bleed (order-independent / `--no-file-parallelism` green)
+- [x] 2.1 Suite passes: `npm test` — f32ed10
+- [x] 2.2 Lint clean: `npm run lint` — f32ed10
+- [x] 2.3 No cross-test fetch bleed (order-independent / `--no-file-parallelism` green) — f32ed10
 
 #### Manual
 
-- [x] 2.4 An assertion deliberately fails when the oracle is violated (has teeth)
-- [x] 2.5 No assertion compares against card JSON copied from `generation.ts`
+- [x] 2.4 An assertion deliberately fails when the oracle is violated (has teeth) — f32ed10
+- [x] 2.5 No assertion compares against card JSON copied from `generation.ts` — f32ed10
 
 ### Phase 3: Risk #2 — Source-Text Privacy Suite
 
 #### Automated
 
-- [ ] 3.1 Privacy suite passes: `npm test`
-- [ ] 3.2 Lint clean: `npm run lint`
+- [x] 3.1 Privacy suite passes: `npm test`
+- [x] 3.2 Lint clean: `npm run lint`
 
 #### Manual
 
-- [ ] 3.3 Interpolating `sourceText` into a throw turns the suite red (canary works)
-- [ ] 3.4 Sentinel-in-success case is sensitive in both directions
+- [x] 3.3 Interpolating `sourceText` into a throw turns the suite red (canary works)
+- [x] 3.4 Sentinel-in-success case is sensitive in both directions
 
 ### Phase 4: Mutation-Testing Selective Gate (Optional)
 
