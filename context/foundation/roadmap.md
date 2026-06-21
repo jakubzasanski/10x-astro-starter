@@ -29,8 +29,8 @@ top_blocker: time
 
 | ID    | Change ID                    | Outcome (user can …)                                              | Prerequisites | PRD refs                  | Status   |
 | ----- | ---------------------------- | ---------------------------------------------------------------- | ------------- | ------------------------- | -------- |
-| F-01  | card-persistence-foundation  | (foundation) user-owned cards persist with RLS + origin tracking | —             | Access Control; No-data-loss | ready    |
-| S-01  | first-ai-cards-to-deck       | paste text → accept AI cards → save to deck                       | F-01          | US-01, FR-008, FR-009, FR-010 | proposed |
+| F-01  | card-persistence-foundation  | (foundation) user-owned cards persist with RLS + origin tracking | —             | Access Control; No-data-loss | done     |
+| S-01  | first-ai-cards-to-deck       | paste text → accept AI cards → save to deck                       | F-01          | US-01, FR-008, FR-009, FR-010 | done     |
 | S-02  | spaced-repetition-review     | run a keyboard-driven spaced-repetition review session           | F-01, S-01    | US-02, FR-015, FR-016     | done     |
 | S-03  | deck-management              | browse, edit (schedule-preserving), and delete cards             | F-01          | FR-012, FR-013, FR-014    | proposed |
 | S-04  | manual-card-creation         | create a flashcard manually (question + answer)                  | F-01          | FR-011                    | proposed |
@@ -73,7 +73,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Sequenced first because the data layer is absent and every card-facing slice depends on it. Scope is capped to the card entity + ownership + origin; spaced-repetition schedule columns are deferred to S-02 (progressive disclosure) so this stays a minimal enabler, not a "build the whole data layer" project.
-- **Status:** ready
+- **Status:** done
 
 ## Slices
 
@@ -89,7 +89,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
   - Which off-the-shelf LLM provider/model backs generation? — Owner: project lead. Block: no (a single default can be chosen in `/10x-plan`; tracked roadmap-wide as Open Question #2).
   - How is source-text privacy enforced end-to-end (no operator-readable logs, no training use, no retention past the request)? — Owner: team. Block: no.
 - **Risk:** This is the wedge and the riskiest assumption — if AI card quality doesn't clear the 75%-accept bar, nothing downstream matters, so it ships first. Edge-runtime caveat (LLM SDK must be fetch-based / workerd-compatible per infrastructure.md) is a planning concern, not a sequencing blocker.
-- **Status:** proposed
+- **Status:** done
 
 ### S-02: Spaced-repetition review session
 
@@ -184,3 +184,5 @@ Foundations below assume these are present and do NOT re-scaffold them.
 ## Done
 
 - **S-02: user can start a review session where an off-the-shelf scheduler picks due-card order, reveal each answer, rate recall on a four-level scale (Again/Hard/Good/Easy) with the schedule updating after each rating, and resume mid-session after navigation/refresh/network loss without losing progress — fully keyboard-driven.** — Archived 2026-06-21 → `context/archive/2026-06-21-spaced-repetition-review/`. Lesson: —.
+- **F-01: (foundation) user-owned flashcards persist — a cards table with per-user row-level security and an AI-vs-manual origin flag; the first migration and the project's RLS pattern are established.** — Archived 2026-06-21 → `context/archive/2026-06-19-card-persistence-foundation/`. Lesson: —.
+- **S-01: paste text → accept AI cards → save to deck** — Archived 2026-06-21 → `context/archive/2026-06-19-first-ai-cards-to-deck/`. Lesson: —.
