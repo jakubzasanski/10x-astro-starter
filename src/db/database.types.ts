@@ -38,27 +38,54 @@ export type Database = {
         Row: {
           answer: string
           created_at: string
+          difficulty: number
+          due: string
+          elapsed_days: number
           id: string
+          lapses: number
+          last_review: string | null
           question: string
+          reps: number
+          scheduled_days: number
           source: string
+          stability: number
+          state: number
           updated_at: string
           user_id: string
         }
         Insert: {
           answer: string
           created_at?: string
+          difficulty?: number
+          due?: string
+          elapsed_days?: number
           id?: string
+          lapses?: number
+          last_review?: string | null
           question: string
+          reps?: number
+          scheduled_days?: number
           source: string
+          stability?: number
+          state?: number
           updated_at?: string
           user_id: string
         }
         Update: {
           answer?: string
           created_at?: string
+          difficulty?: number
+          due?: string
+          elapsed_days?: number
           id?: string
+          lapses?: number
+          last_review?: string | null
           question?: string
+          reps?: number
+          scheduled_days?: number
           source?: string
+          stability?: number
+          state?: number
           updated_at?: string
           user_id?: string
         }
