@@ -32,13 +32,16 @@ export default defineConfig({
       dependencies: ["setup"],
     },
   ],
-  // Build then serve the production output. Reuses a preview already running locally (fast
-  // iteration); builds fresh in CI. NOTE: don't leave `npm run dev` running on this port during
-  // e2e — the reused server must be the preview build, not the flaky dev server.
+  // Build then serve the production output. We do NOT reuse an already-running server: a stale
+  // `astro preview` left over from a prior run keeps serving its old `dist/`, so reusing it runs
+  // the suite against outdated code (false pass/fail) — and reusing a flaky `astro dev` reintroduces
+  // the SSR-wedge/dev-toolbar problems this preview setup exists to avoid. Always building fresh
+  // (locally and in CI) guarantees e2e tests the current code; Playwright owns the server lifecycle
+  // and tears it down on exit. If the port is occupied, Playwright fails fast — free :4321 and re-run.
   webServer: {
     command: "npm run build && npm run preview",
     url: baseURL,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
     timeout: 180_000,
   },
 });
