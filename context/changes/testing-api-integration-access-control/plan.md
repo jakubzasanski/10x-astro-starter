@@ -405,10 +405,10 @@ re-run `npm run test:e2e` to confirm parity. No data migrations.
 
 #### Automated
 
-- [x] 4.1 `npm run lint` / prettier pass on edited markdown
+- [x] 4.1 `npm run lint` / prettier pass on edited markdown — 52c609f
 
 #### Manual
 
-- [x] 4.2 §6.2 and §6.4 no longer read "TBD" and point to real reference tests
-- [x] 4.3 §3 Phase 2 Status shows `complete` with the change folder path
-- [x] 4.4 §6.5 has an accurate Phase 2 note (shipped + deferred)
+- [x] 4.2 §6.2 and §6.4 no longer read "TBD" and point to real reference tests — 52c609f
+- [x] 4.3 §3 Phase 2 Status shows `complete` with the change folder path — 52c609f
+- [x] 4.4 §6.5 has an accurate Phase 2 note (shipped + deferred) — 52c609f
