@@ -376,30 +376,30 @@ re-run `npm run test:e2e` to confirm parity. No data migrations.
 
 #### Automated
 
-- [x] 2.1 `npm test` passes (Docker-free) including both new handler suites
-- [x] 2.2 Tests assert exact status codes per route (401/413/400/200/201/500/502)
-- [x] 2.3 Owner-forcing test proves `source:"ai"` + `user_id===user.id` and overrides client-supplied fields
-- [x] 2.4 Privacy assertion: no `sourceText` / row contents in any error body
-- [x] 2.5 `npm run lint` passes
+- [x] 2.1 `npm test` passes (Docker-free) including both new handler suites — 6f48ad1
+- [x] 2.2 Tests assert exact status codes per route (401/413/400/200/201/500/502) — 6f48ad1
+- [x] 2.3 Owner-forcing test proves `source:"ai"` + `user_id===user.id` and overrides client-supplied fields — 6f48ad1
+- [x] 2.4 Privacy assertion: no `sourceText` / row contents in any error body — 6f48ad1
+- [x] 2.5 `npm run lint` passes — 6f48ad1
 
 #### Manual
 
-- [x] 2.6 Each new test break-verified (invert protected behavior → red → revert)
-- [x] 2.7 Zod-cap cases use boundary values (`MAX_*` passes, `MAX_*+1` fails)
+- [x] 2.6 Each new test break-verified (invert protected behavior → red → revert) — 6f48ad1
+- [x] 2.7 Zod-cap cases use boundary values (`MAX_*` passes, `MAX_*+1` fails) — 6f48ad1
 
 ### Phase 3: RLS two-user isolation (real local Supabase)
 
 #### Automated
 
-- [ ] 3.1 `npx supabase start` then `npm run test:integration` passes
-- [ ] 3.2 Isolation asserted strictly through each user's token (no service-role in assertions)
-- [ ] 3.3 `npm test` (unit project) still passes with Supabase stopped
-- [ ] 3.4 Back-to-back `npm run test:integration` passes (no row collisions)
+- [x] 3.1 `npx supabase start` then `npm run test:integration` passes — 6 passed
+- [x] 3.2 Isolation asserted strictly through each user's token (no service-role in assertions)
+- [x] 3.3 `npm test` (unit project) still passes with Supabase stopped
+- [x] 3.4 Back-to-back `npm run test:integration` passes (no row collisions)
 
 #### Manual
 
-- [ ] 3.5 Dropping a policy/GRANT locally turns the relevant assertion red, then revert
-- [ ] 3.6 Asserting requests carry the user bearer token, not service-role
+- [x] 3.5 Dropping a policy/GRANT locally turns the relevant assertion red, then revert
+- [x] 3.6 Asserting requests carry the user bearer token, not service-role
 
 ### Phase 4: Cookbook + test-plan update
 

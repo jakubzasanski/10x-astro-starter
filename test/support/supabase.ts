@@ -49,6 +49,37 @@ export async function getUserToken(
   return data.access_token;
 }
 
+// The user id (uuid) carried in a Supabase access token's `sub` claim. Lets an RLS test set/forge
+// `user_id` without a round-trip. The token is a JWT; its middle segment is the base64url payload.
+export function userIdFromToken(token: string): string {
+  const payload = token.split(".")[1];
+  const decoded = JSON.parse(Buffer.from(payload, "base64url").toString("utf8")) as { sub: string };
+  return decoded.sub;
+}
+
+// Make a PostgREST request against the flashcards table AS a given user (anon apikey + that user's
+// bearer token). Returns the raw Response so callers assert status + body. This is the asserting
+// path for RLS isolation tests — never call it with the service-role key (RLS is `enable`, not
+// `force`, so service-role bypasses every policy and the assertion would prove nothing).
+export async function flashcardsRequest(
+  method: string,
+  token: string,
+  opts: { query?: string; body?: unknown; prefer?: string } = {},
+): Promise<Response> {
+  const { query = "", body, prefer } = opts;
+  const headers: Record<string, string> = {
+    apikey: SUPABASE_ANON_KEY,
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  };
+  if (prefer) headers.Prefer = prefer;
+  return fetch(`${SUPABASE_URL}/rest/v1/flashcards${query}`, {
+    method,
+    headers,
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
+}
+
 // Delete every flashcard whose question starts with `prefix`, as the given user (RLS-scoped).
 // Each test tags its cards with a unique run id, so this removes exactly what that test created —
 // guaranteeing re-runnable, collision-free tests. Defaults to the shared test user.
