@@ -515,16 +515,16 @@ before considering the slice complete.
 
 #### Automated
 
-- [x] 4.1 Lint passes (`npm run lint`)
-- [x] 4.2 Build passes (`npm run build`)
-- [x] 4.3 Type checking passes (`npx astro sync && npm run lint`)
-- [x] 4.4 Existing unit + integration suites still green (`npm test && npm run test:integration`)
+- [x] 4.1 Lint passes (`npm run lint`) — b0f1700
+- [x] 4.2 Build passes (`npm run build`) — b0f1700
+- [x] 4.3 Type checking passes (`npx astro sync && npm run lint`) — b0f1700
+- [x] 4.4 Existing unit + integration suites still green (`npm test && npm run test:integration`) — b0f1700
 
 #### Manual
 
-- [x] 4.5 Entire loop operable keyboard-only (Space reveal, 1–4 rate, advance)
-- [x] 4.6 Transitions feel instant (<300ms) on a throttled connection
-- [x] 4.7 Refresh mid-session resumes at next un-rated card; prior ratings persisted
-- [x] 4.8 `Again`-rated card reappears later in the same sitting
-- [x] 4.9 Empty state shows "all caught up" + next-due; dashboard due-count matches
-- [x] 4.10 Rating keys inert before reveal
+- [x] 4.5 Entire loop operable keyboard-only (Space reveal, 1–4 rate, advance) — b0f1700
+- [x] 4.6 Transitions feel instant (<300ms) on a throttled connection — b0f1700
+- [x] 4.7 Refresh mid-session resumes at next un-rated card; prior ratings persisted — b0f1700
+- [x] 4.8 `Again`-rated card reappears later in the same sitting — b0f1700
+- [x] 4.9 Empty state shows "all caught up" + next-due; dashboard due-count matches — b0f1700
+- [x] 4.10 Rating keys inert before reveal — b0f1700
