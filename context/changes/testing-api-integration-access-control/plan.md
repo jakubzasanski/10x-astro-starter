@@ -391,24 +391,24 @@ re-run `npm run test:e2e` to confirm parity. No data migrations.
 
 #### Automated
 
-- [x] 3.1 `npx supabase start` then `npm run test:integration` passes — 6 passed
-- [x] 3.2 Isolation asserted strictly through each user's token (no service-role in assertions)
-- [x] 3.3 `npm test` (unit project) still passes with Supabase stopped
-- [x] 3.4 Back-to-back `npm run test:integration` passes (no row collisions)
+- [x] 3.1 `npx supabase start` then `npm run test:integration` passes — 5d3603b
+- [x] 3.2 Isolation asserted strictly through each user's token (no service-role in assertions) — 5d3603b
+- [x] 3.3 `npm test` (unit project) still passes with Supabase stopped — 5d3603b
+- [x] 3.4 Back-to-back `npm run test:integration` passes (no row collisions) — 5d3603b
 
 #### Manual
 
-- [x] 3.5 Dropping a policy/GRANT locally turns the relevant assertion red, then revert
-- [x] 3.6 Asserting requests carry the user bearer token, not service-role
+- [x] 3.5 Dropping a policy/GRANT locally turns the relevant assertion red, then revert — 5d3603b
+- [x] 3.6 Asserting requests carry the user bearer token, not service-role — 5d3603b
 
 ### Phase 4: Cookbook + test-plan update
 
 #### Automated
 
-- [ ] 4.1 `npm run lint` / prettier pass on edited markdown
+- [x] 4.1 `npm run lint` / prettier pass on edited markdown
 
 #### Manual
 
-- [ ] 4.2 §6.2 and §6.4 no longer read "TBD" and point to real reference tests
-- [ ] 4.3 §3 Phase 2 Status shows `complete` with the change folder path
-- [ ] 4.4 §6.5 has an accurate Phase 2 note (shipped + deferred)
+- [x] 4.2 §6.2 and §6.4 no longer read "TBD" and point to real reference tests
+- [x] 4.3 §3 Phase 2 Status shows `complete` with the change folder path
+- [x] 4.4 §6.5 has an accurate Phase 2 note (shipped + deferred)
