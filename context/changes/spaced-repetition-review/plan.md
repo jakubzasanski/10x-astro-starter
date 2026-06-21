@@ -474,27 +474,27 @@ before considering the slice complete.
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly against local Supabase (`npx supabase db reset`)
-- [x] 1.2 Type checking passes (`npx astro sync && npm run lint`)
-- [x] 1.3 Build passes (`npm run build`)
-- [x] 1.4 Generated types include the new columns
+- [x] 1.1 Migration applies cleanly against local Supabase (`npx supabase db reset`) — aa1836a
+- [x] 1.2 Type checking passes (`npx astro sync && npm run lint`) — aa1836a
+- [x] 1.3 Build passes (`npm run build`) — aa1836a
+- [x] 1.4 Generated types include the new columns — aa1836a
 
 #### Manual
 
-- [x] 1.5 Seeded card row shows due≈now, state=0, zeros, last_review null after reset
-- [x] 1.6 Card inserted via existing `/api/cards` comes back immediately due
+- [x] 1.5 Seeded card row shows due≈now, state=0, zeros, last_review null after reset — aa1836a
+- [x] 1.6 Card inserted via existing `/api/cards` comes back immediately due — aa1836a
 
 ### Phase 2: Scheduling Service
 
 #### Automated
 
-- [ ] 2.1 Unit tests pass (`npm test`)
-- [ ] 2.2 Lint passes (`npm run lint`)
-- [ ] 2.3 `ts-fsrs` resolves under Vitest node environment
+- [x] 2.1 Unit tests pass (`npm test`)
+- [x] 2.2 Lint passes (`npm run lint`)
+- [x] 2.3 `ts-fsrs` resolves under Vitest node environment
 
 #### Manual
 
-- [ ] 2.4 `Easy` first interval visibly longer than `Good` (wiring sanity)
+- [x] 2.4 `Easy` first interval visibly longer than `Good` (wiring sanity)
 
 ### Phase 3: Review API Endpoints
 

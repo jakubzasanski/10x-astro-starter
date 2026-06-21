@@ -33,3 +33,16 @@ export interface GenerateRequest {
 export interface GenerateResponse {
   candidates: CandidateCard[];
 }
+
+// Spaced-repetition review (roadmap S-02).
+// The FSRS schedule subset of a flashcard row — the columns the scheduler reads and writes.
+// Mirrors the ts-fsrs v5 Card shape in DB-typed form (timestamps as ISO strings, state as a
+// smallint). The rating endpoint reads a row into this shape, runs the scheduler, and persists it.
+export type FsrsSchedule = Pick<
+  Flashcard,
+  "due" | "stability" | "difficulty" | "scheduled_days" | "learning_steps" | "reps" | "lapses" | "state" | "last_review"
+>;
+
+// The four-level recall scale (FR-016). Maps to ts-fsrs Rating Again/Hard/Good/Easy in the
+// scheduling service; 0 (Manual) is intentionally excluded.
+export type ReviewRating = 1 | 2 | 3 | 4;

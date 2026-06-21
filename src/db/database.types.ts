@@ -40,10 +40,10 @@ export type Database = {
           created_at: string
           difficulty: number
           due: string
-          elapsed_days: number
           id: string
           lapses: number
           last_review: string | null
+          learning_steps: number
           question: string
           reps: number
           scheduled_days: number
@@ -58,10 +58,10 @@ export type Database = {
           created_at?: string
           difficulty?: number
           due?: string
-          elapsed_days?: number
           id?: string
           lapses?: number
           last_review?: string | null
+          learning_steps?: number
           question: string
           reps?: number
           scheduled_days?: number
@@ -76,10 +76,10 @@ export type Database = {
           created_at?: string
           difficulty?: number
           due?: string
-          elapsed_days?: number
           id?: string
           lapses?: number
           last_review?: string | null
+          learning_steps?: number
           question?: string
           reps?: number
           scheduled_days?: number
