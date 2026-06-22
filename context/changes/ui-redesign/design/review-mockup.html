@@ -1,0 +1,487 @@
+<title>10xCards — Review session</title>
+<style>
+  :root {
+    /* Palette — warm paper & moss green. One soft accent (green); ratings stay earthy. */
+    --ground: #F7EEE0;        /* warm golden paper */
+    --ground-deep: #EFE2CF;   /* warmer edge for depth */
+    --surface: #FFFDF8;       /* the card face — warm white */
+    --text: #2D2922;          /* warm espresso near-black */
+    --text-soft: #6B6155;     /* muted warm brown */
+    --text-faint: #9C8F7E;    /* labels */
+    --line: #EBDFCD;          /* hairline on warm surfaces */
+    --accent: #6BA06A;        /* cozy warm moss green — the one accent */
+    --accent-deep: #538152;
+    --accent-warm: #A9C56A;   /* warm olive-lime, for gentle gradients */
+
+    /* Rating semantics — earthy/muted so the green accent stays calm */
+    --r-again: #C75B45;
+    --r-hard:  #C5872F;
+    --r-good:  #4F9A5E;
+    --r-easy:  #3E938C;
+
+    --radius: 22px;
+    --shadow-card: 0 2px 5px rgba(74,58,36,.05), 0 26px 54px -28px rgba(74,58,36,.42);
+    --shadow-lift: 0 2px 5px rgba(74,58,36,.05), 0 36px 74px -30px rgba(74,58,36,.46);
+
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: var(--sans);
+    color: var(--text);
+    background:
+      radial-gradient(1200px 600px at 50% -10%, #FFF7EE 0%, transparent 60%),
+      linear-gradient(180deg, var(--ground) 0%, var(--ground-deep) 100%);
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---- top bar ---- */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px clamp(20px, 5vw, 48px);
+    border-bottom: 1px solid var(--line);
+    background: rgba(255,253,250,.6);
+    backdrop-filter: blur(8px);
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    font-size: 1.05rem;
+  }
+  .brand .mark {
+    width: 30px; height: 30px;
+    border-radius: 9px;
+    background: linear-gradient(145deg, var(--accent), var(--accent-deep));
+    display: grid; place-items: center;
+    color: #fff; font-weight: 800; font-size: .9rem;
+    box-shadow: 0 6px 14px -6px var(--accent-deep);
+  }
+  .brand b { color: var(--accent-deep); }
+  nav { display: flex; gap: 4px; }
+  nav a {
+    font-size: .9rem;
+    color: var(--text-soft);
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 10px;
+    transition: background .15s, color .15s;
+  }
+  nav a:hover { background: rgba(107,160,106,.12); color: var(--text); }
+  nav a.active { color: var(--accent-deep); font-weight: 600; background: rgba(107,160,106,.16); }
+
+  /* ---- main ---- */
+  main {
+    max-width: 660px;
+    margin: 0 auto;
+    padding: clamp(28px, 6vh, 64px) 20px 80px;
+  }
+
+  /* progress row */
+  .progress {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 26px;
+  }
+  .progress .count {
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--text-soft);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .bar {
+    flex: 1;
+    height: 7px;
+    border-radius: 99px;
+    background: var(--ground-deep);
+    overflow: hidden;
+    box-shadow: inset 0 1px 2px rgba(67,46,28,.08);
+  }
+  .bar > i {
+    display: block;
+    height: 100%;
+    border-radius: 99px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-warm));
+    transition: width .45s cubic-bezier(.22,.61,.36,1);
+  }
+
+  /* ---- the card: a physical study object ---- */
+  .card {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    padding: clamp(26px, 4vw, 40px);
+    transition: box-shadow .3s, transform .3s;
+  }
+  /* faint index-card ruling + a warm bound edge */
+  .card::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 16px; bottom: 16px;
+    width: 4px;
+    border-radius: 4px;
+    background: linear-gradient(180deg, var(--accent), var(--accent-warm));
+    opacity: .9;
+  }
+  .card.lift { box-shadow: var(--shadow-lift); transform: translateY(-2px); }
+
+  .label {
+    font-family: var(--sans);
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 10px;
+  }
+  .q {
+    font-family: var(--serif);
+    font-size: clamp(1.4rem, 3.4vw, 1.85rem);
+    line-height: 1.32;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0;
+  }
+
+  /* answer region — the one motion moment */
+  .answer {
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: max-height .4s cubic-bezier(.22,.61,.36,1), opacity .3s ease .05s, transform .35s ease .05s, margin .4s;
+    margin-top: 0;
+  }
+  .answer.show {
+    max-height: 420px;
+    opacity: 1;
+    transform: translateY(0);
+    margin-top: 26px;
+  }
+  .answer .divider {
+    border: none;
+    border-top: 1px dashed var(--line);
+    margin: 0 0 22px;
+  }
+  .a {
+    font-family: var(--serif);
+    font-size: clamp(1.15rem, 2.6vw, 1.4rem);
+    line-height: 1.5;
+    color: var(--text-soft);
+    margin: 0;
+  }
+
+  /* reveal button */
+  .reveal-wrap { margin-top: 28px; }
+  .reveal {
+    width: 100%;
+    border: 1px solid var(--line);
+    background: var(--ground);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: .98rem;
+    font-weight: 600;
+    padding: 16px;
+    border-radius: 16px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: background .15s, border-color .15s, transform .08s;
+  }
+  .reveal:hover { background: #fff; border-color: #E0D0BC; }
+  .reveal:active { transform: scale(.992); }
+
+  kbd {
+    font-family: var(--mono);
+    font-size: .72rem;
+    font-weight: 600;
+    color: var(--text-soft);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-bottom-width: 2px;
+    border-radius: 6px;
+    padding: 2px 7px;
+    line-height: 1.4;
+  }
+
+  /* rating row */
+  .ratings {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  .rate {
+    --c: var(--text-soft);
+    appearance: none;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: 18px;
+    padding: 16px 8px 12px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+    transition: transform .1s, box-shadow .18s, border-color .15s, background .15s;
+  }
+  .rate .dot {
+    width: 9px; height: 9px; border-radius: 99px;
+    background: var(--c);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 16%, transparent);
+  }
+  .rate .name { font-weight: 650; font-size: .95rem; color: var(--text); }
+  .rate kbd { color: var(--c); }
+  .rate:hover {
+    border-color: var(--c);
+    background: color-mix(in srgb, var(--c) 7%, var(--surface));
+    transform: translateY(-2px);
+    box-shadow: 0 12px 22px -16px var(--c);
+  }
+  .rate:active { transform: translateY(0); }
+  .rate[data-r="1"] { --c: var(--r-again); }
+  .rate[data-r="2"] { --c: var(--r-hard); }
+  .rate[data-r="3"] { --c: var(--r-good); }
+  .rate[data-r="4"] { --c: var(--r-easy); }
+
+  .hint {
+    margin-top: 22px;
+    text-align: center;
+    font-size: .82rem;
+    color: var(--text-faint);
+  }
+  .hint kbd { font-size: .68rem; }
+
+  /* ---- caught up state ---- */
+  .done {
+    text-align: center;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    padding: 56px 32px;
+  }
+  .done .seal {
+    width: 64px; height: 64px;
+    margin: 0 auto 20px;
+    border-radius: 99px;
+    background: color-mix(in srgb, var(--r-good) 14%, var(--surface));
+    color: var(--r-good);
+    display: grid; place-items: center;
+    font-size: 1.9rem;
+  }
+  .done h2 {
+    font-family: var(--serif);
+    font-size: 1.7rem;
+    margin: 0 0 8px;
+    font-weight: 600;
+  }
+  .done p { color: var(--text-soft); margin: 4px 0; font-size: .98rem; }
+  .done .actions {
+    margin-top: 28px;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn {
+    font-family: var(--sans);
+    font-size: .92rem;
+    font-weight: 600;
+    border-radius: 12px;
+    padding: 12px 20px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid transparent;
+    transition: transform .08s, filter .15s, background .15s;
+  }
+  .btn:active { transform: scale(.98); }
+  .btn-primary {
+    background: linear-gradient(145deg, var(--accent), var(--accent-deep));
+    color: #fff;
+    box-shadow: 0 12px 22px -12px var(--accent-deep);
+  }
+  .btn-primary:hover { filter: brightness(1.04); }
+  .btn-ghost { background: var(--ground); color: var(--text); border-color: var(--line); }
+  .btn-ghost:hover { background: #fff; }
+
+  /* focus visibility */
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--accent-deep);
+    outline-offset: 2px;
+  }
+
+  .preview-tag {
+    position: fixed;
+    bottom: 14px; left: 50%;
+    transform: translateX(-50%);
+    font-size: .72rem;
+    color: var(--text-faint);
+    background: rgba(255,253,250,.8);
+    border: 1px solid var(--line);
+    padding: 5px 12px;
+    border-radius: 99px;
+    backdrop-filter: blur(6px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+  @media (max-width: 480px) {
+    nav { display: none; }
+    .ratings { gap: 7px; }
+    .rate { padding: 13px 4px 10px; }
+  }
+</style>
+
+<header>
+  <div class="brand"><span class="mark">10x</span>10x<b>Cards</b></div>
+  <nav>
+    <a href="#">Generate</a>
+    <a href="#" class="active">Review</a>
+    <a href="#">Deck</a>
+  </nav>
+</header>
+
+<main id="app"></main>
+<div class="preview-tag">Design preview · review session · press Space, then 1–4</div>
+
+<script>
+  const CARDS = [
+    {
+      q: "What does spaced repetition actually optimize for?",
+      a: "Reviewing each item at widening intervals — right before you'd forget it — so you get the most long-term retention per minute spent studying."
+    },
+    {
+      q: "¿Cómo se dice “deadline” en español?",
+      a: "la fecha límite — e.g. “Entregar antes de la fecha límite.”"
+    },
+    {
+      q: "In one line: what does Bayes’ theorem let you compute?",
+      a: "The probability of a hypothesis given the evidence — by flipping a conditional you already know into the one you want."
+    }
+  ];
+  const RATINGS = [
+    { r: 1, name: "Again" },
+    { r: 2, name: "Hard" },
+    { r: 3, name: "Good" },
+    { r: 4, name: "Easy" },
+  ];
+  const TOTAL = CARDS.length;
+  let i = 0, revealed = false, reviewed = 0;
+
+  const app = document.getElementById("app");
+
+  function renderCard() {
+    const left = TOTAL - i;
+    const pct = Math.round((i / TOTAL) * 100);
+    const c = CARDS[i];
+    app.innerHTML = `
+      <div class="progress">
+        <span class="count">${left} ${left === 1 ? "card" : "cards"} left</span>
+        <span class="bar"><i style="width:${pct}%"></i></span>
+      </div>
+      <div class="card${revealed ? " lift" : ""}" id="card">
+        <div class="label">Question</div>
+        <p class="q">${c.q}</p>
+        <div class="answer${revealed ? " show" : ""}" id="answer">
+          <hr class="divider" />
+          <div class="label">Answer</div>
+          <p class="a">${c.a}</p>
+        </div>
+        ${revealed ? "" : `
+        <div class="reveal-wrap">
+          <button class="reveal" id="revealBtn">Show answer <kbd>Space</kbd></button>
+        </div>`}
+      </div>
+      ${revealed ? `
+      <div class="ratings" id="ratings">
+        ${RATINGS.map(x => `
+          <button class="rate" data-r="${x.r}">
+            <span class="dot"></span>
+            <span class="name">${x.name}</span>
+            <kbd>${x.r}</kbd>
+          </button>`).join("")}
+      </div>
+      <p class="hint">Rate how well you recalled it — <kbd>1</kbd> Again · <kbd>2</kbd> Hard · <kbd>3</kbd> Good · <kbd>4</kbd> Easy</p>
+      ` : `
+      <p class="hint">Try to recall the answer, then reveal it with <kbd>Space</kbd>.</p>
+      `}
+    `;
+    if (!revealed) {
+      document.getElementById("revealBtn").addEventListener("click", reveal);
+    } else {
+      document.querySelectorAll(".rate").forEach(b =>
+        b.addEventListener("click", () => rate(parseInt(b.dataset.r, 10))));
+    }
+  }
+
+  function renderDone() {
+    app.innerHTML = `
+      <div class="done">
+        <div class="seal">✓</div>
+        <h2>All caught up</h2>
+        <p>Reviewed ${reviewed} ${reviewed === 1 ? "card" : "cards"} this session.</p>
+        <p>Next review in about 4 hours.</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="#" id="more">Generate more cards</a>
+          <button class="btn btn-ghost" id="restart">Run the demo again</button>
+        </div>
+      </div>
+    `;
+    document.getElementById("restart").addEventListener("click", restart);
+    document.getElementById("more").addEventListener("click", e => { e.preventDefault(); restart(); });
+  }
+
+  function reveal() {
+    if (revealed) return;
+    revealed = true;
+    renderCard();
+  }
+  function rate() {
+    reviewed++;
+    i++;
+    revealed = false;
+    if (i >= TOTAL) renderDone();
+    else renderCard();
+  }
+  function restart() {
+    i = 0; revealed = false; reviewed = 0;
+    renderCard();
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if (e.code === "Space" && !revealed && i < TOTAL) {
+      e.preventDefault();
+      reveal();
+    } else if (revealed && ["1","2","3","4"].includes(e.key)) {
+      e.preventDefault();
+      rate(parseInt(e.key, 10));
+    }
+  });
+
+  renderCard();
+</script>

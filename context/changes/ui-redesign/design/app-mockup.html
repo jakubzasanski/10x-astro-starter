@@ -1,0 +1,548 @@
+<title>Sage — UI preview</title>
+<style>
+  :root {
+    --ground: #F7EEE0;
+    --ground-deep: #EFE2CF;
+    --surface: #FFFDF8;
+    --text: #2D2922;
+    --text-soft: #6B6155;
+    --text-faint: #9C8F7E;
+    --line: #EBDFCD;
+    --accent: #6BA06A;
+    --accent-deep: #538152;
+    --accent-warm: #A9C56A;
+    --accent-soft: #EEF3E2;
+    --icon: #8A7550;        /* dark beige — flat icon color */
+    --icon-soft: #B7A582;
+
+    --r-again: #C75B45;
+    --r-hard:  #C5872F;
+    --r-good:  #4F9A5E;
+    --r-easy:  #3E938C;
+
+    --radius: 22px;
+    --shadow-card: 0 2px 5px rgba(74,58,36,.05), 0 26px 54px -28px rgba(74,58,36,.42);
+    --shadow-lift: 0 2px 5px rgba(74,58,36,.05), 0 36px 74px -30px rgba(74,58,36,.46);
+    --shadow-soft: 0 1px 3px rgba(74,58,36,.05), 0 12px 28px -20px rgba(74,58,36,.4);
+
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: var(--sans);
+    color: var(--text);
+    background:
+      radial-gradient(1200px 600px at 50% -10%, #FFF7EB 0%, transparent 60%),
+      linear-gradient(180deg, var(--ground) 0%, var(--ground-deep) 100%);
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  svg { display: block; }
+
+  /* ---------- shared chrome ---------- */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px clamp(20px, 5vw, 48px);
+    border-bottom: 1px solid var(--line);
+    background: rgba(255,253,248,.7);
+    backdrop-filter: blur(10px);
+    position: sticky; top: 0; z-index: 5;
+  }
+  .brand { display: flex; align-items: center; gap: 9px; cursor: pointer; }
+  .brand .logo { filter: drop-shadow(0 4px 7px rgba(83,129,82,.32)); }
+  .brand .wordmark { font-family: var(--serif); font-size: 1.32rem; font-weight: 600; letter-spacing: -.01em; color: var(--text); }
+  nav { display: flex; gap: 4px; }
+  nav button.tab {
+    font-family: var(--sans); font-size: .9rem; color: var(--text-soft);
+    background: none; border: none; cursor: pointer;
+    padding: 8px 14px; border-radius: 11px; transition: background .15s, color .15s;
+  }
+  nav button.tab:hover { background: rgba(107,160,106,.12); color: var(--text); }
+  nav button.tab.active { color: var(--accent-deep); font-weight: 600; background: rgba(107,160,106,.16); }
+  .top-right { display: flex; align-items: center; gap: 12px; }
+  .avatar {
+    width: 34px; height: 34px; border-radius: 99px;
+    background: var(--accent-soft); color: var(--accent-deep);
+    display: grid; place-items: center; font-weight: 700; font-size: .85rem;
+    border: 1px solid var(--line); cursor: pointer;
+  }
+
+  main { max-width: 720px; margin: 0 auto; padding: clamp(28px, 5vh, 56px) 20px 96px; }
+  .screen { display: none; }
+  .screen.active { display: block; animation: fade .35s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .page-head { margin-bottom: 26px; }
+  .page-head h1 { font-family: var(--serif); font-size: clamp(1.7rem, 4vw, 2.1rem); font-weight: 600; margin: 0 0 6px; letter-spacing: -.01em; }
+  .page-head p { color: var(--text-soft); margin: 0; font-size: .98rem; }
+
+  .label { font-size: .7rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--text-faint); }
+
+  /* ---------- buttons ---------- */
+  .btn {
+    font-family: var(--sans); font-size: .94rem; font-weight: 600;
+    border-radius: 14px; padding: 12px 20px; cursor: pointer; text-decoration: none;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    border: 1px solid transparent; transition: transform .08s, filter .15s, background .15s, border-color .15s;
+  }
+  .btn svg { width: 17px; height: 17px; }
+  .btn:active { transform: scale(.98); }
+  .btn-primary { background: linear-gradient(145deg, var(--accent), var(--accent-deep)); color: #fff; box-shadow: 0 12px 22px -12px var(--accent-deep); }
+  .btn-primary:hover { filter: brightness(1.04); }
+  .btn-primary:disabled { background: var(--ground-deep); color: var(--text-faint); box-shadow: none; cursor: not-allowed; }
+  .btn-ghost { background: var(--surface); color: var(--text); border-color: var(--line); }
+  .btn-ghost:hover { background: #fff; border-color: #DECDB6; }
+  .btn-block { width: 100%; }
+
+  kbd {
+    font-family: var(--mono); font-size: .72rem; font-weight: 600; color: var(--text-soft);
+    background: var(--surface); border: 1px solid var(--line); border-bottom-width: 2px;
+    border-radius: 6px; padding: 2px 7px; line-height: 1.4;
+  }
+
+  /* ---------- form fields ---------- */
+  .field { margin-bottom: 18px; }
+  .field > label { display: block; font-size: .85rem; font-weight: 600; color: var(--text); margin-bottom: 7px; }
+  .input, .area {
+    width: 100%; font-family: var(--sans); font-size: 1rem; color: var(--text);
+    background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+    padding: 13px 15px; transition: border-color .15s, box-shadow .15s; resize: vertical;
+  }
+  .area { min-height: 120px; line-height: 1.5; }
+  .input:focus, .area:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px rgba(107,160,106,.16); }
+  .field-foot { display: flex; justify-content: space-between; margin-top: 6px; font-size: .78rem; color: var(--text-faint); }
+
+  /* ---------- generate ---------- */
+  .gen-box { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-soft); padding: clamp(20px, 3vw, 28px); }
+  .gen-box .area { min-height: 170px; background: var(--ground); }
+  .gen-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+  .gen-actions .note { font-size: .8rem; color: var(--text-faint); }
+
+  .cand-head { display: flex; align-items: baseline; justify-content: space-between; margin: 30px 0 14px; }
+  .cand-head h2 { font-family: var(--serif); font-size: 1.3rem; font-weight: 600; margin: 0; }
+  .cand-head .meta { font-size: .85rem; color: var(--text-soft); }
+
+  .cand {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 18px;
+    padding: 18px 20px; margin-bottom: 12px; box-shadow: var(--shadow-soft);
+    transition: opacity .2s, border-color .2s, background .2s;
+  }
+  .cand .cq { font-family: var(--serif); font-size: 1.1rem; font-weight: 600; margin: 0 0 6px; }
+  .cand .ca { font-family: var(--serif); color: var(--text-soft); margin: 0; line-height: 1.5; }
+  .cand-foot { display: flex; align-items: center; gap: 8px; margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--line); }
+  .cand-foot .spacer { flex: 1; }
+  .chip {
+    font-size: .82rem; font-weight: 600; border-radius: 10px; padding: 7px 12px; cursor: pointer;
+    border: 1px solid var(--line); background: var(--ground); color: var(--text-soft);
+    display: inline-flex; align-items: center; gap: 6px; transition: all .15s;
+  }
+  .chip svg { width: 15px; height: 15px; }
+  .chip:hover { background: #fff; }
+  .chip.accept.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-deep); }
+  .chip.reject.on { background: #F7E7E2; border-color: var(--r-again); color: var(--r-again); }
+  .cand.is-rejected { opacity: .5; }
+  .cand.is-accepted { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 5%, var(--surface)); }
+  .badge-state { font-size: .72rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--text-faint); }
+
+  .savebar {
+    position: sticky; bottom: 18px; margin-top: 22px;
+    display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+    padding: 14px 18px; box-shadow: var(--shadow-card);
+  }
+  .savebar .sumtext { font-size: .92rem; color: var(--text-soft); }
+  .savebar .sumtext b { color: var(--text); }
+
+  /* ---------- deck ---------- */
+  .deck-tools { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .deck-tools .total { font-size: .9rem; color: var(--text-soft); font-variant-numeric: tabular-nums; }
+  .row {
+    display: flex; align-items: flex-start; gap: 14px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+    padding: 16px 18px; margin-bottom: 10px; box-shadow: var(--shadow-soft);
+    transition: border-color .15s, transform .08s;
+  }
+  .row:hover { border-color: #DECDB6; }
+  .row .body { flex: 1; min-width: 0; }
+  .row .rq { font-family: var(--serif); font-size: 1.05rem; font-weight: 600; margin: 0 0 3px; }
+  .row .ra { font-family: var(--serif); color: var(--text-soft); margin: 0; font-size: .95rem; line-height: 1.45; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; }
+  .origin { flex-shrink: 0; font-size: .72rem; font-weight: 700; letter-spacing: .03em; padding: 4px 9px; border-radius: 8px; display: inline-flex; align-items: center; gap: 5px; }
+  .origin svg { width: 13px; height: 13px; }
+  .origin.ai { background: var(--accent-soft); color: var(--accent-deep); }
+  .origin.manual { background: #F0EAF7; color: #7B5EA8; }
+  .row .acts { display: flex; gap: 4px; flex-shrink: 0; }
+  .iconbtn { width: 34px; height: 34px; border-radius: 10px; border: 1px solid transparent; background: none; cursor: pointer; color: var(--icon); display: grid; place-items: center; transition: all .15s; }
+  .iconbtn svg { width: 17px; height: 17px; }
+  .iconbtn:hover { background: var(--ground); color: var(--text); }
+  .iconbtn.danger:hover { background: #F7E7E2; color: var(--r-again); }
+
+  /* empty state */
+  .empty { text-align: center; padding: 60px 28px; background: var(--surface); border: 1px dashed var(--line); border-radius: var(--radius); }
+  .empty .ico { color: var(--icon-soft); margin: 0 auto 14px; width: 44px; height: 44px; }
+  .empty .ico svg { width: 44px; height: 44px; }
+  .empty h2 { font-family: var(--serif); font-size: 1.5rem; font-weight: 600; margin: 0 0 6px; }
+  .empty p { color: var(--text-soft); margin: 0 0 22px; }
+
+  /* ---------- review (reused) ---------- */
+  .progress { display: flex; align-items: center; gap: 14px; margin-bottom: 26px; }
+  .progress .count { font-size: .8rem; font-weight: 600; color: var(--text-soft); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .bar { flex: 1; height: 7px; border-radius: 99px; background: var(--ground-deep); overflow: hidden; box-shadow: inset 0 1px 2px rgba(74,58,36,.08); }
+  .bar > i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent), var(--accent-warm)); transition: width .45s cubic-bezier(.22,.61,.36,1); }
+  .card { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-card); padding: clamp(26px, 4vw, 40px); transition: box-shadow .3s, transform .3s; }
+  .card::before { content: ""; position: absolute; left: 0; top: 16px; bottom: 16px; width: 4px; border-radius: 4px; background: linear-gradient(180deg, var(--accent), var(--accent-warm)); opacity: .9; }
+  .card.lift { box-shadow: var(--shadow-lift); transform: translateY(-2px); }
+  .q { font-family: var(--serif); font-size: clamp(1.4rem, 3.4vw, 1.85rem); line-height: 1.32; font-weight: 600; color: var(--text); margin: 10px 0 0; }
+  .answer { overflow: hidden; max-height: 0; opacity: 0; transform: translateY(-6px); transition: max-height .4s cubic-bezier(.22,.61,.36,1), opacity .3s ease .05s, transform .35s ease .05s, margin .4s; margin-top: 0; }
+  .answer.show { max-height: 420px; opacity: 1; transform: translateY(0); margin-top: 26px; }
+  .answer .divider { border: none; border-top: 1px dashed var(--line); margin: 0 0 22px; }
+  .a { font-family: var(--serif); font-size: clamp(1.15rem, 2.6vw, 1.4rem); line-height: 1.5; color: var(--text-soft); margin: 10px 0 0; }
+  .reveal-wrap { margin-top: 28px; }
+  .reveal { width: 100%; border: 1px solid var(--line); background: var(--ground); color: var(--text); font-family: var(--sans); font-size: .98rem; font-weight: 600; padding: 16px; border-radius: 16px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px; transition: background .15s, border-color .15s, transform .08s; }
+  .reveal:hover { background: #fff; border-color: #DECDB6; }
+  .reveal:active { transform: scale(.992); }
+  .ratings { margin-top: 16px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .rate { --c: var(--text-soft); appearance: none; border: 1px solid var(--line); background: var(--surface); border-radius: 18px; padding: 16px 8px 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 9px; transition: transform .1s, box-shadow .18s, border-color .15s, background .15s; }
+  .rate .dot { width: 9px; height: 9px; border-radius: 99px; background: var(--c); box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 16%, transparent); }
+  .rate .name { font-weight: 650; font-size: .95rem; color: var(--text); }
+  .rate kbd { color: var(--c); }
+  .rate:hover { border-color: var(--c); background: color-mix(in srgb, var(--c) 7%, var(--surface)); transform: translateY(-2px); box-shadow: 0 12px 22px -16px var(--c); }
+  .rate:active { transform: translateY(0); }
+  .rate[data-r="1"] { --c: var(--r-again); } .rate[data-r="2"] { --c: var(--r-hard); } .rate[data-r="3"] { --c: var(--r-good); } .rate[data-r="4"] { --c: var(--r-easy); }
+  .hint { margin-top: 22px; text-align: center; font-size: .82rem; color: var(--text-faint); }
+  .hint kbd { font-size: .68rem; }
+  .done { text-align: center; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-card); padding: 56px 32px; }
+  .done .seal { width: 64px; height: 64px; margin: 0 auto 20px; border-radius: 99px; background: color-mix(in srgb, var(--r-good) 14%, var(--surface)); color: var(--r-good); display: grid; place-items: center; }
+  .done .seal svg { width: 30px; height: 30px; }
+  .done h2 { font-family: var(--serif); font-size: 1.7rem; margin: 0 0 8px; font-weight: 600; }
+  .done p { color: var(--text-soft); margin: 4px 0; font-size: .98rem; }
+  .done .actions { margin-top: 28px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  /* ---------- auth ---------- */
+  #authView { display: none; min-height: 100vh; place-items: center; padding: 40px 20px; }
+  #authView.active { display: grid; }
+  .auth-card { width: 100%; max-width: 400px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-card); padding: clamp(28px, 5vw, 38px); }
+  .auth-card .brand { justify-content: center; margin-bottom: 22px; }
+  .auth-card h1 { font-family: var(--serif); font-size: 1.5rem; font-weight: 600; text-align: center; margin: 0 0 4px; }
+  .auth-card .sub { text-align: center; color: var(--text-soft); font-size: .92rem; margin: 0 0 26px; }
+  .auth-row { display: flex; justify-content: flex-end; margin: -8px 0 18px; }
+  .auth-row a, .auth-foot a, .linkback { color: var(--accent-deep); text-decoration: none; font-weight: 600; font-size: .86rem; }
+  .auth-row a:hover, .auth-foot a:hover { text-decoration: underline; }
+  .auth-foot { text-align: center; margin-top: 22px; font-size: .9rem; color: var(--text-soft); }
+  .linkback { display: inline-block; margin-top: 20px; font-size: .85rem; }
+
+  a:focus-visible, button:focus-visible, .input:focus-visible, .area:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 2px; }
+
+  .preview-tag { position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%); font-size: .72rem; color: var(--text-faint); background: rgba(255,253,248,.85); border: 1px solid var(--line); padding: 5px 12px; border-radius: 99px; backdrop-filter: blur(6px); z-index: 10; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+  @media (max-width: 520px) { nav { gap: 0; } nav button.tab { padding: 8px 10px; font-size: .85rem; } .ratings { gap: 7px; } .rate { padding: 13px 4px 10px; } .top-right .btn { display: none; } }
+</style>
+
+<!-- Sage leaf logo, defined once; referenced by <use> so the gradient lives in one place -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="sageGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#84B673"/><stop offset="1" stop-color="#4E7C4D"/>
+    </linearGradient>
+    <g id="sageLeaf">
+      <path d="M18 3C28 9 30 23 18 33 6 23 8 9 18 3Z" fill="url(#sageGrad)"/>
+      <path d="M18 8C16.2 16 16.2 24 18 30" stroke="#fff" stroke-opacity=".82" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+      <path d="M18 14c1.8 0 3.4-.8 4.6-2.2M18 20c-1.8 0-3.4-.8-4.6-2.2" stroke="#fff" stroke-opacity=".55" stroke-width="1.3" stroke-linecap="round" fill="none"/>
+    </g>
+  </defs>
+</svg>
+
+<!-- ================= APP ================= -->
+<div id="appView">
+  <header>
+    <div class="brand" onclick="go('generate')">
+      <svg class="logo" width="30" height="30" viewBox="0 0 36 36" aria-hidden="true"><use href="#sageLeaf"/></svg>
+      <span class="wordmark">Sage</span>
+    </div>
+    <nav>
+      <button class="tab" data-tab="generate" onclick="go('generate')">Generate</button>
+      <button class="tab" data-tab="review" onclick="go('review')">Review</button>
+      <button class="tab" data-tab="deck" onclick="go('deck')">Deck</button>
+    </nav>
+    <div class="top-right">
+      <button class="btn btn-ghost" onclick="go('new')">New card</button>
+      <div class="avatar" title="Account — click for sign-in preview" onclick="showAuth()">JZ</div>
+    </div>
+  </header>
+
+  <main>
+    <!-- GENERATE -->
+    <section class="screen" id="screen-generate">
+      <div class="page-head">
+        <h1>Turn your notes into cards</h1>
+        <p>Paste source text and let Sage draft flashcards. You decide which ones make the cut.</p>
+      </div>
+      <div class="gen-box">
+        <textarea class="area" id="genInput" placeholder="Paste a passage, lecture notes, or an article — up to 5,000 characters.">Spaced repetition schedules each review at a widening interval, timed to land just before the point of forgetting. The forgetting curve, described by Hermann Ebbinghaus, shows that recall decays exponentially without reinforcement; well-timed reviews flatten that curve. Active recall — retrieving an answer from memory rather than rereading it — strengthens the memory trace far more than passive review.</textarea>
+        <div class="gen-actions">
+          <span class="note" id="genCount">621 / 5,000 characters · up to ~12 cards</span>
+          <button class="btn btn-primary" id="genBtn" onclick="generate()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.6 5.4L19 10l-5.4 1.6L12 17l-1.6-5.4L5 10l5.4-1.6Z"/></svg> Generate cards</button>
+        </div>
+      </div>
+
+      <div id="candidates" style="display:none;">
+        <div class="cand-head">
+          <h2>Review candidates</h2>
+          <span class="meta" id="candMeta">4 drafted · keep the good ones</span>
+        </div>
+        <div id="candList"></div>
+        <div class="savebar">
+          <span class="sumtext"><b id="acceptCount">4</b> of 4 cards accepted</span>
+          <button class="btn btn-primary" id="saveBtn" onclick="go('deck')">Save to deck</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- REVIEW -->
+    <section class="screen" id="screen-review"></section>
+
+    <!-- DECK -->
+    <section class="screen" id="screen-deck">
+      <div class="page-head">
+        <h1>Your deck</h1>
+        <p>Edit a card without resetting its schedule. Deleting is permanent.</p>
+      </div>
+      <div class="deck-tools">
+        <span class="total" id="deckTotal">42 cards · 28 from AI</span>
+        <button class="btn btn-ghost" onclick="go('new')">New card</button>
+      </div>
+      <div id="deckList"></div>
+    </section>
+
+    <!-- NEW (manual) -->
+    <section class="screen" id="screen-new">
+      <div class="page-head">
+        <h1>Add a card</h1>
+        <p>Write a question and its answer. It joins your deck right away.</p>
+      </div>
+      <div class="gen-box">
+        <div class="field">
+          <label for="mq">Question</label>
+          <textarea class="area" id="mq" style="min-height:90px" placeholder="What do you want to be asked?"></textarea>
+          <div class="field-foot"><span></span><span>0 / 500</span></div>
+        </div>
+        <div class="field">
+          <label for="ma">Answer</label>
+          <textarea class="area" id="ma" style="min-height:120px" placeholder="The answer you want to recall."></textarea>
+          <div class="field-foot"><span></span><span>0 / 1,000</span></div>
+        </div>
+        <div style="display:flex; gap:10px; margin-top:6px;">
+          <button class="btn btn-primary" onclick="go('deck')">Save card</button>
+          <button class="btn btn-ghost" onclick="go('deck')">Cancel</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ================= AUTH ================= -->
+<div id="authView">
+  <div class="auth-card">
+    <div class="brand">
+      <svg class="logo" width="30" height="30" viewBox="0 0 36 36" aria-hidden="true"><use href="#sageLeaf"/></svg>
+      <span class="wordmark">Sage</span>
+    </div>
+    <h1>Welcome back</h1>
+    <p class="sub">Sign in to pick up your reviews.</p>
+    <div class="field">
+      <label for="email">Email</label>
+      <input class="input" id="email" type="email" placeholder="you@example.com" />
+    </div>
+    <div class="field">
+      <label for="pw">Password</label>
+      <input class="input" id="pw" type="password" placeholder="••••••••" />
+    </div>
+    <div class="auth-row"><a href="#">Forgot password?</a></div>
+    <button class="btn btn-primary btn-block" onclick="hideAuth()">Sign in</button>
+    <p class="auth-foot">New here? <a href="#">Create an account</a></p>
+  </div>
+  <a class="linkback" onclick="hideAuth()" style="position:fixed;top:24px;left:24px;cursor:pointer;">← Back to app preview</a>
+</div>
+
+<div class="preview-tag" id="ptag">Design preview · click the tabs to explore</div>
+
+<script>
+  /* ---------- flat line icons (inherit currentColor) ---------- */
+  const SVG = (p, sw) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw || 2}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
+  const ICONS = {
+    edit:   SVG('<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>'),
+    trash:  SVG('<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>'),
+    sparkle:SVG('<path d="M12 3l1.6 5.4L19 10l-5.4 1.6L12 17l-1.6-5.4L5 10l5.4-1.6Z"/>'),
+    check:  SVG('<polyline points="20 6 9 17 4 12"/>'),
+    x:      SVG('<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>'),
+    pen:    SVG('<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>'),
+    layers: SVG('<path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>'),
+  };
+
+  /* ---------- router ---------- */
+  const TIPS = {
+    generate: "Paste text → Generate → keep the good cards",
+    review: "Press Space, then 1–4 to rate",
+    deck: "Hover a row for edit / delete",
+    new: "Manual card creation",
+  };
+  function go(name) {
+    document.getElementById('authView').classList.remove('active');
+    document.getElementById('appView').style.display = '';
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + name).classList.add('active');
+    document.querySelectorAll('nav .tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+    document.getElementById('ptag').textContent = "Design preview · " + (TIPS[name] || "");
+    window.scrollTo({ top: 0 });
+    if (name === 'review') mountReview();
+    if (name === 'deck') mountDeck();
+  }
+  function showAuth() {
+    document.getElementById('appView').style.display = 'none';
+    document.getElementById('authView').classList.add('active');
+    document.getElementById('ptag').textContent = "Design preview · sign-in screen";
+  }
+  function hideAuth() { go('generate'); }
+
+  /* ---------- generate ---------- */
+  const genInput = document.getElementById('genInput');
+  function fmtCount() {
+    const n = genInput.value.length;
+    document.getElementById('genCount').textContent = n.toLocaleString() + " / 5,000 characters · up to ~12 cards";
+    document.getElementById('genBtn').disabled = n === 0 || n > 5000;
+  }
+  genInput.addEventListener('input', fmtCount);
+
+  const CANDS = [
+    { q: "What does spaced repetition time each review around?", a: "The point of forgetting — reviews land just before recall would fail, at widening intervals." },
+    { q: "Whose work describes the forgetting curve?", a: "Hermann Ebbinghaus — recall decays exponentially without reinforcement." },
+    { q: "How does active recall differ from rereading?", a: "It retrieves the answer from memory, which strengthens the trace far more than passive review." },
+    { q: "What effect do well-timed reviews have on the forgetting curve?", a: "They flatten it — each reinforcement slows the rate of decay." },
+  ];
+  let candState = [];
+  function generate() {
+    const list = document.getElementById('candList');
+    candState = CANDS.map(() => 'accepted');
+    list.innerHTML = CANDS.map((c, idx) => `
+      <div class="cand is-accepted" id="cand-${idx}">
+        <p class="cq">${c.q}</p>
+        <p class="ca">${c.a}</p>
+        <div class="cand-foot">
+          <span class="badge-state" id="cand-state-${idx}">Accepted</span>
+          <span class="spacer"></span>
+          <button class="chip accept on" onclick="setCand(${idx},'accepted')">${ICONS.check} Keep</button>
+          <button class="chip" onclick="editCand(${idx})">${ICONS.pen} Edit</button>
+          <button class="chip reject" onclick="setCand(${idx},'rejected')">${ICONS.x} Reject</button>
+        </div>
+      </div>`).join('');
+    document.getElementById('candidates').style.display = 'block';
+    syncCounts();
+    document.getElementById('candidates').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  function setCand(idx, state) {
+    candState[idx] = state;
+    const el = document.getElementById('cand-' + idx);
+    el.classList.toggle('is-accepted', state === 'accepted');
+    el.classList.toggle('is-rejected', state === 'rejected');
+    el.querySelector('.chip.accept').classList.toggle('on', state === 'accepted');
+    el.querySelector('.chip.reject').classList.toggle('on', state === 'rejected');
+    document.getElementById('cand-state-' + idx).textContent = state === 'accepted' ? 'Accepted' : 'Rejected';
+    syncCounts();
+  }
+  function editCand(idx) { setCand(idx, 'accepted'); }
+  function syncCounts() {
+    const n = candState.filter(s => s === 'accepted').length;
+    document.getElementById('acceptCount').textContent = n;
+    const btn = document.getElementById('saveBtn');
+    btn.textContent = n ? `Save ${n} ${n === 1 ? 'card' : 'cards'} to deck` : 'No cards selected';
+    btn.disabled = n === 0;
+  }
+
+  /* ---------- deck ---------- */
+  const DECK = [
+    { q: "What does spaced repetition time each review around?", a: "The point of forgetting — reviews land just before recall would fail.", o: "ai" },
+    { q: "¿Cómo se dice “deadline” en español?", a: "la fecha límite", o: "manual" },
+    { q: "Whose work describes the forgetting curve?", a: "Hermann Ebbinghaus.", o: "ai" },
+    { q: "Bayes’ theorem lets you compute…?", a: "The probability of a hypothesis given the evidence.", o: "ai" },
+    { q: "What is active recall?", a: "Retrieving an answer from memory rather than rereading it.", o: "ai" },
+    { q: "First line of the Stoic dichotomy of control?", a: "Some things are up to us; others are not.", o: "manual" },
+  ];
+  function mountDeck() {
+    document.getElementById('deckList').innerHTML = DECK.map((c) => `
+      <div class="row">
+        <div class="body">
+          <p class="rq">${c.q}</p>
+          <p class="ra">${c.a}</p>
+        </div>
+        <span class="origin ${c.o}">${c.o === 'ai' ? ICONS.sparkle + ' AI' : ICONS.pen + ' Manual'}</span>
+        <div class="acts">
+          <button class="iconbtn" title="Edit" onclick="go('new')">${ICONS.edit}</button>
+          <button class="iconbtn danger" title="Delete" onclick="this.closest('.row').remove()">${ICONS.trash}</button>
+        </div>
+      </div>`).join('');
+  }
+
+  /* ---------- review (reused) ---------- */
+  const RCARDS = [
+    { q: "What does spaced repetition actually optimize for?", a: "Reviewing each item at widening intervals — right before you'd forget it — so you get the most long-term retention per minute spent studying." },
+    { q: "¿Cómo se dice “deadline” en español?", a: "la fecha límite — e.g. “Entregar antes de la fecha límite.”" },
+    { q: "In one line: what does Bayes’ theorem let you compute?", a: "The probability of a hypothesis given the evidence — by flipping a conditional you already know." },
+  ];
+  const RR = [{ r: 1, name: "Again" }, { r: 2, name: "Hard" }, { r: 3, name: "Good" }, { r: 4, name: "Easy" }];
+  let ri = 0, rRevealed = false, rReviewed = 0;
+  const RTOTAL = RCARDS.length;
+  function mountReview() { ri = 0; rRevealed = false; rReviewed = 0; renderR(); }
+  function renderR() {
+    const root = document.getElementById('screen-review');
+    const left = RTOTAL - ri, pct = Math.round((ri / RTOTAL) * 100), c = RCARDS[ri];
+    root.innerHTML = `
+      <div class="progress">
+        <span class="count">${left} ${left === 1 ? "card" : "cards"} left</span>
+        <span class="bar"><i style="width:${pct}%"></i></span>
+      </div>
+      <div class="card${rRevealed ? " lift" : ""}">
+        <span class="label">Question</span>
+        <p class="q">${c.q}</p>
+        <div class="answer${rRevealed ? " show" : ""}"><hr class="divider" /><span class="label">Answer</span><p class="a">${c.a}</p></div>
+        ${rRevealed ? "" : `<div class="reveal-wrap"><button class="reveal" onclick="rReveal()">Show answer <kbd>Space</kbd></button></div>`}
+      </div>
+      ${rRevealed ? `
+        <div class="ratings">${RR.map(x => `<button class="rate" data-r="${x.r}" onclick="rRate()"><span class="dot"></span><span class="name">${x.name}</span><kbd>${x.r}</kbd></button>`).join("")}</div>
+        <p class="hint"><kbd>1</kbd> Again · <kbd>2</kbd> Hard · <kbd>3</kbd> Good · <kbd>4</kbd> Easy</p>`
+      : `<p class="hint">Try to recall the answer, then reveal it with <kbd>Space</kbd>.</p>`}
+    `;
+  }
+  function rReveal() { rRevealed = true; renderR(); }
+  function rRate() { rReviewed++; ri++; rRevealed = false; if (ri >= RTOTAL) renderDone(); else renderR(); }
+  function renderDone() {
+    document.getElementById('screen-review').innerHTML = `
+      <div class="done">
+        <div class="seal">${ICONS.check}</div>
+        <h2>All caught up</h2>
+        <p>Reviewed ${rReviewed} ${rReviewed === 1 ? "card" : "cards"} this session.</p>
+        <p>Next review in about 4 hours.</p>
+        <div class="actions">
+          <button class="btn btn-primary" onclick="go('generate')">Generate more cards</button>
+          <button class="btn btn-ghost" onclick="mountReview()">Run the demo again</button>
+        </div>
+      </div>`;
+  }
+  document.addEventListener('keydown', (e) => {
+    if (!document.getElementById('screen-review').classList.contains('active')) return;
+    if (e.code === "Space" && !rRevealed && ri < RTOTAL) { e.preventDefault(); rReveal(); }
+    else if (rRevealed && ["1","2","3","4"].includes(e.key)) { e.preventDefault(); rRate(); }
+  });
+
+  /* ---------- init ---------- */
+  fmtCount();
+  go('generate');
+</script>
