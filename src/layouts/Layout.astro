@@ -10,6 +10,7 @@ interface Props {
 
 const { title = "Sage Flashcards" } = Astro.props;
 const locale = Astro.locals.locale;
+const year = new Date().getFullYear();
 ---
 
 <!doctype html>
@@ -49,6 +50,7 @@ const locale = Astro.locals.locale;
       ))
     }
     <slot />
+    <footer class="site-footer">© {year} Jakub Zasański</footer>
   </body>
 </html>
 

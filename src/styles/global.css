@@ -1399,6 +1399,14 @@
     margin: 0 0 22px;
   }
 
+  /* ---------- site footer ---------- */
+  .site-footer {
+    text-align: center;
+    padding: 28px 20px;
+    font-size: 0.8rem;
+    color: var(--text-faint);
+  }
+
   /* focus rings in accent green across chrome (mockup) */
   a:focus-visible,
   button:focus-visible,
@@ -1525,6 +1533,10 @@
     }
     .bottombar .bb:active {
       background: var(--accent-soft);
+    }
+    /* clear the fixed bottom tab bar so the footer isn't hidden behind it */
+    .site-footer {
+      padding-bottom: calc(28px + 76px + env(safe-area-inset-bottom, 0px));
     }
   }
 }
