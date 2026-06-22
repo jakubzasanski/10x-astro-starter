@@ -607,14 +607,14 @@ considering the slice complete.
 
 #### Automated
 
-- [x] 4.1 Lint passes (`npm run lint`)
-- [x] 4.2 Build passes (`npm run build`)
-- [x] 4.3 Type checking passes (`npx astro sync && npm run lint`)
-- [x] 4.4 Existing unit + integration suites still green (`npm test && npm run test:integration`)
+- [x] 4.1 Lint passes (`npm run lint`) — b8db1f2
+- [x] 4.2 Build passes (`npm run build`) — b8db1f2
+- [x] 4.3 Type checking passes (`npx astro sync && npm run lint`) — b8db1f2
+- [x] 4.4 Existing unit + integration suites still green (`npm test && npm run test:integration`) — b8db1f2
 
 #### Manual
 
-- [x] 4.5 `/cards` lists cards newest-first; "Load more" appends the next page only when more exist
-- [x] 4.6 Editing Q/A persists and leaves the review schedule unchanged (verified via `/review` next-due)
-- [x] 4.7 Delete requires arm→confirm; a single click never deletes; deleted cards stay gone on reload; deleting from a loaded page then "Load more" skips no remaining card (offset cursor; F2)
-- [x] 4.8 Unauthenticated `/cards` redirects to `/auth/signin`; dashboard links into `/cards`
+- [x] 4.5 `/cards` lists cards newest-first; "Load more" appends the next page only when more exist — b8db1f2
+- [x] 4.6 Editing Q/A persists and leaves the review schedule unchanged (verified via `/review` next-due) — b8db1f2
+- [x] 4.7 Delete requires arm→confirm; a single click never deletes; deleted cards stay gone on reload; deleting from a loaded page then "Load more" skips no remaining card (offset cursor; F2) — b8db1f2
+- [x] 4.8 Unauthenticated `/cards` redirects to `/auth/signin`; dashboard links into `/cards` — b8db1f2
