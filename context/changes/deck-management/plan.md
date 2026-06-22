@@ -592,29 +592,29 @@ considering the slice complete.
 
 #### Automated
 
-- [x] 3.1 Handler-property tests pass, incl. the FR-013 payload-keys guard (`npm test`)
-- [x] 3.2 RLS integration test passes, incl. schedule-unchanged-after-edit (`npm run test:integration`)
-- [x] 3.3 Lint + build pass (`npm run lint && npm run build`)
-- [x] 3.4 Type checking passes (`npx astro sync && npm run lint`)
+- [x] 3.1 Handler-property tests pass, incl. the FR-013 payload-keys guard (`npm test`) — e36f3c1
+- [x] 3.2 RLS integration test passes, incl. schedule-unchanged-after-edit (`npm run test:integration`) — e36f3c1
+- [x] 3.3 Lint + build pass (`npm run lint && npm run build`) — e36f3c1
+- [x] 3.4 Type checking passes (`npx astro sync && npm run lint`) — e36f3c1
 
 #### Manual
 
-- [x] 3.5 PATCH own card persists Q/A and leaves `due`/`state`/etc. unchanged
-- [x] 3.6 PATCH/DELETE another user's cardId returns 404 (no effect)
-- [x] 3.7 DELETE own card returns 200 and the card is gone from a subsequent `GET /api/cards`
+- [x] 3.5 PATCH own card persists Q/A and leaves `due`/`state`/etc. unchanged — e36f3c1
+- [x] 3.6 PATCH/DELETE another user's cardId returns 404 (no effect) — e36f3c1
+- [x] 3.7 DELETE own card returns 200 and the card is gone from a subsequent `GET /api/cards` — e36f3c1
 
 ### Phase 4: Deck UI — `/cards` page + `DeckView` island
 
 #### Automated
 
-- [ ] 4.1 Lint passes (`npm run lint`)
-- [ ] 4.2 Build passes (`npm run build`)
-- [ ] 4.3 Type checking passes (`npx astro sync && npm run lint`)
-- [ ] 4.4 Existing unit + integration suites still green (`npm test && npm run test:integration`)
+- [x] 4.1 Lint passes (`npm run lint`)
+- [x] 4.2 Build passes (`npm run build`)
+- [x] 4.3 Type checking passes (`npx astro sync && npm run lint`)
+- [x] 4.4 Existing unit + integration suites still green (`npm test && npm run test:integration`)
 
 #### Manual
 
-- [ ] 4.5 `/cards` lists cards newest-first; "Load more" appends the next page only when more exist
-- [ ] 4.6 Editing Q/A persists and leaves the review schedule unchanged (verified via `/review` next-due)
-- [ ] 4.7 Delete requires arm→confirm; a single click never deletes; deleted cards stay gone on reload; deleting from a loaded page then "Load more" skips no remaining card (offset cursor; F2)
-- [ ] 4.8 Unauthenticated `/cards` redirects to `/auth/signin`; dashboard links into `/cards`
+- [x] 4.5 `/cards` lists cards newest-first; "Load more" appends the next page only when more exist
+- [x] 4.6 Editing Q/A persists and leaves the review schedule unchanged (verified via `/review` next-due)
+- [x] 4.7 Delete requires arm→confirm; a single click never deletes; deleted cards stay gone on reload; deleting from a loaded page then "Load more" skips no remaining card (offset cursor; F2)
+- [x] 4.8 Unauthenticated `/cards` redirects to `/auth/signin`; dashboard links into `/cards`
