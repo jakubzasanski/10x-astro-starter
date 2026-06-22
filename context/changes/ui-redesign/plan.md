@@ -907,14 +907,14 @@ validation gates, supplemented by per-screen manual render-verify.
 
 #### Automated
 
-- [x] 6.1 Linting passes: `npm run lint`
-- [x] 6.2 Build succeeds: `npm run build`
-- [x] 6.3 No remaining cosmic utility usage in `src`
+- [x] 6.1 Linting passes: `npm run lint` — 84776b0
+- [x] 6.2 Build succeeds: `npm run build` — 84776b0
+- [x] 6.3 No remaining cosmic utility usage in `src` — 84776b0
 
 #### Manual
 
-- [x] 6.4 Sign-in matches the mockup; all auth flows share the warm language and still work
-- [x] 6.5 Landing renders warm (no cosmic), reads "Sage Flashcards," links work
-- [x] 6.6 Dashboard renders warm via the app shell
-- [x] 6.7 Landing/auth/dashboard render correctly in both light/dark themes, both languages (EN/PL), and on mobile (stacked hero, full-width CTAs, single-column how-it-works)
-- [x] 6.8 Full route walkthrough shows a cohesive Sage Flashcards app in both themes, both languages, and on mobile + desktop, with no grayscale/cosmic remnants, no untranslated UI strings, and no horizontal scroll
+- [x] 6.4 Sign-in matches the mockup; all auth flows share the warm language and still work — 84776b0
+- [x] 6.5 Landing renders warm (no cosmic), reads "Sage Flashcards," links work — 84776b0
+- [x] 6.6 Dashboard renders warm via the app shell — 84776b0
+- [x] 6.7 Landing/auth/dashboard render correctly in both light/dark themes, both languages (EN/PL), and on mobile (stacked hero, full-width CTAs, single-column how-it-works) — 84776b0
+- [x] 6.8 Full route walkthrough shows a cohesive Sage Flashcards app in both themes, both languages, and on mobile + desktop, with no grayscale/cosmic remnants, no untranslated UI strings, and no horizontal scroll — 84776b0
