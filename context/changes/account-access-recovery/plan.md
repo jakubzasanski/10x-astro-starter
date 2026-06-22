@@ -629,35 +629,35 @@ considering the slice complete.
 
 #### Automated
 
-- [x] 1.1 Lint passes (`npm run lint`)
-- [x] 1.2 Build passes (`npm run build`)
-- [x] 1.3 Type checking passes (`npx astro sync && npm run lint`)
-- [x] 1.4 Handler-property test for the request route passes (`npm test`)
+- [x] 1.1 Lint passes (`npm run lint`) — 6ea11d1
+- [x] 1.2 Build passes (`npm run build`) — 6ea11d1
+- [x] 1.3 Type checking passes (`npx astro sync && npm run lint`) — 6ea11d1
+- [x] 1.4 Handler-property test for the request route passes (`npm test`) — 6ea11d1
 
 #### Manual
 
-- [x] 1.5 `/auth/forgot-password` renders; valid email → neutral "sent" state; unknown email → same state (no enumeration)
-- [x] 1.6 Known email produces a recovery email in Mailpit (`:54324`) whose link targets `/auth/reset-password`
-- [x] 1.7 Invalid email shows an error, not the "sent" state
+- [x] 1.5 `/auth/forgot-password` renders; valid email → neutral "sent" state; unknown email → same state (no enumeration) — 6ea11d1
+- [x] 1.6 Known email produces a recovery email in Mailpit (`:54324`) whose link targets `/auth/reset-password` — 6ea11d1
+- [x] 1.7 Invalid email shows an error, not the "sent" state — 6ea11d1
 
 ### Phase 2: Password-Reset Completion (reset-password)
 
 #### Automated
 
-- [ ] 2.1 Lint passes (`npm run lint`)
-- [ ] 2.2 Build passes (`npm run build`)
-- [ ] 2.3 Type checking passes (`npx astro sync && npm run lint`)
-- [ ] 2.4 Handler-property test for the reset route passes (`npm test`)
-- [ ] 2.10 `config.toml` applies cleanly with `[auth.email.template.recovery]` (`npx supabase db reset` / stop+start), no parse error
+- [x] 2.1 Lint passes (`npm run lint`)
+- [x] 2.2 Build passes (`npm run build`)
+- [x] 2.3 Type checking passes (`npx astro sync && npm run lint`)
+- [x] 2.4 Handler-property test for the reset route passes (`npm test`)
+- [x] 2.10 `config.toml` applies cleanly with `[auth.email.template.recovery]` (`npx supabase db reset` / stop+start), no parse error
 
 #### Manual
 
-- [ ] 2.11 Customized recovery email in Mailpit links to `/auth/reset-password?token_hash=...&type=recovery` (not GoTrue `/auth/v1/verify`)
-- [ ] 2.5 Mailpit recovery link opens `/auth/reset-password` showing the new-password form
-- [ ] 2.6 Valid new password → redirect to `/auth/signin?reset=1` with success banner; new password works, old rejected
-- [ ] 2.7 Mismatched/too-short password shows error and does not change the password
-- [ ] 2.8 Direct visit (no token) shows "request a new link" state
-- [ ] 2.9 Reused/expired link shows "invalid or expired" state, not an error page
+- [x] 2.11 Customized recovery email in Mailpit links to `/auth/reset-password?token_hash=...&type=recovery` (not GoTrue `/auth/v1/verify`)
+- [x] 2.5 Mailpit recovery link opens `/auth/reset-password` showing the new-password form
+- [x] 2.6 Valid new password → redirect to `/auth/signin?reset=1` with success banner; new password works, old rejected
+- [x] 2.7 Mismatched/too-short password shows error and does not change the password
+- [x] 2.8 Direct visit (no token) shows "request a new link" state
+- [x] 2.9 Reused/expired link shows "invalid or expired" state, not an error page
 
 ### Phase 3: Verify FR-003/004/005/007 + Close Config Gaps
 

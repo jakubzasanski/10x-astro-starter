@@ -3,6 +3,7 @@ import Layout from "@/layouts/Layout.astro";
 import SignInForm from "@/components/auth/SignInForm";
 
 const error = Astro.url.searchParams.get("error");
+const reset = Astro.url.searchParams.get("reset");
 ---
 
 <Layout title="Sign in">
@@ -13,6 +14,13 @@ const error = Astro.url.searchParams.get("error");
       >
         Sign in
       </h1>
+      {
+        reset && (
+          <p class="mb-4 flex items-center gap-2 rounded-lg border border-green-500/30 bg-green-900/30 px-3 py-2 text-sm text-green-200">
+            Your password has been updated — sign in with your new password.
+          </p>
+        )
+      }
       <SignInForm serverError={error} client:load />
       <p class="mt-4 text-center text-sm text-blue-100/60">
         <a href="/auth/forgot-password" class="text-purple-300 hover:underline">Forgot password?</a>

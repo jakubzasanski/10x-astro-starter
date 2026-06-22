@@ -231,6 +231,14 @@ otp_expiry = 3600
 # subject = "You have been invited"
 # content_path = "./supabase/templates/invite.html"
 
+# Customized recovery (password-reset) email. The link points straight at the app's reset-password
+# page carrying a server-readable token_hash, so the SSR cookie client can mint the recovery session
+# via verifyOtp — the stock {{ .ConfirmationURL }} routes through GoTrue's /auth/v1/verify (PKCE
+# ?code=) which the server cannot complete cross-device.
+[auth.email.template.recovery]
+subject = "Reset your password"
+content_path = "./supabase/templates/recovery.html"
+
 # Uncomment to customize notification email template
 # [auth.email.notification.password_changed]
 # enabled = true
