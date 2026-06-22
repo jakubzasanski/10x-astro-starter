@@ -150,11 +150,26 @@ max_indexes = 5
 [auth]
 enabled = true
 # The base URL of your website. Used as an allow-list for redirects and for constructing URLs used
-# in emails.
-site_url = "http://127.0.0.1:3000"
-# A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
-additional_redirect_urls = ["https://127.0.0.1:3000"]
+# in emails (including the recovery link's {{ .SiteURL }}). Aligned with the Astro dev default and the
+# e2e/preview baseURL (playwright.config.ts → http://localhost:4321) so the recovery email link lands
+# on the running app, not a mismatched fallback.
+site_url = "http://localhost:4321"
+# A list of *exact* URLs that auth providers are permitted to redirect to post authentication. The
+# forgot-password route derives redirectTo from the request origin, so allow-list the local dev/preview
+# host variants; without a match GoTrue silently falls back to site_url. Mirror the production
+# /auth/reset-password origin in the dashboard (Authentication → URL Configuration).
+additional_redirect_urls = [
+  "http://localhost:4321",
+  "http://127.0.0.1:4321",
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
+# FR-005 (≥7-day session): this is the short-lived ACCESS token, silently refreshed — leave it short.
+# The 7-day guarantee is the REFRESH-token lifetime: keep enable_refresh_token_rotation below and the
+# [auth.sessions] timebox/inactivity block commented out (no forced logout) so nothing caps the window
+# under 7 days. In production, confirm the dashboard refresh-token expiry is ≥7 days (Authentication →
+# Sessions); Supabase's default already is. Local dev cannot fully prove the 7-day window.
 jwt_expiry = 3600
 # JWT issuer URL. If not set, defaults to the local API URL (http://127.0.0.1:<port>/auth/v1).
 # jwt_issuer = ""
@@ -206,6 +221,9 @@ enable_signup = true
 # addresses. If disabled, only the new email is required to confirm.
 double_confirm_changes = true
 # If enabled, users need to confirm their email address before signing in.
+# FR-003/FR-004: OFF locally for dev convenience (matches confirm-email.astro's DEV "you can now sign
+# in" branch). PRODUCTION MUST have this ON (dashboard → Authentication → Email → "Confirm email") so
+# verify-before-use holds — unconfirmed accounts cannot sign in until the emailed link is clicked.
 enable_confirmations = false
 # If enabled, users will need to reauthenticate or have logged in recently to change their password.
 secure_password_change = false

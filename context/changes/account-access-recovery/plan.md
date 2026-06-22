@@ -644,36 +644,36 @@ considering the slice complete.
 
 #### Automated
 
-- [x] 2.1 Lint passes (`npm run lint`)
-- [x] 2.2 Build passes (`npm run build`)
-- [x] 2.3 Type checking passes (`npx astro sync && npm run lint`)
-- [x] 2.4 Handler-property test for the reset route passes (`npm test`)
-- [x] 2.10 `config.toml` applies cleanly with `[auth.email.template.recovery]` (`npx supabase db reset` / stop+start), no parse error
+- [x] 2.1 Lint passes (`npm run lint`) — 9e40045
+- [x] 2.2 Build passes (`npm run build`) — 9e40045
+- [x] 2.3 Type checking passes (`npx astro sync && npm run lint`) — 9e40045
+- [x] 2.4 Handler-property test for the reset route passes (`npm test`) — 9e40045
+- [x] 2.10 `config.toml` applies cleanly with `[auth.email.template.recovery]` (`npx supabase db reset` / stop+start), no parse error — 9e40045
 
 #### Manual
 
-- [x] 2.11 Customized recovery email in Mailpit links to `/auth/reset-password?token_hash=...&type=recovery` (not GoTrue `/auth/v1/verify`)
-- [x] 2.5 Mailpit recovery link opens `/auth/reset-password` showing the new-password form
-- [x] 2.6 Valid new password → redirect to `/auth/signin?reset=1` with success banner; new password works, old rejected
-- [x] 2.7 Mismatched/too-short password shows error and does not change the password
-- [x] 2.8 Direct visit (no token) shows "request a new link" state
-- [x] 2.9 Reused/expired link shows "invalid or expired" state, not an error page
+- [x] 2.11 Customized recovery email in Mailpit links to `/auth/reset-password?token_hash=...&type=recovery` (not GoTrue `/auth/v1/verify`) — 9e40045
+- [x] 2.5 Mailpit recovery link opens `/auth/reset-password` showing the new-password form — 9e40045
+- [x] 2.6 Valid new password → redirect to `/auth/signin?reset=1` with success banner; new password works, old rejected — 9e40045
+- [x] 2.7 Mismatched/too-short password shows error and does not change the password — 9e40045
+- [x] 2.8 Direct visit (no token) shows "request a new link" state — 9e40045
+- [x] 2.9 Reused/expired link shows "invalid or expired" state, not an error page — 9e40045
 
 ### Phase 3: Verify FR-003/004/005/007 + Close Config Gaps
 
 #### Automated
 
-- [ ] 3.1 Lint + build still pass (`npm run lint && npm run build`)
-- [ ] 3.2 `config.toml` applies cleanly (`npx supabase db reset` / stop+start), no `[auth]` parse error
-- [ ] 3.8 `additional_redirect_urls` includes the local e2e/preview origin (`http://localhost:4321`); recovery link resolves to the running app, not the `site_url` fallback
-- [ ] 3.3 Existing unit + integration suites still green (`npm test && npm run test:integration`)
+- [x] 3.1 Lint + build still pass (`npm run lint && npm run build`)
+- [x] 3.2 `config.toml` applies cleanly (`npx supabase db reset` / stop+start), no `[auth]` parse error
+- [x] 3.8 `additional_redirect_urls` includes the local e2e/preview origin (`http://localhost:4321`); recovery link resolves to the running app, not the `site_url` fallback
+- [x] 3.3 Existing unit + integration suites still green (`npm test && npm run test:integration`)
 
 #### Manual
 
-- [ ] 3.4 FR-003: fresh-email signup creates an account (dev confirm-email "can now sign in")
-- [ ] 3.5 FR-004 (prod): with confirmations ON, unconfirmed account can't sign in until link clicked
-- [ ] 3.6 FR-005: session persists; prod refresh-token lifetime confirmed ≥7 days; silent refresh after 1h works
-- [ ] 3.7 FR-007: sign-out redirects to `/`, clears session; `/dashboard` then redirects to `/auth/signin`
+- [x] 3.4 FR-003: fresh-email signup creates an account (dev confirm-email "can now sign in")
+- [x] 3.5 FR-004 (prod): with confirmations ON, unconfirmed account can't sign in until link clicked
+- [x] 3.6 FR-005: session persists; prod refresh-token lifetime confirmed ≥7 days; silent refresh after 1h works
+- [x] 3.7 FR-007: sign-out redirects to `/`, clears session; `/dashboard` then redirects to `/auth/signin`
 
 ### Phase 4: Tests — Handler Validation + Reset Happy-Path E2E
 
