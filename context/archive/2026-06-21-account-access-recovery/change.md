@@ -1,10 +1,10 @@
 ---
 change_id: account-access-recovery
 title: Account access — password reset + auth acceptance-criteria verification
-status: impl_reviewed
+status: archived
 created: 2026-06-21
 updated: 2026-06-22
-archived_at: null
+archived_at: 2026-06-22T12:25:17Z
 ---
 
 ## Notes

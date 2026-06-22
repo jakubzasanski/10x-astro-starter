@@ -34,7 +34,7 @@ top_blocker: time
 | S-02  | spaced-repetition-review     | run a keyboard-driven spaced-repetition review session           | F-01, S-01    | US-02, FR-015, FR-016     | done     |
 | S-03  | deck-management              | browse, edit (schedule-preserving), and delete cards             | F-01          | FR-012, FR-013, FR-014    | done     |
 | S-04  | manual-card-creation         | create a flashcard manually (question + answer)                  | F-01          | FR-011                    | done     |
-| S-05  | account-access-recovery      | reset a forgotten password; auth flows meet PRD criteria         | —             | FR-003, FR-004, FR-005, FR-006, FR-007 | planned  |
+| S-05  | account-access-recovery      | reset a forgotten password; auth flows meet PRD criteria         | —             | FR-003, FR-004, FR-005, FR-006, FR-007 | done     |
 | S-06  | anonymous-trial-and-claim    | generate cards with no account; claim them on sign-up            | F-01, S-01    | FR-001, FR-002            | blocked  |
 
 ## Streams
@@ -138,7 +138,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Net-new work is password reset (FR-006, absent today); the rest is verifying baseline auth against PRD criteria. Reset rides Supabase's existing email path (confirmation emails already work in production), so no new email infrastructure is needed — keeping it a small, independent slice. Without FR-006 the "no data loss" guardrail is hollow (a forgotten password = a lost deck), so it stays must-have even under `speed`.
-- **Status:** planned
+- **Status:** done
 
 ### S-06: Anonymous-trial generation + claim-on-signup
 
@@ -183,6 +183,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ## Done
 
+- **S-05: user can request an emailed password-reset link and complete the reset (the one absent auth flow), and the existing sign-up, email-verify, sign-in, and sign-out flows are confirmed to meet the PRD's acceptance criteria — including the 7-day default session.** — Archived 2026-06-22 → `context/archive/2026-06-21-account-access-recovery/`. Lesson: —.
 - **S-02: user can start a review session where an off-the-shelf scheduler picks due-card order, reveal each answer, rate recall on a four-level scale (Again/Hard/Good/Easy) with the schedule updating after each rating, and resume mid-session after navigation/refresh/network loss without losing progress — fully keyboard-driven.** — Archived 2026-06-21 → `context/archive/2026-06-21-spaced-repetition-review/`. Lesson: —.
 - **F-01: (foundation) user-owned flashcards persist — a cards table with per-user row-level security and an AI-vs-manual origin flag; the first migration and the project's RLS pattern are established.** — Archived 2026-06-21 → `context/archive/2026-06-19-card-persistence-foundation/`. Lesson: —.
 - **S-01: paste text → accept AI cards → save to deck** — Archived 2026-06-21 → `context/archive/2026-06-19-first-ai-cards-to-deck/`. Lesson: —.
