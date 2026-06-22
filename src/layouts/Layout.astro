@@ -57,6 +57,11 @@ const locale = Astro.locals.locale;
   body {
     margin: 0;
     width: 100%;
-    height: 100%;
+  }
+  /* min-height (not height:100%) so the warm body background spans the full
+     content on long pages (e.g. the landing) instead of cutting off after one
+     viewport. */
+  body {
+    min-height: 100vh;
   }
 </style>

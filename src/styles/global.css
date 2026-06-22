@@ -179,6 +179,10 @@
   }
   body {
     @apply text-foreground;
+    /* Match the mockup's compact chrome: it uses the browser-default line-height,
+       whereas Tailwind's preflight forces 1.5 (which made everything too tall).
+       Text blocks that need looser leading set it explicitly in their own rules. */
+    line-height: normal;
     background:
       radial-gradient(1200px 600px at 50% -10%, #fff7eb 0%, transparent 60%),
       linear-gradient(180deg, var(--background) 0%, var(--ground-deep) 100%);
@@ -1176,10 +1180,31 @@
 
   /* ---------- auth ---------- */
   .auth-wrap {
+    position: relative;
     min-height: 100vh;
     display: grid;
     place-items: center;
     padding: 40px 20px;
+  }
+  .auth-back {
+    position: absolute;
+    top: clamp(16px, 4vw, 28px);
+    left: clamp(16px, 4vw, 28px);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-soft);
+    text-decoration: none;
+    font-family: var(--sans);
+    font-size: 0.88rem;
+    font-weight: 600;
+  }
+  .auth-back:hover {
+    color: var(--accent-deep);
+  }
+  .auth-back svg {
+    width: 18px;
+    height: 18px;
   }
   .auth-card {
     width: 100%;
@@ -1193,7 +1218,6 @@
   .auth-card .brand {
     justify-content: center;
     margin-bottom: 22px;
-    cursor: default;
   }
   .auth-card h1 {
     font-family: var(--serif);
@@ -1211,7 +1235,7 @@
   .auth-row {
     display: flex;
     justify-content: flex-end;
-    margin: -8px 0 18px;
+    margin: 14px 0 0;
   }
   .auth-row a,
   .auth-foot a,

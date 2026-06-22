@@ -112,6 +112,7 @@ export const pl: Record<string, string> = {
   "auth.haveAccount": "Masz już konto?",
   "auth.rememberPw": "Pamiętasz hasło?",
   "auth.backToSignin": "Powrót do logowania",
+  "auth.backHome": "Strona główna",
   "auth.checkEmail": "Sprawdź pocztę",
   "auth.resetSent": "Jeśli konto dla tego adresu istnieje, wysłaliśmy link do zresetowania hasła. Sprawdź skrzynkę.",
   "auth.expiredTitle": "Ten link resetujący jest nieprawidłowy lub wygasł",

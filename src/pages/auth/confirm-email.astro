@@ -1,5 +1,6 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import BackHome from "@/components/auth/BackHome.astro";
 import { t } from "@/i18n";
 
 const { locale } = Astro.locals;
@@ -22,6 +23,7 @@ const content = isAutoConfirmed
 
 <Layout title={`${content.heading} — Sage Flashcards`}>
   <div class="auth-wrap">
+    <BackHome />
     <div class="auth-card auth-center">
       <div class="auth-emoji">{content.emoji}</div>
       <h1>{content.heading}</h1>
