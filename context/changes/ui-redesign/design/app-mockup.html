@@ -1,4 +1,6 @@
-<title>Sage — UI preview</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sage Flashcards — UI preview</title>
 <style>
   :root {
     --ground: #F7EEE0;
@@ -30,6 +32,32 @@
     --mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
   }
 
+  /* ---------- dark theme: same layout, darker warm palette ---------- */
+  html.dark {
+    --ground: #211C15;       /* warm dark ground */
+    --ground-deep: #191510;
+    --surface: #2A241C;      /* elevated warm surface (cards/inputs) */
+    --text: #F0E8DA;         /* warm off-white */
+    --text-soft: #B5A892;
+    --text-faint: #8C7F6C;
+    --line: #3A332A;         /* dark hairline */
+    --accent: #7FB47E;       /* green lifted a step so it pops on dark */
+    --accent-deep: #6BA06A;
+    --accent-warm: #A9C56A;
+    --accent-soft: #26301F;  /* dark green-tinted tint surface */
+    --icon: #B7A582;
+    --icon-soft: #6E6450;
+
+    --r-again: #D86E57;
+    --r-hard:  #D69A45;
+    --r-good:  #62B071;
+    --r-easy:  #54A89F;
+
+    --shadow-card: 0 2px 5px rgba(0,0,0,.30), 0 26px 54px -28px rgba(0,0,0,.62);
+    --shadow-lift: 0 2px 5px rgba(0,0,0,.30), 0 36px 74px -30px rgba(0,0,0,.66);
+    --shadow-soft: 0 1px 3px rgba(0,0,0,.30), 0 12px 28px -20px rgba(0,0,0,.55);
+  }
+
   * { box-sizing: border-box; }
 
   body {
@@ -43,6 +71,20 @@
     background-attachment: fixed;
     -webkit-font-smoothing: antialiased;
   }
+  html.dark body {
+    background:
+      radial-gradient(1200px 600px at 50% -10%, #2A2318 0%, transparent 60%),
+      linear-gradient(180deg, var(--ground) 0%, var(--ground-deep) 100%);
+  }
+
+  /* dark overrides for the few hardcoded light values */
+  html.dark header { background: rgba(33,28,21,.72); }
+  html.dark .btn-ghost:hover { background: #322B22; border-color: #4A4133; }
+  html.dark .reveal:hover { background: #322B22; border-color: #4A4133; }
+  html.dark .chip:hover { background: #322B22; }
+  html.dark .chip.reject.on { background: #3A2620; }
+  html.dark .iconbtn.danger:hover { background: #3A2620; }
+  html.dark .origin.manual { background: #2C2540; color: #C9B8E8; }
 
   svg { display: block; }
 
@@ -242,9 +284,125 @@
   a:focus-visible, button:focus-visible, .input:focus-visible, .area:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 2px; }
 
   .preview-tag { position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%); font-size: .72rem; color: var(--text-faint); background: rgba(255,253,248,.85); border: 1px solid var(--line); padding: 5px 12px; border-radius: 99px; backdrop-filter: blur(6px); z-index: 10; }
+  html.dark .preview-tag { background: rgba(33,28,21,.85); }
+
+  /* ---------- theme toggle ---------- */
+  .theme-toggle {
+    width: 34px; height: 34px; border-radius: 99px; flex-shrink: 0;
+    border: 1px solid var(--line); background: var(--surface); color: var(--icon);
+    display: grid; place-items: center; cursor: pointer; transition: all .15s;
+  }
+  .theme-toggle:hover { color: var(--text); border-color: #DECDB6; }
+  html.dark .theme-toggle:hover { border-color: #4A4133; }
+  .theme-toggle svg { width: 17px; height: 17px; }
+  .theme-toggle .moon { display: none; }
+  html.dark .theme-toggle .sun { display: none; }
+  html.dark .theme-toggle .moon { display: block; }
+
+  /* ---------- language toggle (EN / PL) ---------- */
+  .lang-toggle {
+    display: inline-flex; align-items: center; flex-shrink: 0;
+    border: 1px solid var(--line); border-radius: 99px; background: var(--surface); overflow: hidden;
+  }
+  .lang-toggle button {
+    font-family: var(--sans); font-size: .76rem; font-weight: 700; letter-spacing: .04em;
+    color: var(--text-faint); background: none; border: none; cursor: pointer;
+    padding: 6px 11px; transition: background .15s, color .15s;
+  }
+  .lang-toggle button:hover { color: var(--text); }
+  .lang-toggle button.on { background: var(--accent-soft); color: var(--accent-deep); }
+
+  /* ---------- landing (pre-login) ---------- */
+  #landingView { display: none; }
+  #landingView.active { display: block; }
+  .landing-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px clamp(20px, 5vw, 48px); max-width: 1080px; margin: 0 auto;
+  }
+  .landing-nav .top-right { display: flex; align-items: center; gap: 12px; }
+  .hero { max-width: 760px; margin: 0 auto; padding: clamp(48px, 9vh, 110px) 20px 40px; text-align: center; }
+  .hero .leaf-xl { filter: drop-shadow(0 8px 16px rgba(83,129,82,.34)); margin-bottom: 22px; }
+  .hero h1 { font-family: var(--serif); font-size: clamp(2.2rem, 6vw, 3.4rem); font-weight: 600; line-height: 1.1; letter-spacing: -.02em; margin: 0 0 18px; }
+  .hero h1 .accent { color: var(--accent-deep); }
+  .hero p.lede { font-size: clamp(1.05rem, 2.4vw, 1.25rem); color: var(--text-soft); line-height: 1.55; margin: 0 auto 30px; max-width: 560px; }
+  .hero .cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .hero .btn-primary { padding: 14px 26px; font-size: 1rem; }
+  .hero .btn-ghost { padding: 14px 26px; font-size: 1rem; }
+  .hero .reassure { margin-top: 16px; font-size: .82rem; color: var(--text-faint); }
+
+  .how { max-width: 940px; margin: 0 auto; padding: 30px 20px 40px; }
+  .how-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .step {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    box-shadow: var(--shadow-soft); padding: 26px 22px; text-align: left;
+  }
+  .step .ico {
+    width: 44px; height: 44px; border-radius: 13px; display: grid; place-items: center;
+    background: var(--accent-soft); color: var(--accent-deep); margin-bottom: 14px;
+  }
+  .step .ico svg { width: 22px; height: 22px; }
+  .step .n { font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--text-faint); }
+  .step h3 { font-family: var(--serif); font-size: 1.2rem; font-weight: 600; margin: 4px 0 7px; }
+  .step p { color: var(--text-soft); margin: 0; font-size: .94rem; line-height: 1.5; }
+
+  .closing { max-width: 760px; margin: 0 auto; padding: 20px 20px 90px; }
+  .closing-card {
+    background: linear-gradient(150deg, var(--accent-soft), var(--surface));
+    border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-card);
+    padding: clamp(30px, 5vw, 46px); text-align: center;
+  }
+  .closing-card h2 { font-family: var(--serif); font-size: clamp(1.5rem, 3.4vw, 2rem); font-weight: 600; margin: 0 0 8px; }
+  .closing-card p { color: var(--text-soft); margin: 0 0 22px; }
+
+  /* bottom tab bar: hidden on desktop, shown on phones */
+  .bottombar { display: none; }
+
+  @media (max-width: 720px) { .how-grid { grid-template-columns: 1fr; } }
 
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
-  @media (max-width: 520px) { nav { gap: 0; } nav button.tab { padding: 8px 10px; font-size: .85rem; } .ratings { gap: 7px; } .rate { padding: 13px 4px 10px; } .top-right .btn { display: none; } }
+
+  /* ---------- mobile (phones) ---------- */
+  @media (max-width: 640px) {
+    header { padding: 12px 16px; }
+    .brand .wordmark { font-size: 1.15rem; }
+    header nav { display: none; }            /* desktop tabs → bottom bar */
+    .top-right > .btn { display: none; }     /* "New card" → bottom bar */
+    .top-right { gap: 8px; }
+    main { padding: 22px 16px 96px; }        /* reserve space for bottom bar */
+
+    .page-head { margin-bottom: 20px; }
+    .ratings { gap: 7px; }
+    .rate { padding: 13px 4px 10px; }
+    kbd { display: none; }                   /* keyboard hints are irrelevant on touch */
+    .hint { display: none; }
+
+    .hero { padding: 40px 18px 28px; }
+    .hero .cta { flex-direction: column; }
+    .hero .cta .btn, .closing-card .btn { width: 100%; }
+    .landing-nav { padding: 14px 16px; }
+    .how { padding: 24px 16px 32px; }
+
+    .savebar { bottom: 84px; }               /* float above the bottom bar */
+    .gen-actions { flex-direction: column; align-items: stretch; }
+    .gen-actions .btn { width: 100%; }
+
+    .bottombar {
+      display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+      background: rgba(255,253,248,.93); backdrop-filter: blur(12px);
+      border-top: 1px solid var(--line);
+      padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px));
+    }
+    html.dark .bottombar { background: rgba(33,28,21,.93); }
+    .bottombar .bb {
+      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+      min-height: 52px; padding: 8px 4px; border: none; background: none; cursor: pointer;
+      border-radius: 12px; color: var(--text-faint);
+      font-family: var(--sans); font-size: .68rem; font-weight: 600;
+    }
+    .bottombar .bb svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .bottombar .bb.active { color: var(--accent-deep); }
+    .bottombar .bb:active { background: var(--accent-soft); }
+  }
 </style>
 
 <!-- Sage leaf logo, defined once; referenced by <use> so the gradient lives in one place -->
@@ -261,20 +419,91 @@
   </defs>
 </svg>
 
+<!-- ================= LANDING (pre-login) ================= -->
+<div id="landingView">
+  <div class="landing-nav">
+    <div class="brand">
+      <svg class="logo" width="30" height="30" viewBox="0 0 36 36" aria-hidden="true"><use href="#sageLeaf"/></svg>
+      <span class="wordmark">Sage Flashcards</span>
+    </div>
+    <div class="top-right">
+      <div class="lang-toggle" role="group" aria-label="Language">
+        <button data-lang="en" onclick="setLang('en')">EN</button>
+        <button data-lang="pl" onclick="setLang('pl')">PL</button>
+      </div>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle light/dark theme" title="Toggle theme">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+      </button>
+      <button class="btn btn-ghost" data-i18n="auth.signin" onclick="showAuth()">Sign in</button>
+    </div>
+  </div>
+
+  <section class="hero">
+    <svg class="leaf-xl" width="68" height="68" viewBox="0 0 36 36" aria-hidden="true"><use href="#sageLeaf"/></svg>
+    <h1 data-i18n-html="landing.h1">Turn what you read into memory that <span class="accent">lasts</span></h1>
+    <p class="lede" data-i18n="landing.lede">Paste your notes and Sage drafts flashcards in seconds. Keep the good ones, then review on a schedule timed to beat forgetting.</p>
+    <div class="cta">
+      <button class="btn btn-primary" data-i18n="landing.cta" onclick="showAuth('signup')">Get started — it's free</button>
+      <button class="btn btn-ghost" data-i18n="auth.signin" onclick="showAuth()">Sign in</button>
+    </div>
+    <p class="reassure" data-i18n="landing.reassure">No credit card. Your first deck takes about a minute.</p>
+  </section>
+
+  <section class="how">
+    <div class="how-grid">
+      <div class="step">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h6"/></svg></div>
+        <span class="n" data-i18n="landing.step1.n">Step 1</span>
+        <h3 data-i18n="landing.step1.h">Paste your notes</h3>
+        <p data-i18n="landing.step1.p">Drop in a passage, lecture notes, or an article — up to a few thousand characters.</p>
+      </div>
+      <div class="step">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.6 5.4L19 10l-5.4 1.6L12 17l-1.6-5.4L5 10l5.4-1.6Z"/></svg></div>
+        <span class="n" data-i18n="landing.step2.n">Step 2</span>
+        <h3 data-i18n="landing.step2.h">Sage drafts cards</h3>
+        <p data-i18n="landing.step2.p">You get clean question-and-answer candidates. Keep, edit, or reject each one.</p>
+      </div>
+      <div class="step">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <span class="n" data-i18n="landing.step3.n">Step 3</span>
+        <h3 data-i18n="landing.step3.h">Review on schedule</h3>
+        <p data-i18n="landing.step3.p">Spaced repetition surfaces each card right before you'd forget it — so it sticks.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="closing">
+    <div class="closing-card">
+      <h2 data-i18n="landing.closing.h">Start your first deck today</h2>
+      <p data-i18n="landing.closing.p">Free to begin. Bring your notes — Sage does the drafting.</p>
+      <button class="btn btn-primary" data-i18n="landing.cta2" onclick="showAuth('signup')">Get started</button>
+    </div>
+  </section>
+</div>
+
 <!-- ================= APP ================= -->
 <div id="appView">
   <header>
     <div class="brand" onclick="go('generate')">
       <svg class="logo" width="30" height="30" viewBox="0 0 36 36" aria-hidden="true"><use href="#sageLeaf"/></svg>
-      <span class="wordmark">Sage</span>
+      <span class="wordmark">Sage Flashcards</span>
     </div>
     <nav>
-      <button class="tab" data-tab="generate" onclick="go('generate')">Generate</button>
-      <button class="tab" data-tab="review" onclick="go('review')">Review</button>
-      <button class="tab" data-tab="deck" onclick="go('deck')">Deck</button>
+      <button class="tab" data-tab="generate" data-i18n="nav.generate" onclick="go('generate')">Generate</button>
+      <button class="tab" data-tab="review" data-i18n="nav.review" onclick="go('review')">Review</button>
+      <button class="tab" data-tab="deck" data-i18n="nav.deck" onclick="go('deck')">Deck</button>
     </nav>
     <div class="top-right">
-      <button class="btn btn-ghost" onclick="go('new')">New card</button>
+      <button class="btn btn-ghost" data-i18n="btn.newCard" onclick="go('new')">New card</button>
+      <div class="lang-toggle" role="group" aria-label="Language">
+        <button data-lang="en" onclick="setLang('en')">EN</button>
+        <button data-lang="pl" onclick="setLang('pl')">PL</button>
+      </div>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle light/dark theme" title="Toggle theme">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+      </button>
       <div class="avatar" title="Account — click for sign-in preview" onclick="showAuth()">JZ</div>
     </div>
   </header>
@@ -283,20 +512,20 @@
     <!-- GENERATE -->
     <section class="screen" id="screen-generate">
       <div class="page-head">
-        <h1>Turn your notes into cards</h1>
-        <p>Paste source text and let Sage draft flashcards. You decide which ones make the cut.</p>
+        <h1 data-i18n="gen.title">Turn your notes into cards</h1>
+        <p data-i18n="gen.sub">Paste source text and let Sage draft flashcards. You decide which ones make the cut.</p>
       </div>
       <div class="gen-box">
-        <textarea class="area" id="genInput" placeholder="Paste a passage, lecture notes, or an article — up to 5,000 characters.">Spaced repetition schedules each review at a widening interval, timed to land just before the point of forgetting. The forgetting curve, described by Hermann Ebbinghaus, shows that recall decays exponentially without reinforcement; well-timed reviews flatten that curve. Active recall — retrieving an answer from memory rather than rereading it — strengthens the memory trace far more than passive review.</textarea>
+        <textarea class="area" id="genInput" data-i18n-ph="gen.placeholder" placeholder="Paste a passage, lecture notes, or an article — up to 5,000 characters.">Spaced repetition schedules each review at a widening interval, timed to land just before the point of forgetting. The forgetting curve, described by Hermann Ebbinghaus, shows that recall decays exponentially without reinforcement; well-timed reviews flatten that curve. Active recall — retrieving an answer from memory rather than rereading it — strengthens the memory trace far more than passive review.</textarea>
         <div class="gen-actions">
           <span class="note" id="genCount">621 / 5,000 characters · up to ~12 cards</span>
-          <button class="btn btn-primary" id="genBtn" onclick="generate()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.6 5.4L19 10l-5.4 1.6L12 17l-1.6-5.4L5 10l5.4-1.6Z"/></svg> Generate cards</button>
+          <button class="btn btn-primary" id="genBtn" onclick="generate()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.6 5.4L19 10l-5.4 1.6L12 17l-1.6-5.4L5 10l5.4-1.6Z"/></svg> <span data-i18n="gen.btn">Generate cards</span></button>
         </div>
       </div>
 
       <div id="candidates" style="display:none;">
         <div class="cand-head">
-          <h2>Review candidates</h2>
+          <h2 data-i18n="gen.candTitle">Review candidates</h2>
           <span class="meta" id="candMeta">4 drafted · keep the good ones</span>
         </div>
         <div id="candList"></div>
@@ -313,12 +542,12 @@
     <!-- DECK -->
     <section class="screen" id="screen-deck">
       <div class="page-head">
-        <h1>Your deck</h1>
-        <p>Edit a card without resetting its schedule. Deleting is permanent.</p>
+        <h1 data-i18n="deck.title">Your deck</h1>
+        <p data-i18n="deck.sub">Edit a card without resetting its schedule. Deleting is permanent.</p>
       </div>
       <div class="deck-tools">
-        <span class="total" id="deckTotal">42 cards · 28 from AI</span>
-        <button class="btn btn-ghost" onclick="go('new')">New card</button>
+        <span class="total" id="deckTotal" data-i18n="deck.total">42 cards · 28 from AI</span>
+        <button class="btn btn-ghost" data-i18n="btn.newCard" onclick="go('new')">New card</button>
       </div>
       <div id="deckList"></div>
     </section>
@@ -326,27 +555,47 @@
     <!-- NEW (manual) -->
     <section class="screen" id="screen-new">
       <div class="page-head">
-        <h1>Add a card</h1>
-        <p>Write a question and its answer. It joins your deck right away.</p>
+        <h1 data-i18n="new.title">Add a card</h1>
+        <p data-i18n="new.sub">Write a question and its answer. It joins your deck right away.</p>
       </div>
       <div class="gen-box">
         <div class="field">
-          <label for="mq">Question</label>
-          <textarea class="area" id="mq" style="min-height:90px" placeholder="What do you want to be asked?"></textarea>
+          <label for="mq" data-i18n="field.question">Question</label>
+          <textarea class="area" id="mq" style="min-height:90px" data-i18n-ph="new.qPlaceholder" placeholder="What do you want to be asked?"></textarea>
           <div class="field-foot"><span></span><span>0 / 500</span></div>
         </div>
         <div class="field">
-          <label for="ma">Answer</label>
-          <textarea class="area" id="ma" style="min-height:120px" placeholder="The answer you want to recall."></textarea>
+          <label for="ma" data-i18n="field.answer">Answer</label>
+          <textarea class="area" id="ma" style="min-height:120px" data-i18n-ph="new.aPlaceholder" placeholder="The answer you want to recall."></textarea>
           <div class="field-foot"><span></span><span>0 / 1,000</span></div>
         </div>
         <div style="display:flex; gap:10px; margin-top:6px;">
-          <button class="btn btn-primary" onclick="go('deck')">Save card</button>
-          <button class="btn btn-ghost" onclick="go('deck')">Cancel</button>
+          <button class="btn btn-primary" data-i18n="new.save" onclick="go('deck')">Save card</button>
+          <button class="btn btn-ghost" data-i18n="btn.cancel" onclick="go('deck')">Cancel</button>
         </div>
       </div>
     </section>
   </main>
+
+  <!-- mobile bottom tab bar (hidden on desktop) -->
+  <nav class="bottombar" aria-label="Primary">
+    <button class="bb" data-tab="generate" onclick="go('generate')">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.6 5.4L19 10l-5.4 1.6L12 17l-1.6-5.4L5 10l5.4-1.6Z"/></svg>
+      <span data-i18n="nav.generate">Generate</span>
+    </button>
+    <button class="bb" data-tab="review" onclick="go('review')">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+      <span data-i18n="nav.review">Review</span>
+    </button>
+    <button class="bb" data-tab="deck" onclick="go('deck')">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      <span data-i18n="nav.deck">Deck</span>
+    </button>
+    <button class="bb" data-tab="new" onclick="go('new')">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <span data-i18n="btn.add">Add</span>
+    </button>
+  </nav>
 </div>
 
 <!-- ================= AUTH ================= -->
@@ -354,23 +603,23 @@
   <div class="auth-card">
     <div class="brand">
       <svg class="logo" width="30" height="30" viewBox="0 0 36 36" aria-hidden="true"><use href="#sageLeaf"/></svg>
-      <span class="wordmark">Sage</span>
+      <span class="wordmark">Sage Flashcards</span>
     </div>
-    <h1>Welcome back</h1>
-    <p class="sub">Sign in to pick up your reviews.</p>
+    <h1 id="authTitle">Welcome back</h1>
+    <p class="sub" id="authSub">Sign in to pick up your reviews.</p>
     <div class="field">
-      <label for="email">Email</label>
+      <label for="email" data-i18n="field.email">Email</label>
       <input class="input" id="email" type="email" placeholder="you@example.com" />
     </div>
     <div class="field">
-      <label for="pw">Password</label>
+      <label for="pw" data-i18n="field.password">Password</label>
       <input class="input" id="pw" type="password" placeholder="••••••••" />
     </div>
-    <div class="auth-row"><a href="#">Forgot password?</a></div>
-    <button class="btn btn-primary btn-block" onclick="hideAuth()">Sign in</button>
-    <p class="auth-foot">New here? <a href="#">Create an account</a></p>
+    <div class="auth-row" id="authRow"><a href="#" data-i18n="auth.forgot">Forgot password?</a></div>
+    <button class="btn btn-primary btn-block" id="authBtn" onclick="hideAuth()">Sign in</button>
+    <p class="auth-foot" id="authFoot">New here? <a href="#" onclick="showAuth('signup');return false;">Create an account</a></p>
   </div>
-  <a class="linkback" onclick="hideAuth()" style="position:fixed;top:24px;left:24px;cursor:pointer;">← Back to app preview</a>
+  <a class="linkback" onclick="goLanding()" style="position:fixed;top:24px;left:24px;cursor:pointer;">← Back to landing</a>
 </div>
 
 <div class="preview-tag" id="ptag">Design preview · click the tabs to explore</div>
@@ -388,6 +637,117 @@
     layers: SVG('<path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>'),
   };
 
+  /* ---------- theme (light/dark) ---------- */
+  function applyTheme(t) { document.documentElement.classList.toggle('dark', t === 'dark'); }
+  function toggleTheme() {
+    const next = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+    try { localStorage.setItem('sage-theme', next); } catch (e) {}
+    applyTheme(next);
+  }
+  (function initTheme() {
+    let stored = null;
+    try { stored = localStorage.getItem('sage-theme'); } catch (e) {}
+    const dark = stored ? stored === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(dark ? 'dark' : 'light');
+  })();
+
+  /* ---------- i18n (EN / PL) — UI chrome only ---------- */
+  const I18N = {
+    en: {
+      'nav.generate': 'Generate', 'nav.review': 'Review', 'nav.deck': 'Deck',
+      'btn.newCard': 'New card', 'btn.cancel': 'Cancel', 'btn.add': 'Add',
+      'field.question': 'Question', 'field.answer': 'Answer', 'field.email': 'Email', 'field.password': 'Password',
+      'gen.title': 'Turn your notes into cards',
+      'gen.sub': 'Paste source text and let Sage draft flashcards. You decide which ones make the cut.',
+      'gen.placeholder': 'Paste a passage, lecture notes, or an article — up to 5,000 characters.',
+      'gen.btn': 'Generate cards', 'gen.candTitle': 'Review candidates',
+      'gen.keep': 'Keep', 'gen.edit': 'Edit', 'gen.reject': 'Reject',
+      'gen.accepted': 'Accepted', 'gen.rejected': 'Rejected', 'gen.saveNone': 'No cards selected',
+      'deck.title': 'Your deck', 'deck.sub': 'Edit a card without resetting its schedule. Deleting is permanent.',
+      'deck.total': '42 cards · 28 from AI', 'deck.ai': 'AI', 'deck.manual': 'Manual', 'deck.edit': 'Edit', 'deck.delete': 'Delete',
+      'new.title': 'Add a card', 'new.sub': 'Write a question and its answer. It joins your deck right away.',
+      'new.qPlaceholder': 'What do you want to be asked?', 'new.aPlaceholder': 'The answer you want to recall.', 'new.save': 'Save card',
+      'rev.question': 'Question', 'rev.answer': 'Answer', 'rev.show': 'Show answer',
+      'rev.recallHint': 'Try to recall the answer, then reveal it with',
+      'rev.again': 'Again', 'rev.hard': 'Hard', 'rev.good': 'Good', 'rev.easy': 'Easy',
+      'rev.done': 'All caught up', 'rev.next': 'Next review in about 4 hours.',
+      'rev.genMore': 'Generate more cards', 'rev.demo': 'Run the demo again',
+      'auth.signin': 'Sign in', 'auth.signup': 'Create account', 'auth.forgot': 'Forgot password?',
+      'auth.welcomeTitle': 'Welcome back', 'auth.welcomeSub': 'Sign in to pick up your reviews.',
+      'auth.signupTitle': 'Create your account', 'auth.signupSub': 'Start turning your notes into cards.',
+      'landing.lede': 'Paste your notes and Sage drafts flashcards in seconds. Keep the good ones, then review on a schedule timed to beat forgetting.',
+      'landing.cta': "Get started — it's free", 'landing.cta2': 'Get started',
+      'landing.reassure': 'No credit card. Your first deck takes about a minute.',
+      'landing.step1.n': 'Step 1', 'landing.step1.h': 'Paste your notes', 'landing.step1.p': 'Drop in a passage, lecture notes, or an article — up to a few thousand characters.',
+      'landing.step2.n': 'Step 2', 'landing.step2.h': 'Sage drafts cards', 'landing.step2.p': 'You get clean question-and-answer candidates. Keep, edit, or reject each one.',
+      'landing.step3.n': 'Step 3', 'landing.step3.h': 'Review on schedule', 'landing.step3.p': "Spaced repetition surfaces each card right before you'd forget it — so it sticks.",
+      'landing.closing.h': 'Start your first deck today', 'landing.closing.p': 'Free to begin. Bring your notes — Sage does the drafting.',
+      'landing.h1': 'Turn what you read into memory that <span class="accent">lasts</span>',
+    },
+    pl: {
+      'nav.generate': 'Generuj', 'nav.review': 'Powtórki', 'nav.deck': 'Talia',
+      'btn.newCard': 'Nowa karta', 'btn.cancel': 'Anuluj', 'btn.add': 'Dodaj',
+      'field.question': 'Pytanie', 'field.answer': 'Odpowiedź', 'field.email': 'E-mail', 'field.password': 'Hasło',
+      'gen.title': 'Zamień notatki w fiszki',
+      'gen.sub': 'Wklej tekst źródłowy, a Sage przygotuje fiszki. Ty decydujesz, które zostaną.',
+      'gen.placeholder': 'Wklej fragment, notatki z wykładu lub artykuł — do 5000 znaków.',
+      'gen.btn': 'Generuj fiszki', 'gen.candTitle': 'Przejrzyj propozycje',
+      'gen.keep': 'Zachowaj', 'gen.edit': 'Edytuj', 'gen.reject': 'Odrzuć',
+      'gen.accepted': 'Zachowana', 'gen.rejected': 'Odrzucona', 'gen.saveNone': 'Nie wybrano fiszek',
+      'deck.title': 'Twoja talia', 'deck.sub': 'Edytuj kartę bez resetowania harmonogramu. Usunięcie jest trwałe.',
+      'deck.total': '42 fiszki · 28 od AI', 'deck.ai': 'AI', 'deck.manual': 'Ręczna', 'deck.edit': 'Edytuj', 'deck.delete': 'Usuń',
+      'new.title': 'Dodaj kartę', 'new.sub': 'Napisz pytanie i odpowiedź. Karta od razu trafia do talii.',
+      'new.qPlaceholder': 'O co chcesz być pytany?', 'new.aPlaceholder': 'Odpowiedź, którą chcesz zapamiętać.', 'new.save': 'Zapisz kartę',
+      'rev.question': 'Pytanie', 'rev.answer': 'Odpowiedź', 'rev.show': 'Pokaż odpowiedź',
+      'rev.recallHint': 'Spróbuj przypomnieć sobie odpowiedź, a potem odsłoń ją klawiszem',
+      'rev.again': 'Znów', 'rev.hard': 'Trudne', 'rev.good': 'Dobre', 'rev.easy': 'Łatwe',
+      'rev.done': 'Wszystko powtórzone', 'rev.next': 'Następna powtórka za około 4 godziny.',
+      'rev.genMore': 'Wygeneruj więcej fiszek', 'rev.demo': 'Uruchom demo ponownie',
+      'auth.signin': 'Zaloguj się', 'auth.signup': 'Załóż konto', 'auth.forgot': 'Nie pamiętasz hasła?',
+      'auth.welcomeTitle': 'Witaj ponownie', 'auth.welcomeSub': 'Zaloguj się, aby wrócić do powtórek.',
+      'auth.signupTitle': 'Załóż konto', 'auth.signupSub': 'Zacznij zamieniać notatki w fiszki.',
+      'landing.lede': 'Wklej notatki, a Sage w kilka sekund przygotuje fiszki. Zachowaj te dobre i powtarzaj według harmonogramu, który wyprzedza zapominanie.',
+      'landing.cta': 'Zacznij — za darmo', 'landing.cta2': 'Zacznij',
+      'landing.reassure': 'Bez karty kredytowej. Pierwsza talia zajmie około minuty.',
+      'landing.step1.n': 'Krok 1', 'landing.step1.h': 'Wklej notatki', 'landing.step1.p': 'Wrzuć fragment, notatki z wykładu lub artykuł — do kilku tysięcy znaków.',
+      'landing.step2.n': 'Krok 2', 'landing.step2.h': 'Sage tworzy fiszki', 'landing.step2.p': 'Otrzymujesz gotowe propozycje pytań i odpowiedzi. Każdą możesz zachować, edytować lub odrzucić.',
+      'landing.step3.n': 'Krok 3', 'landing.step3.h': 'Powtarzaj według planu', 'landing.step3.p': 'Powtórki w odstępach pokazują każdą fiszkę tuż zanim ją zapomnisz — dzięki temu zostaje na dłużej.',
+      'landing.closing.h': 'Zacznij swoją pierwszą talię już dziś', 'landing.closing.p': 'Za darmo na start. Przynieś notatki — Sage zajmie się resztą.',
+      'landing.h1': 'Zamień to, co czytasz, w pamięć, która <span class="accent">zostaje</span>',
+    }
+  };
+  let LANG = 'en';
+  function t(key) { return (I18N[LANG] && I18N[LANG][key] != null) ? I18N[LANG][key] : (I18N.en[key] != null ? I18N.en[key] : key); }
+  function plPL(n, one, few, many) {
+    if (n === 1) return one;
+    const d = n % 10, dd = n % 100;
+    return (d >= 2 && d <= 4 && !(dd >= 12 && dd <= 14)) ? few : many;
+  }
+  function cardNoun(n, acc) {
+    if (LANG === 'pl') return plPL(n, acc ? 'fiszkę' : 'fiszka', 'fiszki', 'fiszek');
+    return n === 1 ? 'card' : 'cards';
+  }
+  function applyStaticI18n() {
+    document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+    document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.getAttribute('data-i18n-html')); });
+    document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.setAttribute('placeholder', t(el.getAttribute('data-i18n-ph'))); });
+  }
+  function setLang(l) {
+    LANG = (l === 'pl') ? 'pl' : 'en';
+    try { localStorage.setItem('sage-lang', LANG); } catch (e) {}
+    document.documentElement.setAttribute('lang', LANG);
+    document.querySelectorAll('.lang-toggle button').forEach(b => b.classList.toggle('on', b.dataset.lang === LANG));
+    applyStaticI18n();
+    refreshDynamic();
+  }
+  function refreshDynamic() {
+    fmtCount();
+    if (document.getElementById('candidates').style.display !== 'none' && candState.length) { renderCandidates(); syncCounts(); }
+    if (document.getElementById('screen-review').classList.contains('active')) { (ri >= RTOTAL) ? renderDone() : renderR(); }
+    if (document.getElementById('screen-deck').classList.contains('active')) mountDeck();
+    if (document.getElementById('authView').classList.contains('active')) applyAuthLang();
+  }
+
   /* ---------- router ---------- */
   const TIPS = {
     generate: "Paste text → Generate → keep the good cards",
@@ -396,20 +756,46 @@
     new: "Manual card creation",
   };
   function go(name) {
+    document.getElementById('landingView').classList.remove('active');
     document.getElementById('authView').classList.remove('active');
     document.getElementById('appView').style.display = '';
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById('screen-' + name).classList.add('active');
     document.querySelectorAll('nav .tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+    document.querySelectorAll('.bottombar .bb').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
     document.getElementById('ptag').textContent = "Design preview · " + (TIPS[name] || "");
     window.scrollTo({ top: 0 });
     if (name === 'review') mountReview();
     if (name === 'deck') mountDeck();
   }
-  function showAuth() {
+  function goLanding() {
+    document.getElementById('appView').style.display = 'none';
+    document.getElementById('authView').classList.remove('active');
+    document.getElementById('landingView').classList.add('active');
+    document.getElementById('ptag').textContent = "Design preview · landing page (pre-login)";
+    window.scrollTo({ top: 0 });
+  }
+  let authMode = 'signin';
+  function applyAuthLang() {
+    const signup = authMode === 'signup';
+    document.getElementById('authTitle').textContent = t(signup ? 'auth.signupTitle' : 'auth.welcomeTitle');
+    document.getElementById('authSub').textContent = t(signup ? 'auth.signupSub' : 'auth.welcomeSub');
+    document.getElementById('authBtn').textContent = t(signup ? 'auth.signup' : 'auth.signin');
+    document.getElementById('authRow').style.display = signup ? 'none' : '';
+    const lead = signup ? (LANG === 'pl' ? 'Masz już konto? ' : 'Already have an account? ')
+                        : (LANG === 'pl' ? 'Nowy tutaj? ' : 'New here? ');
+    document.getElementById('authFoot').innerHTML = signup
+      ? lead + '<a href="#" onclick="showAuth();return false;">' + t('auth.signin') + '</a>'
+      : lead + '<a href="#" onclick="showAuth(\'signup\');return false;">' + t('auth.signup') + '</a>';
+  }
+  function showAuth(mode) {
+    document.getElementById('landingView').classList.remove('active');
     document.getElementById('appView').style.display = 'none';
     document.getElementById('authView').classList.add('active');
-    document.getElementById('ptag').textContent = "Design preview · sign-in screen";
+    authMode = mode === 'signup' ? 'signup' : 'signin';
+    applyAuthLang();
+    document.getElementById('ptag').textContent = "Design preview · " + (authMode === 'signup' ? "sign-up" : "sign-in") + " screen";
+    window.scrollTo({ top: 0 });
   }
   function hideAuth() { go('generate'); }
 
@@ -417,7 +803,9 @@
   const genInput = document.getElementById('genInput');
   function fmtCount() {
     const n = genInput.value.length;
-    document.getElementById('genCount').textContent = n.toLocaleString() + " / 5,000 characters · up to ~12 cards";
+    document.getElementById('genCount').textContent = LANG === 'pl'
+      ? n.toLocaleString('pl') + ' / 5000 znaków · do ~12 fiszek'
+      : n.toLocaleString('en') + ' / 5,000 characters · up to ~12 cards';
     document.getElementById('genBtn').disabled = n === 0 || n > 5000;
   }
   genInput.addEventListener('input', fmtCount);
@@ -430,23 +818,32 @@
   ];
   let candState = [];
   function generate() {
-    const list = document.getElementById('candList');
     candState = CANDS.map(() => 'accepted');
-    list.innerHTML = CANDS.map((c, idx) => `
-      <div class="cand is-accepted" id="cand-${idx}">
-        <p class="cq">${c.q}</p>
-        <p class="ca">${c.a}</p>
-        <div class="cand-foot">
-          <span class="badge-state" id="cand-state-${idx}">Accepted</span>
-          <span class="spacer"></span>
-          <button class="chip accept on" onclick="setCand(${idx},'accepted')">${ICONS.check} Keep</button>
-          <button class="chip" onclick="editCand(${idx})">${ICONS.pen} Edit</button>
-          <button class="chip reject" onclick="setCand(${idx},'rejected')">${ICONS.x} Reject</button>
-        </div>
-      </div>`).join('');
+    renderCandidates();
     document.getElementById('candidates').style.display = 'block';
     syncCounts();
     document.getElementById('candidates').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  function renderCandidates() {
+    document.getElementById('candMeta').textContent = LANG === 'pl'
+      ? CANDS.length + ' propozycji · zachowaj te dobre'
+      : CANDS.length + ' drafted · keep the good ones';
+    document.getElementById('candList').innerHTML = CANDS.map((c, idx) => {
+      const st = candState[idx] || 'accepted';
+      const cls = st === 'rejected' ? 'is-rejected' : 'is-accepted';
+      return `
+      <div class="cand ${cls}" id="cand-${idx}">
+        <p class="cq">${c.q}</p>
+        <p class="ca">${c.a}</p>
+        <div class="cand-foot">
+          <span class="badge-state" id="cand-state-${idx}">${t(st === 'rejected' ? 'gen.rejected' : 'gen.accepted')}</span>
+          <span class="spacer"></span>
+          <button class="chip accept ${st === 'accepted' ? 'on' : ''}" onclick="setCand(${idx},'accepted')">${ICONS.check} ${t('gen.keep')}</button>
+          <button class="chip" onclick="editCand(${idx})">${ICONS.pen} ${t('gen.edit')}</button>
+          <button class="chip reject ${st === 'rejected' ? 'on' : ''}" onclick="setCand(${idx},'rejected')">${ICONS.x} ${t('gen.reject')}</button>
+        </div>
+      </div>`;
+    }).join('');
   }
   function setCand(idx, state) {
     candState[idx] = state;
@@ -455,15 +852,21 @@
     el.classList.toggle('is-rejected', state === 'rejected');
     el.querySelector('.chip.accept').classList.toggle('on', state === 'accepted');
     el.querySelector('.chip.reject').classList.toggle('on', state === 'rejected');
-    document.getElementById('cand-state-' + idx).textContent = state === 'accepted' ? 'Accepted' : 'Rejected';
+    document.getElementById('cand-state-' + idx).textContent = t(state === 'accepted' ? 'gen.accepted' : 'gen.rejected');
     syncCounts();
   }
   function editCand(idx) { setCand(idx, 'accepted'); }
   function syncCounts() {
     const n = candState.filter(s => s === 'accepted').length;
-    document.getElementById('acceptCount').textContent = n;
+    const total = candState.length;
+    const sum = document.querySelector('.savebar .sumtext');
+    if (sum) sum.innerHTML = LANG === 'pl'
+      ? `zaakceptowano <b>${n}</b> z ${total}`
+      : `<b>${n}</b> of ${total} cards accepted`;
     const btn = document.getElementById('saveBtn');
-    btn.textContent = n ? `Save ${n} ${n === 1 ? 'card' : 'cards'} to deck` : 'No cards selected';
+    btn.textContent = n
+      ? (LANG === 'pl' ? `Zapisz ${n} ${cardNoun(n, true)} do talii` : `Save ${n} ${cardNoun(n)} to deck`)
+      : t('gen.saveNone');
     btn.disabled = n === 0;
   }
 
@@ -483,10 +886,10 @@
           <p class="rq">${c.q}</p>
           <p class="ra">${c.a}</p>
         </div>
-        <span class="origin ${c.o}">${c.o === 'ai' ? ICONS.sparkle + ' AI' : ICONS.pen + ' Manual'}</span>
+        <span class="origin ${c.o}">${c.o === 'ai' ? ICONS.sparkle + ' ' + t('deck.ai') : ICONS.pen + ' ' + t('deck.manual')}</span>
         <div class="acts">
-          <button class="iconbtn" title="Edit" onclick="go('new')">${ICONS.edit}</button>
-          <button class="iconbtn danger" title="Delete" onclick="this.closest('.row').remove()">${ICONS.trash}</button>
+          <button class="iconbtn" title="${t('deck.edit')}" onclick="go('new')">${ICONS.edit}</button>
+          <button class="iconbtn danger" title="${t('deck.delete')}" onclick="this.closest('.row').remove()">${ICONS.trash}</button>
         </div>
       </div>`).join('');
   }
@@ -497,42 +900,47 @@
     { q: "¿Cómo se dice “deadline” en español?", a: "la fecha límite — e.g. “Entregar antes de la fecha límite.”" },
     { q: "In one line: what does Bayes’ theorem let you compute?", a: "The probability of a hypothesis given the evidence — by flipping a conditional you already know." },
   ];
-  const RR = [{ r: 1, name: "Again" }, { r: 2, name: "Hard" }, { r: 3, name: "Good" }, { r: 4, name: "Easy" }];
+  const RR = [{ r: 1, key: "rev.again" }, { r: 2, key: "rev.hard" }, { r: 3, key: "rev.good" }, { r: 4, key: "rev.easy" }];
   let ri = 0, rRevealed = false, rReviewed = 0;
   const RTOTAL = RCARDS.length;
   function mountReview() { ri = 0; rRevealed = false; rReviewed = 0; renderR(); }
   function renderR() {
     const root = document.getElementById('screen-review');
     const left = RTOTAL - ri, pct = Math.round((ri / RTOTAL) * 100), c = RCARDS[ri];
+    const leftText = LANG === 'pl' ? `Pozostało: ${left} ${cardNoun(left)}` : `${left} ${cardNoun(left)} left`;
+    const ratingHint = `<kbd>1</kbd> ${t('rev.again')} · <kbd>2</kbd> ${t('rev.hard')} · <kbd>3</kbd> ${t('rev.good')} · <kbd>4</kbd> ${t('rev.easy')}`;
     root.innerHTML = `
       <div class="progress">
-        <span class="count">${left} ${left === 1 ? "card" : "cards"} left</span>
+        <span class="count">${leftText}</span>
         <span class="bar"><i style="width:${pct}%"></i></span>
       </div>
       <div class="card${rRevealed ? " lift" : ""}">
-        <span class="label">Question</span>
+        <span class="label">${t('rev.question')}</span>
         <p class="q">${c.q}</p>
-        <div class="answer${rRevealed ? " show" : ""}"><hr class="divider" /><span class="label">Answer</span><p class="a">${c.a}</p></div>
-        ${rRevealed ? "" : `<div class="reveal-wrap"><button class="reveal" onclick="rReveal()">Show answer <kbd>Space</kbd></button></div>`}
+        <div class="answer${rRevealed ? " show" : ""}"><hr class="divider" /><span class="label">${t('rev.answer')}</span><p class="a">${c.a}</p></div>
+        ${rRevealed ? "" : `<div class="reveal-wrap"><button class="reveal" onclick="rReveal()">${t('rev.show')} <kbd>Space</kbd></button></div>`}
       </div>
       ${rRevealed ? `
-        <div class="ratings">${RR.map(x => `<button class="rate" data-r="${x.r}" onclick="rRate()"><span class="dot"></span><span class="name">${x.name}</span><kbd>${x.r}</kbd></button>`).join("")}</div>
-        <p class="hint"><kbd>1</kbd> Again · <kbd>2</kbd> Hard · <kbd>3</kbd> Good · <kbd>4</kbd> Easy</p>`
-      : `<p class="hint">Try to recall the answer, then reveal it with <kbd>Space</kbd>.</p>`}
+        <div class="ratings">${RR.map(x => `<button class="rate" data-r="${x.r}" onclick="rRate()"><span class="dot"></span><span class="name">${t(x.key)}</span><kbd>${x.r}</kbd></button>`).join("")}</div>
+        <p class="hint">${ratingHint}</p>`
+      : `<p class="hint">${t('rev.recallHint')} <kbd>Space</kbd>.</p>`}
     `;
   }
   function rReveal() { rRevealed = true; renderR(); }
   function rRate() { rReviewed++; ri++; rRevealed = false; if (ri >= RTOTAL) renderDone(); else renderR(); }
   function renderDone() {
+    const reviewedText = LANG === 'pl'
+      ? `Powtórzono ${rReviewed} ${cardNoun(rReviewed, true)} w tej sesji.`
+      : `Reviewed ${rReviewed} ${cardNoun(rReviewed)} this session.`;
     document.getElementById('screen-review').innerHTML = `
       <div class="done">
         <div class="seal">${ICONS.check}</div>
-        <h2>All caught up</h2>
-        <p>Reviewed ${rReviewed} ${rReviewed === 1 ? "card" : "cards"} this session.</p>
-        <p>Next review in about 4 hours.</p>
+        <h2>${t('rev.done')}</h2>
+        <p>${reviewedText}</p>
+        <p>${t('rev.next')}</p>
         <div class="actions">
-          <button class="btn btn-primary" onclick="go('generate')">Generate more cards</button>
-          <button class="btn btn-ghost" onclick="mountReview()">Run the demo again</button>
+          <button class="btn btn-primary" onclick="go('generate')">${t('rev.genMore')}</button>
+          <button class="btn btn-ghost" onclick="mountReview()">${t('rev.demo')}</button>
         </div>
       </div>`;
   }
@@ -543,6 +951,11 @@
   });
 
   /* ---------- init ---------- */
-  fmtCount();
-  go('generate');
+  (function initLang() {
+    let stored = null;
+    try { stored = localStorage.getItem('sage-lang'); } catch (e) {}
+    const navPL = (navigator.language || '').toLowerCase().startsWith('pl');
+    setLang(stored || (navPL ? 'pl' : 'en'));
+  })();
+  goLanding();
 </script>

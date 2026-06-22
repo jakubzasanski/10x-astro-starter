@@ -6,9 +6,11 @@
 
 ## Name & brand
 
-- **App name: Sage** (replaces "10xCards"). Warm, calm, "wise"; the name implies
-  sage-green, which drives the leaf logo.
-- **Wordmark:** "Sage" set in the **serif** display face, weight 600.
+- **App name: Sage Flashcards** (replaces "10xCards"). Warm, calm, "wise"; the "Sage"
+  half implies sage-green, which drives the leaf logo, while "Flashcards" names the
+  product plainly.
+- **Wordmark:** "Sage Flashcards" set in the **serif** display face, weight 600. In
+  tight chrome a compact "Sage" + leaf is acceptable; full name in titles/hero/auth.
 - **Logo:** a green **sage leaf** — filled with the green gradient, white center
   vein + two side veins, soft drop shadow. In the mockup it's defined once as an
   SVG `<symbol>`/`<g id="sageLeaf">` and referenced via `<use href="#sageLeaf">`.
@@ -49,6 +51,44 @@ Rating semantics (earthy/muted so the green accent stays the loudest note):
 The "Manual" origin badge uses a soft violet (`#F0EAF7` bg / `#7B5EA8` text) to
 distinguish it from the green "AI" badge.
 
+### Dark theme (approved)
+
+The app ships a **light/dark toggle**. Dark is the **same layout with a darker warm
+palette** — not a redesign. The same token *names* are overridden under `html.dark`;
+only values change. The green accent stays the identity (lifted one step to
+`#7FB47E` so it pops on dark). Anchor values (tuned in render-verify, see mockup
+`html.dark` block):
+
+| Token (`html.dark`)        | Hex       | Role (dark)                                    |
+| -------------------------- | --------- | ---------------------------------------------- |
+| `--ground`                 | `#211C15` | warm dark page background                      |
+| `--ground-deep`            | `#191510` | gradient bottom / wells                        |
+| `--surface`                | `#2A241C` | cards, inputs, panels (elevated warm)          |
+| `--text`                   | `#F0E8DA` | primary text (warm off-white)                  |
+| `--text-soft`              | `#B5A892` | secondary text / answers                       |
+| `--text-faint`             | `#8C7F6C` | labels, captions                               |
+| `--line`                   | `#3A332A` | hairline borders                               |
+| `--accent`                 | `#7FB47E` | the bold accent (lifted for dark)              |
+| `--accent-deep`            | `#6BA06A` | accent pressed / links / focus ring            |
+| `--accent-soft`            | `#26301F` | accent tint backgrounds                        |
+| `--icon`                   | `#B7A582` | neutral flat icon color                        |
+| ratings                    | brightened a step (`--r-again #D86E57`, `--r-good #62B071`, …) | contrast on dark |
+
+Shadows deepen (near-black warm rgba). Dark **default follows the OS preference**
+on first visit; the user's explicit toggle persists. Theme is applied via a `dark`
+class on `<html>`, set **before first paint** (no flash).
+
+### Languages — EN / PL (approved)
+
+The app ships an **EN/PL language toggle** (a segmented pill in the header / landing nav,
+next to the theme toggle). **UI chrome only** is translated — nav, buttons, labels,
+headings, hints, landing copy, auth, and the empty/error/success states. **User card
+content is never translated** (it's the user's data). In code this is a `t(key)` dictionary
+keyed by the strings in the mockup's `I18N` object (EN + PL), with the locale resolved
+server-side from a cookie (no per-locale URLs) and `<html lang>` set from it. Polish count
+strings use proper plural forms (1 / 2–4 / 5+) — see the mockup's `plPL`/`cardNoun` helpers.
+The approved EN + PL copy lives in `app-mockup.html` (the `I18N` object) — port it verbatim.
+
 ## Shape, shadow, motion
 
 - `--radius: 22px` (cozy). Smaller elements: chips/inputs ~14–18px.
@@ -68,9 +108,8 @@ Deliberate split — **meaning, not decoration**:
 - **Sans** (`--sans`) for *app chrome*: nav, buttons, labels, counts, form fields.
   Stack: `system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`.
 - **Mono** (`--mono`) for `<kbd>` keycaps only.
-- **OPEN DECISION (resolve in /10x-plan):** keep these system stacks (zero
-  dependency) or self-host a specific typeface. No external font CDN allowed
-  (Cloudflare Workers runtime + project constraints).
+- **RESOLVED (in plan):** keep the **system stacks** (zero dependency, zero network
+  cost, no CDN) — the mockups were approved with exactly these. No self-hosted typeface.
 
 ## Icons
 
@@ -84,8 +123,24 @@ Deliberate split — **meaning, not decoration**:
 
 ## Screens covered (all approved)
 
-All re-create the current functionality — no behavior change, visual only.
+All re-create the current functionality — no behavior change, visual only. The
+**theme toggle** (sun/moon) and the **EN/PL language toggle** live in the app header
+and the landing nav; every screen must read correctly in both light and dark and in
+both languages.
 
+**Responsive / mobile (approved, must be excellent):** below ~640px the desktop top tabs
+and "New card" button hide and a **fixed bottom tab bar** (Generate / Review / Deck / Add)
+takes over — the same routes, thumb-reachable. Content reserves bottom space so it never
+hides behind the bar; `env(safe-area-inset-bottom)` is honored; the Generate save-bar
+floats above the bar; keyboard hints (`kbd`/hint rows) hide on touch; CTAs go full-width;
+the how-it-works grid stacks. Tap targets ≥44px, no horizontal scroll to 320px. Reference:
+the mockup's `@media (max-width: 640px)` block + `.bottombar`.
+
+0. **Landing (pre-login)** — new marketing page for signed-out visitors (replaces the
+   old "cosmic" Welcome). Warm hero (leaf, "Sage Flashcards", value-prop headline,
+   primary **"Get started" → sign-up**, secondary **"Sign in"**), a 3-step
+   *paste → Sage drafts → review on schedule* how-it-works strip, and a closing CTA
+   card. See the `#landingView` section in `app-mockup.html`.
 1. **Review** (`src/pages/review.astro` + `src/components/review/ReviewSession.tsx`)
    — progress bar, the card as a physical study object (warm paper, green spine,
    soft shadow), Show-answer → unfold, 4 rating chips, "All caught up" state,

@@ -1,7 +1,7 @@
 ---
 change_id: ui-redesign
 title: UI redesign — warm "Sage" visual identity across all screens
-status: new
+status: planned
 created: 2026-06-22
 updated: 2026-06-22
 archived_at: null
@@ -24,37 +24,52 @@ real Astro + React + shadcn/ui codebase, screen by screen, with render-verify.
 See `design/DESIGN-FOUNDATION.md` for the full token system, palette hexes,
 typography, logo, and per-screen notes. Headlines:
 
-- **New app name: "Sage"** (was "10xCards"). Warm/green identity; the name drives
-  the leaf logo. Renaming touches `<head>` titles, in-app copy, and possibly
-  `package.json` / README / the Cloudflare deploy URL — the **deploy URL + repo
-  rename are a separate user decision**, out of scope for the in-app work.
+- **New app name: "Sage Flashcards"** (was "10xCards"). Warm/green identity; the
+  "Sage" half drives the leaf logo. Renaming touches `<head>` titles, in-app copy,
+  the header wordmark, and the favicon — but **NOT** `package.json` / README / the
+  Cloudflare worker (`10x-cards`) / repo: the **deploy URL + repo rename are a
+  separate user decision**, out of scope for the in-app work.
 - **Direction:** warm paper ground + a single **moss-green** accent; cozy/soft
   (large radii, soft warm shadows). Serif for *studied content* (card Q/A),
   sans for *app chrome*.
+- **Light/dark toggle:** ships a **dark theme** — the same layout with a darker warm
+  palette (same token names, darker values; green accent lifted to pop on dark).
+  Default follows OS preference; choice persists; applied before first paint (no
+  flash). See the `html.dark` block + toggle in `app-mockup.html`.
+- **EN/PL language toggle:** UI chrome is localized English/Polish via a `t()` dictionary
+  + locale cookie (no per-locale URLs); user card content is never translated. Approved
+  EN+PL copy lives in the mockup's `I18N` object. Also tidies the existing hardcoded PL
+  config banner.
+- **Mobile (first-class):** below ~640px a **fixed bottom tab bar** (Generate / Review /
+  Deck / Add) replaces the top tabs; every screen reflows to a thumb-friendly single column
+  (touch targets ≥44px, no horizontal scroll, keyboard hints hidden on touch). See the
+  mockup's `@media (max-width: 640px)` block + `.bottombar`.
+- **Landing page (pre-login):** a new warm marketing page (hero + how-it-works +
+  CTA, primary "Get started" → sign-up) replacing the old "cosmic" Welcome.
 - **Logo:** green sage leaf (filled gradient + veins), defined once as an SVG
-  symbol.
+  symbol. **Favicon:** the leaf (ship `public/favicon.svg`).
 - **Icons:** flat line icons (SVG, `currentColor`) in **dark beige** for neutral
   actions; semantic actions (Keep=green, Reject=red, ratings) keep their colors.
 
 ### Approved mockups (source of truth for Phase B)
 
-- `design/app-mockup.html` — the full app: Generate, Review, Deck, Manual create,
-  Sign-in. This is the canonical reference.
+- `design/app-mockup.html` — the full app: **Landing**, Generate, Review, Deck,
+  Manual create, Sign-in/Sign-up, **light + dark themes**, **EN + PL languages**, and a
+  **responsive mobile layout with a bottom tab bar** (theme + language toggles in the
+  header / landing nav). This is the canonical reference, and its `I18N` object is the
+  approved EN/PL copy.
 - `design/review-mockup.html` — earlier single-screen Review iteration (kept for
   history; superseded by app-mockup.html).
 
-### Open decision before planning
+### Resolved decisions
 
-- **Font strategy:** the mockups use a *system* serif stack
-  (Iowan/Palatino/Georgia) and system sans — zero dependency, zero cost. Decide
-  in `/10x-plan` whether to keep system fonts or self-host a specific typeface.
-  No external font CDN (Cloudflare Workers + the project's existing constraints).
+- **Font strategy:** keep the **system stacks** (Iowan/Palatino/Georgia serif;
+  system-ui sans) — zero dependency, zero cost, no CDN. No self-hosted typeface.
 
 ### Resuming Phase B
 
-Next session: run `/10x-plan ui-redesign` (or `/10x-research` first if grounding
-in the current component structure is needed). The plan should sequence:
-shell + design tokens (global.css `@theme`) → shared primitives → screens in
-order (Review → Generate → Deck → Manual → Auth) → render-verify each. The
-current screens to migrate live under `src/pages/` and `src/components/`
-(e.g. `src/components/review/ReviewSession.tsx`, `src/styles/global.css`).
+The plan is written — run `/10x-implement ui-redesign phase 1`. The plan sequences:
+design tokens incl. dark palette (global.css) → shell + primitives + theme toggle →
+screens in order (Review → Generate → Deck+Manual → Auth + Landing + Dashboard) →
+render-verify each in both themes. Current screens live under `src/pages/` and
+`src/components/` (e.g. `src/components/review/ReviewSession.tsx`, `src/styles/global.css`).
