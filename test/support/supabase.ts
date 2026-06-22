@@ -27,6 +27,25 @@ export async function ensureTestUser(email: string, password: string): Promise<v
   throw new Error(`Failed to ensure test user: ${res.status} ${await res.text()}`);
 }
 
+// Delete a user by email via the GoTrue admin API (service-role). Used to clean up throwaway users
+// a test creates (e.g. the password-reset e2e, which changes a user's password and so must not reuse
+// the shared E2E_USER). Idempotent: a missing user is a no-op. Local test DBs are small, so a single
+// listing page is enough to resolve the id.
+export async function deleteUserByEmail(email: string): Promise<void> {
+  const listRes = await fetch(`${SUPABASE_URL}/auth/v1/admin/users?per_page=200`, { headers: adminHeaders });
+  if (!listRes.ok) throw new Error(`Admin user list failed: ${listRes.status} ${await listRes.text()}`);
+  const { users } = (await listRes.json()) as { users: { id: string; email?: string }[] };
+  const user = users.find((u) => u.email?.toLowerCase() === email.toLowerCase());
+  if (!user) return;
+  const delRes = await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${user.id}`, {
+    method: "DELETE",
+    headers: adminHeaders,
+  });
+  if (!delRes.ok && delRes.status !== 404) {
+    throw new Error(`Admin user delete failed: ${delRes.status} ${await delRes.text()}`);
+  }
+}
+
 // Cache access tokens per email so two distinct users (e.g. an RLS isolation test) don't collide.
 // Assumes one password per email for the suite's lifetime (the key ignores password) and does not
 // expire entries — fine for local-dev tokens within a single run; not a session manager.

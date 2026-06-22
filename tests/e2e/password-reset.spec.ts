@@ -9,14 +9,38 @@
  *
  * Requires local Supabase running (Docker) — the recovery link only exists in the local mailbox.
  */
-import { test, expect } from "@playwright/test";
-import { ensureTestUser } from "./support/supabase";
+import { test, expect, type Page } from "@playwright/test";
+import { ensureTestUser, deleteUserByEmail } from "./support/supabase";
 import { getLatestRecoveryLink } from "./support/mailpit";
 
 // Logged-out for the whole file — the reset flow is the unauthenticated experience.
 test.use({ storageState: { cookies: [], origins: [] } });
 
+// These auth forms are `client:load` React islands. Filling + clicking before the island hydrates
+// drops the value from React's controlled state, so onSubmit preventDefaults on an "empty" field and
+// no navigation happens. Retry the fill+submit until the expected navigation occurs — this waits on
+// STATE (the redirect), not a timeout, and validation-blocked retries issue no request, so it never
+// trips the email rate limit.
+async function submitForm(page: Page, fill: () => Promise<void>, submit: () => Promise<void>, url: string | RegExp) {
+  await expect(async () => {
+    await fill();
+    await submit();
+    await page.waitForURL(url, { timeout: 3000 });
+  }).toPass({ timeout: 15_000 });
+}
+
 test.describe("password reset (FR-006)", () => {
+  // The happy-path test creates a throwaway user; track it so afterEach can delete it (CLAUDE.md
+  // cleanup rule). null when a test (e.g. the negative path) creates no user.
+  let createdEmail: string | null = null;
+
+  test.afterEach(async () => {
+    if (createdEmail) {
+      await deleteUserByEmail(createdEmail);
+      createdEmail = null;
+    }
+  });
+
   test("request → email link → set new password → sign in with it", async ({ page }) => {
     // Fresh throwaway user so the test is re-run-safe and never mutates the shared E2E_USER.
     const runId = Date.now();
@@ -24,11 +48,16 @@ test.describe("password reset (FR-006)", () => {
     const oldPassword = "old-password-12345";
     const newPassword = "new-password-67890";
     await ensureTestUser(email, oldPassword);
+    createdEmail = email;
 
     // (1) Request the reset and land on the neutral, non-enumerating confirmation.
     await page.goto("/auth/forgot-password");
-    await page.getByLabel("Email", { exact: true }).fill(email);
-    await page.getByRole("button", { name: "Send reset link" }).click();
+    await submitForm(
+      page,
+      () => page.getByLabel("Email", { exact: true }).fill(email),
+      () => page.getByRole("button", { name: "Send reset link" }).click(),
+      /\/auth\/forgot-password\?sent=1/,
+    );
     await expect(page.getByText("we've sent a password-reset link", { exact: false })).toBeVisible();
 
     // (2) Read the recovery link from the local mail server (polled, not timed) and confirm its shape.
@@ -42,17 +71,27 @@ test.describe("password reset (FR-006)", () => {
     await expect(page.getByRole("heading", { name: "Set a new password" })).toBeVisible();
 
     // (4) Set the new password → redirected back to sign-in with the success banner.
-    await page.getByLabel("New password", { exact: true }).fill(newPassword);
-    await page.getByLabel("Confirm new password", { exact: true }).fill(newPassword);
-    await page.getByRole("button", { name: "Update password" }).click();
-    await page.waitForURL("/auth/signin?reset=1");
+    await submitForm(
+      page,
+      async () => {
+        await page.getByLabel("New password", { exact: true }).fill(newPassword);
+        await page.getByLabel("Confirm new password", { exact: true }).fill(newPassword);
+      },
+      () => page.getByRole("button", { name: "Update password" }).click(),
+      "/auth/signin?reset=1",
+    );
     await expect(page.getByText("Your password has been updated", { exact: false })).toBeVisible();
 
     // (5) Sign in with the NEW password → reach the app and prove a protected route renders.
-    await page.getByLabel("Email", { exact: true }).fill(email);
-    await page.getByLabel("Password", { exact: true }).fill(newPassword);
-    await page.getByRole("button", { name: "Sign in" }).click();
-    await page.waitForURL("/");
+    await submitForm(
+      page,
+      async () => {
+        await page.getByLabel("Email", { exact: true }).fill(email);
+        await page.getByLabel("Password", { exact: true }).fill(newPassword);
+      },
+      () => page.getByRole("button", { name: "Sign in" }).click(),
+      "/",
+    );
 
     await page.goto("/generate");
     await expect(page.getByRole("heading", { name: "Generate flashcards" })).toBeVisible();

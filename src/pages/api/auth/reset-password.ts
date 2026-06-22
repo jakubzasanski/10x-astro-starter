@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase";
 
 export const prerender = false;
 
-const MIN_PASSWORD_LENGTH = 6;
+const MIN_PASSWORD_LENGTH = 8;
 
 // Mirror the client-side ResetPasswordForm + minimum_password_length = 6: a min-length new password
 // that matches its confirmation. The server is not the only layer trusting the client.

@@ -64,6 +64,8 @@ describe("POST /api/auth/reset-password — happy path", () => {
     expect(updateUser).toHaveBeenCalledTimes(1);
     expect(updateUser).toHaveBeenCalledWith({ password: "newpass1" });
     expect(signOut).toHaveBeenCalledTimes(1);
+    // signOut must run AFTER updateUser — dropping the recovery session only once the password is set.
+    expect(signOut.mock.invocationCallOrder[0]).toBeGreaterThan(updateUser.mock.invocationCallOrder[0]);
     expect(res.status).toBe(302);
     expect(location(res)).toBe("/auth/signin?reset=1");
   });
