@@ -793,6 +793,223 @@
     height: 16px;
   }
 
+  /* ---------- form fields ---------- */
+  .field {
+    margin-bottom: 18px;
+  }
+  .field > label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 7px;
+  }
+  .input,
+  .area {
+    width: 100%;
+    font-family: var(--sans);
+    font-size: 1rem;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 13px 15px;
+    transition:
+      border-color 0.15s,
+      box-shadow 0.15s;
+    resize: vertical;
+  }
+  .area {
+    min-height: 120px;
+    line-height: 1.5;
+  }
+  .input:focus,
+  .area:focus {
+    outline: none;
+    border-color: var(--accent-green);
+    box-shadow: 0 0 0 4px rgba(107, 160, 106, 0.16);
+  }
+  .field-foot {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+    font-size: 0.78rem;
+    color: var(--text-faint);
+  }
+
+  /* ---------- generate ---------- */
+  .gen-box {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-soft);
+    padding: clamp(20px, 3vw, 28px);
+  }
+  .gen-box .area {
+    min-height: 170px;
+    background: var(--ground);
+  }
+  .gen-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+  .gen-actions .note {
+    font-size: 0.8rem;
+    color: var(--text-faint);
+  }
+  .gen-actions .note.over {
+    color: var(--r-again);
+    font-weight: 600;
+  }
+  .gen-cap {
+    margin-top: 10px;
+    font-size: 0.8rem;
+    color: var(--text-faint);
+    text-align: center;
+  }
+  .form-error {
+    margin-top: 12px;
+    color: var(--r-again);
+    font-size: 0.88rem;
+  }
+  .cand-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin: 30px 0 14px;
+  }
+  .cand-head h2 {
+    font-family: var(--serif);
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 0;
+  }
+  .cand-head .meta {
+    font-size: 0.85rem;
+    color: var(--text-soft);
+  }
+  .cand {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 18px 20px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow-soft);
+    transition:
+      opacity 0.2s,
+      border-color 0.2s,
+      background 0.2s;
+  }
+  .cand .cq {
+    font-family: var(--serif);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
+  .cand .ca {
+    font-family: var(--serif);
+    color: var(--text-soft);
+    margin: 0;
+    line-height: 1.5;
+  }
+  .cand .area {
+    min-height: 64px;
+    margin-bottom: 10px;
+  }
+  .cand-foot {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--line);
+    flex-wrap: wrap;
+  }
+  .cand-foot .spacer {
+    flex: 1;
+  }
+  .chip {
+    font-size: 0.82rem;
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 7px 12px;
+    cursor: pointer;
+    border: 1px solid var(--line);
+    background: var(--ground);
+    color: var(--text-soft);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s;
+  }
+  .chip svg {
+    width: 15px;
+    height: 15px;
+  }
+  .chip:hover {
+    background: #fff;
+  }
+  html.dark .chip:hover {
+    background: #322b22;
+  }
+  .chip.accept.on {
+    background: var(--accent-soft);
+    border-color: var(--accent-green);
+    color: var(--accent-deep);
+  }
+  .chip.reject.on {
+    background: #f7e7e2;
+    border-color: var(--r-again);
+    color: var(--r-again);
+  }
+  html.dark .chip.reject.on {
+    background: #3a2620;
+  }
+  .cand.is-rejected {
+    opacity: 0.5;
+  }
+  .cand.is-accepted {
+    border-color: var(--accent-green);
+    background: color-mix(in srgb, var(--accent-green) 5%, var(--surface));
+  }
+  .badge-state {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+  .savebar {
+    position: sticky;
+    bottom: 18px;
+    margin-top: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 14px 18px;
+    box-shadow: var(--shadow-card);
+  }
+  .savebar .sumtext {
+    font-size: 0.92rem;
+    color: var(--text-soft);
+  }
+  .savebar .sumtext b {
+    color: var(--text);
+  }
+  .savebar-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
   /* focus rings in accent green across chrome (mockup) */
   a:focus-visible,
   button:focus-visible,

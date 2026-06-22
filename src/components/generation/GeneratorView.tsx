@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import { Sparkles, Check, X, Save, Loader2, RotateCcw, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent } from "@/components/ui/card";
+import { Check, Loader2, Pencil, Sparkles, X } from "lucide-react";
+import { cardNoun, t, type Locale } from "@/i18n";
 import type { CandidateCard, GenerateResponse } from "@/types";
 
 // Client-side cap for UX (count + disable). The server is the source of truth and re-validates;
@@ -32,9 +30,14 @@ function loadSession(): ReviewCard[] {
   }
 }
 
-export default function GeneratorView() {
+interface GeneratorViewProps {
+  locale: Locale;
+}
+
+export default function GeneratorView({ locale }: GeneratorViewProps) {
   const [sourceText, setSourceText] = useState("");
   const [cards, setCards] = useState<ReviewCard[]>([]);
+  const [editingIds, setEditingIds] = useState<Set<string>>(new Set());
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -82,12 +85,12 @@ export default function GeneratorView() {
       });
       if (!res.ok) {
         const data = (await res.json().catch(() => null)) as { error?: string } | null;
-        setError(data?.error ?? "Could not generate cards. Please try again.");
+        setError(data?.error ?? t(locale, "gen.errGenerate"));
         return;
       }
       const data = (await res.json()) as GenerateResponse;
       if (data.candidates.length === 0) {
-        setError("No flashcards could be generated from this text. Try a longer or richer passage.");
+        setError(t(locale, "gen.errEmpty"));
         return;
       }
       setCards(
@@ -99,7 +102,7 @@ export default function GeneratorView() {
         })),
       );
     } catch {
-      setError("Could not reach the server. Please try again.");
+      setError(t(locale, "gen.errNetwork"));
     } finally {
       setIsGenerating(false);
     }
@@ -107,6 +110,15 @@ export default function GeneratorView() {
 
   function updateCard(id: string, patch: Partial<Pick<ReviewCard, "question" | "answer" | "rejected">>) {
     setCards((prev) => prev.map((c) => (c.id === id ? { ...c, ...patch } : c)));
+  }
+
+  function toggleEdit(id: string) {
+    setEditingIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   }
 
   async function handleSave() {
@@ -121,15 +133,16 @@ export default function GeneratorView() {
       });
       if (!res.ok) {
         const data = (await res.json().catch(() => null)) as { error?: string } | null;
-        setError(data?.error ?? "Could not save cards. Please try again.");
+        setError(data?.error ?? t(locale, "gen.errSave"));
         return;
       }
       const data = (await res.json()) as { saved: number };
       setSavedCount(data.saved);
       setCards([]); // clears localStorage via the effect
+      setEditingIds(new Set());
       setSourceText("");
     } catch {
-      setError("Could not reach the server. Please try again.");
+      setError(t(locale, "gen.errNetwork"));
     } finally {
       setIsSaving(false);
     }
@@ -137,6 +150,7 @@ export default function GeneratorView() {
 
   function startOver() {
     setCards([]);
+    setEditingIds(new Set());
     setSourceText("");
     setSavedCount(null);
     setError(null);
@@ -144,138 +158,170 @@ export default function GeneratorView() {
 
   // Confirmation state after a successful save.
   if (savedCount !== null) {
+    const savedText =
+      locale === "pl"
+        ? `Zapisano ${savedCount} ${cardNoun(locale, savedCount, true)} w talii`
+        : `${savedCount} ${cardNoun(locale, savedCount)} saved to your deck`;
     return (
-      <div className="rounded-2xl border border-white/10 bg-white/10 p-8 text-center backdrop-blur-xl">
-        <Check className="mx-auto mb-3 size-10 text-emerald-300" />
-        <p className="text-lg font-semibold">
-          {savedCount} {savedCount === 1 ? "card" : "cards"} saved to your deck
-        </p>
-        <Button className="mt-6" variant="secondary" onClick={startOver}>
-          <Sparkles className="size-4" /> Generate more
-        </Button>
+      <div className="done">
+        <div className="seal">
+          <Check aria-hidden="true" />
+        </div>
+        <h2>{savedText}</h2>
+        <div className="actions">
+          <button type="button" className="btn btn-primary" onClick={startOver}>
+            <Sparkles aria-hidden="true" /> {t(locale, "gen.more")}
+          </button>
+        </div>
       </div>
     );
   }
 
   // Review state: candidates returned, awaiting per-card decisions.
   if (cards.length > 0) {
+    const total = cards.length;
+    const accepted = acceptedCards.length;
+    const metaText =
+      locale === "pl" ? `${total} propozycji · zachowaj te dobre` : `${total} drafted · keep the good ones`;
+    const saveText =
+      accepted === 0
+        ? t(locale, "gen.saveNone")
+        : locale === "pl"
+          ? `Zapisz ${accepted} ${cardNoun(locale, accepted, true)} do talii`
+          : `Save ${accepted} ${cardNoun(locale, accepted)} to deck`;
+
     return (
-      <div className="space-y-4">
-        <div className="flex items-center justify-between text-sm text-blue-100/70">
-          <span>
-            {acceptedCards.length} of {cards.length} accepted
-          </span>
-          <button type="button" onClick={startOver} className="inline-flex items-center gap-1 hover:text-white">
-            <RotateCcw className="size-3.5" /> Start over
-          </button>
+      <div>
+        <div className="cand-head">
+          <h2>{t(locale, "gen.candTitle")}</h2>
+          <span className="meta">{metaText}</span>
         </div>
 
-        {cards.map((card) => (
-          <Card
-            key={card.id}
-            className={card.rejected ? "border-white/5 bg-white/5 opacity-50" : "border-white/10 bg-white/10"}
-          >
-            <CardContent className="space-y-3 p-4">
-              <div className="space-y-1">
-                <span className="text-xs font-medium tracking-wide text-blue-100/50 uppercase">Question</span>
-                <Textarea
-                  value={card.question}
-                  disabled={card.rejected}
-                  onChange={(e) => {
-                    updateCard(card.id, { question: e.target.value });
-                  }}
-                  className="min-h-0 resize-none bg-white/5 text-white"
-                  rows={2}
-                />
-              </div>
-              <div className="space-y-1">
-                <span className="text-xs font-medium tracking-wide text-blue-100/50 uppercase">Answer</span>
-                <Textarea
-                  value={card.answer}
-                  disabled={card.rejected}
-                  onChange={(e) => {
-                    updateCard(card.id, { answer: e.target.value });
-                  }}
-                  className="min-h-0 resize-none bg-white/5 text-white"
-                  rows={2}
-                />
-              </div>
-              <div className="flex justify-end">
-                {card.rejected ? (
-                  <Button
-                    size="sm"
-                    variant="secondary"
+        <div>
+          {cards.map((card) => {
+            const editing = editingIds.has(card.id);
+            return (
+              <div key={card.id} className={card.rejected ? "cand is-rejected" : "cand is-accepted"}>
+                {editing ? (
+                  <>
+                    <textarea
+                      className="area"
+                      value={card.question}
+                      aria-label={t(locale, "field.question")}
+                      onChange={(e) => {
+                        updateCard(card.id, { question: e.target.value });
+                      }}
+                    />
+                    <textarea
+                      className="area"
+                      value={card.answer}
+                      aria-label={t(locale, "field.answer")}
+                      onChange={(e) => {
+                        updateCard(card.id, { answer: e.target.value });
+                      }}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <p className="cq">{card.question}</p>
+                    <p className="ca">{card.answer}</p>
+                  </>
+                )}
+                <div className="cand-foot">
+                  <span className="badge-state">
+                    {card.rejected ? t(locale, "gen.rejected") : t(locale, "gen.accepted")}
+                  </span>
+                  <span className="spacer" />
+                  <button
+                    type="button"
+                    className={card.rejected ? "chip accept" : "chip accept on"}
                     onClick={() => {
                       updateCard(card.id, { rejected: false });
                     }}
                   >
-                    <Check className="size-4" /> Restore
-                  </Button>
-                ) : (
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="text-red-200 hover:text-red-100"
+                    <Check aria-hidden="true" /> {t(locale, "gen.keep")}
+                  </button>
+                  <button
+                    type="button"
+                    className="chip"
+                    aria-pressed={editing}
+                    onClick={() => {
+                      toggleEdit(card.id);
+                    }}
+                  >
+                    <Pencil aria-hidden="true" /> {t(locale, "gen.edit")}
+                  </button>
+                  <button
+                    type="button"
+                    className={card.rejected ? "chip reject on" : "chip reject"}
                     onClick={() => {
                       updateCard(card.id, { rejected: true });
                     }}
                   >
-                    <X className="size-4" /> Reject
-                  </Button>
-                )}
+                    <X aria-hidden="true" /> {t(locale, "gen.reject")}
+                  </button>
+                </div>
               </div>
-            </CardContent>
-          </Card>
-        ))}
+            );
+          })}
+        </div>
 
-        {error && <p className="text-sm text-red-300">{error}</p>}
+        {error && <p className="form-error">{error}</p>}
 
-        <div className="sticky bottom-4 flex items-center gap-3">
-          <Button onClick={handleSave} disabled={acceptedCards.length === 0 || isSaving} className="flex-1">
-            {isSaving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
-            {isSaving ? "Saving..." : `Save ${acceptedCards.length} ${acceptedCards.length === 1 ? "card" : "cards"}`}
-          </Button>
+        <div className="savebar">
+          <span className="sumtext">
+            {locale === "pl" ? (
+              <>
+                zaakceptowano <b>{accepted}</b> z {total}
+              </>
+            ) : (
+              <>
+                <b>{accepted}</b> of {total} cards accepted
+              </>
+            )}
+          </span>
+          <div className="savebar-actions">
+            <button type="button" className="btn btn-ghost" onClick={startOver}>
+              {t(locale, "gen.startOver")}
+            </button>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => void handleSave()}
+              disabled={accepted === 0 || isSaving}
+            >
+              {isSaving && <Loader2 className="animate-spin" aria-hidden="true" />}
+              {isSaving ? t(locale, "gen.saving") : saveText}
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
   // Input state: paste source text and generate.
+  const counter = `${sourceText.length.toLocaleString(locale)} / ${MAX_SOURCE_CHARS.toLocaleString(locale)} ${t(locale, "gen.chars")}`;
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
-      <Textarea
+    <div className="gen-box">
+      <textarea
+        className="area"
         value={sourceText}
         onChange={(e) => {
           setSourceText(e.target.value);
         }}
-        placeholder="Paste the text you want to turn into flashcards..."
-        className="min-h-48 bg-white/5 text-white"
+        placeholder={t(locale, "gen.placeholder")}
+        aria-label={t(locale, "gen.title")}
         disabled={isGenerating}
       />
-      <div className="mt-2 flex items-center justify-between text-xs">
-        <span className={overCap ? "text-red-300" : "text-blue-100/50"}>
-          {sourceText.length.toLocaleString()} / {MAX_SOURCE_CHARS.toLocaleString()} characters
-        </span>
-        {cards.length === 0 && sourceText.length > 0 && (
-          <button
-            type="button"
-            onClick={() => {
-              setSourceText("");
-            }}
-            className="inline-flex items-center gap-1 text-blue-100/50 hover:text-white"
-          >
-            <Trash2 className="size-3.5" /> Clear
-          </button>
-        )}
+      <div className="gen-actions">
+        <span className={overCap ? "note over" : "note"}>{counter}</span>
+        <button type="button" className="btn btn-primary" onClick={() => void handleGenerate()} disabled={!canGenerate}>
+          {isGenerating ? <Loader2 className="animate-spin" aria-hidden="true" /> : <Sparkles aria-hidden="true" />}
+          {isGenerating ? t(locale, "gen.generating") : t(locale, "gen.btn")}
+        </button>
       </div>
-
-      {error && <p className="mt-3 text-sm text-red-300">{error}</p>}
-
-      <Button onClick={handleGenerate} disabled={!canGenerate} className="mt-4 w-full">
-        {isGenerating ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
-        {isGenerating ? "Generating..." : "Generate cards"}
-      </Button>
-      <p className="mt-2 text-center text-xs text-blue-100/40">Generates up to 30 cards. Review before saving.</p>
+      {error && <p className="form-error">{error}</p>}
+      <p className="gen-cap">{t(locale, "gen.cap")}</p>
     </div>
   );
 }

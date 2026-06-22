@@ -861,32 +861,32 @@ validation gates, supplemented by per-screen manual render-verify.
 
 #### Automated
 
-- [x] 3.1 Linting passes: `npm run lint`
-- [x] 3.2 Build succeeds: `npm run build`
+- [x] 3.1 Linting passes: `npm run lint` — 61ab57c
+- [x] 3.2 Build succeeds: `npm run build` — 61ab57c
 
 #### Manual
 
-- [x] 3.3 Review screen (card, progress, reveal-unfold, rating chips, done) matches the mockup
-- [x] 3.4 Keyboard flow works: `Space` reveals, `1–4` rate and advance
-- [x] 3.5 Reduced-motion: answer appears without animating when OS setting is on
-- [x] 3.6 Zero-due, loading, and failed-save-retry states render warm
-- [x] 3.7 Screen renders correctly in both light/dark themes, both languages (EN/PL), and at mobile widths; all chrome via `t()` incl. Polish plurals
-- [x] 3.8 No regressions in review/scheduling behavior
+- [x] 3.3 Review screen (card, progress, reveal-unfold, rating chips, done) matches the mockup — 61ab57c
+- [x] 3.4 Keyboard flow works: `Space` reveals, `1–4` rate and advance — 61ab57c
+- [x] 3.5 Reduced-motion: answer appears without animating when OS setting is on — 61ab57c
+- [x] 3.6 Zero-due, loading, and failed-save-retry states render warm — 61ab57c
+- [x] 3.7 Screen renders correctly in both light/dark themes, both languages (EN/PL), and at mobile widths; all chrome via `t()` incl. Polish plurals — 61ab57c
+- [x] 3.8 No regressions in review/scheduling behavior — 61ab57c
 
 ### Phase 4: Generate Screen
 
 #### Automated
 
-- [ ] 4.1 Linting passes: `npm run lint`
-- [ ] 4.2 Build succeeds: `npm run build`
+- [x] 4.1 Linting passes: `npm run lint`
+- [x] 4.2 Build succeeds: `npm run build`
 
 #### Manual
 
-- [ ] 4.3 Generate screen (paste box, counter, candidate cards, save bar) matches the mockup
-- [ ] 4.4 Counter warns past 10,000 chars; accept/reject updates save count; save works
-- [ ] 4.5 Success + error states render warm
-- [ ] 4.6 Screen renders correctly in both light/dark themes, both languages (EN/PL), and at mobile widths; all chrome via `t()`
-- [ ] 4.7 No regression in generation behavior
+- [x] 4.3 Generate screen (paste box, counter, candidate cards, save bar) matches the mockup
+- [x] 4.4 Counter warns past 10,000 chars; accept/reject updates save count; save works
+- [x] 4.5 Success + error states render warm
+- [x] 4.6 Screen renders correctly in both light/dark themes, both languages (EN/PL), and at mobile widths; all chrome via `t()`
+- [x] 4.7 No regression in generation behavior
 
 ### Phase 5: Deck & Manual Create
 
