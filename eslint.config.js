@@ -80,7 +80,9 @@ export default tseslint.config(
   includeIgnoreFile(gitignorePath),
   // Supabase-generated DB types are overwritten on every `supabase gen types` run, so
   // linting them is futile (in-file fixes get wiped) and they don't match prettier/strict rules.
-  { ignores: ["src/db/database.types.ts"] },
+  // `.claude/` holds Claude Code harness scripts (hooks) that live outside any tsconfig, so the
+  // typed `projectService` can't resolve them — they're tooling, not app source, so skip them.
+  { ignores: ["src/db/database.types.ts", ".claude/**"] },
   baseConfig,
   reactConfig,
   eslintPluginAstro.configs["flat/recommended"],

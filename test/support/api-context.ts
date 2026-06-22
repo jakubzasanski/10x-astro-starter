@@ -1,10 +1,12 @@
 // Synthetic APIContext factory for direct-invocation handler tests.
 //
-// The `/api/generate` and `/api/cards` POST handlers read only a thin slice of the Astro context:
+// The `/api/generate` and `/api/cards` handlers read only a thin slice of the Astro context:
 //   - context.locals.user                          (the auth gate)
 //   - context.request.headers.get("content-length") (the 413 cap)
 //   - context.request.json()                        (the body)
 //   - context.cookies                               (cards only, passed straight into createClient)
+//   - context.params.id                             ([id].ts PATCH/DELETE route params)
+//   - context.url.searchParams                      (GET /api/cards reads the `offset` query param)
 //
 // We build `request` as a plain object — NOT a real `Request` — because undici recomputes the
 // `content-length` header from the actual body on a real Request, which would defeat the 413 test
@@ -28,10 +30,27 @@ interface ApiContextOptions {
   headers?: Record<string, string>;
   /** Sets the content-length header (number or string). Omit to leave it absent. */
   contentLength?: number | string;
+  /** context.params — route params for dynamic routes (e.g. `[id].ts` reads params.id). Defaults to {}. */
+  params?: Record<string, string | undefined>;
+  /** context.url — built as a real URL. Defaults to a benign placeholder. */
+  url?: string;
+  /** Convenience: query params merged onto the default URL (e.g. { offset: "100" }). Ignored when `url` is set. */
+  searchParams?: Record<string, string>;
 }
 
+const DEFAULT_URL = "http://localhost/api/cards";
+
 export function makeApiContext(opts: ApiContextOptions = {}): APIContext {
-  const { user = { id: "user-1" }, body, jsonThrows = false, headers = {}, contentLength } = opts;
+  const {
+    user = { id: "user-1" },
+    body,
+    jsonThrows = false,
+    headers = {},
+    contentLength,
+    params = {},
+    url,
+    searchParams,
+  } = opts;
 
   const requestHeaders = new Headers(headers);
   if (contentLength !== undefined) {
@@ -54,9 +73,18 @@ export function makeApiContext(opts: ApiContextOptions = {}): APIContext {
     headers: () => new Headers(),
   };
 
+  const resolvedUrl = new URL(url ?? DEFAULT_URL);
+  if (!url && searchParams) {
+    for (const [key, value] of Object.entries(searchParams)) {
+      resolvedUrl.searchParams.set(key, value);
+    }
+  }
+
   return {
     locals: { user },
     request,
     cookies,
+    params,
+    url: resolvedUrl,
   } as unknown as APIContext;
 }
