@@ -4,9 +4,11 @@
 //   - context.locals.user                          (the auth gate)
 //   - context.request.headers.get("content-length") (the 413 cap)
 //   - context.request.json()                        (the body)
+//   - context.request.formData()                     (the auth routes read form-encoded bodies)
 //   - context.cookies                               (cards only, passed straight into createClient)
 //   - context.params.id                             ([id].ts PATCH/DELETE route params)
 //   - context.url.searchParams                      (GET /api/cards reads the `offset` query param)
+//   - context.redirect(path, status?)               (the auth routes redirect with ?error=/?sent=/?reset=)
 //
 // We build `request` as a plain object — NOT a real `Request` — because undici recomputes the
 // `content-length` header from the actual body on a real Request, which would defeat the 413 test
@@ -24,6 +26,8 @@ interface ApiContextOptions {
   user?: { id: string } | null;
   /** Resolved value of context.request.json(). Ignored when jsonThrows is true. */
   body?: unknown;
+  /** Form fields for context.request.formData() — used by the form-POST auth routes. */
+  formData?: Record<string, string>;
   /** When true, request.json() rejects — exercises the invalid-JSON 400 path. */
   jsonThrows?: boolean;
   /** Extra request headers. */
@@ -44,6 +48,7 @@ export function makeApiContext(opts: ApiContextOptions = {}): APIContext {
   const {
     user = { id: "user-1" },
     body,
+    formData,
     jsonThrows = false,
     headers = {},
     contentLength,
@@ -61,6 +66,13 @@ export function makeApiContext(opts: ApiContextOptions = {}): APIContext {
     headers: requestHeaders,
     json: (): Promise<unknown> =>
       jsonThrows ? Promise.reject(new SyntaxError("Unexpected token in JSON")) : Promise.resolve(body),
+    formData: (): Promise<FormData> => {
+      const fd = new FormData();
+      for (const [key, value] of Object.entries(formData ?? {})) {
+        fd.set(key, value);
+      }
+      return Promise.resolve(fd);
+    },
   };
 
   const cookies = {
@@ -80,11 +92,16 @@ export function makeApiContext(opts: ApiContextOptions = {}): APIContext {
     }
   }
 
+  // Mirror Astro's context.redirect: a 302 (default) Response carrying the target in Location.
+  const redirect = (path: string, status = 302): Response =>
+    new Response(null, { status, headers: { Location: path } });
+
   return {
     locals: { user },
     request,
     cookies,
     params,
     url: resolvedUrl,
+    redirect,
   } as unknown as APIContext;
 }
