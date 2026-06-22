@@ -1,7 +1,7 @@
 ---
 change_id: deck-management
 title: Deck management — browse, schedule-preserving edit, and delete cards
-status: implemented
+status: impl_reviewed
 created: 2026-06-21
 updated: 2026-06-22
 archived_at: null

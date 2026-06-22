@@ -245,7 +245,9 @@ export default function DeckView() {
                           variant="ghost"
                           className="text-red-200 hover:text-red-100"
                           onClick={() => void confirmDelete(card.id)}
-                          disabled={deletingId === card.id}
+                          // Don't fire a delete while a page fetch is in flight: loadMore sets
+                          // nextOffset absolutely and would clobber the delete's cursor decrement.
+                          disabled={deletingId === card.id || loadingMore}
                         >
                           {deletingId === card.id ? (
                             <Loader2 className="size-4 animate-spin" />
@@ -289,7 +291,7 @@ export default function DeckView() {
 
       {hasMore && (
         <div className="flex flex-col items-center gap-2 pt-2">
-          <Button variant="secondary" onClick={() => void loadMore()} disabled={loadingMore}>
+          <Button variant="secondary" onClick={() => void loadMore()} disabled={loadingMore || deletingId !== null}>
             {loadingMore ? <Loader2 className="size-4 animate-spin" /> : <RefreshCw className="size-4" />}
             Load more
           </Button>
