@@ -59,6 +59,21 @@
   --shadow-card: 0 2px 5px rgba(74, 58, 36, 0.05), 0 26px 54px -28px rgba(74, 58, 36, 0.42);
   --shadow-lift: 0 2px 5px rgba(74, 58, 36, 0.05), 0 36px 74px -30px rgba(74, 58, 36, 0.46);
   --shadow-soft: 0 1px 3px rgba(74, 58, 36, 0.05), 0 12px 28px -20px rgba(74, 58, 36, 0.4);
+
+  /*
+   * Mockup-name aliases — let the approved mockup CSS port near-verbatim.
+   * They reference the theme-aware tokens above, so they follow light/dark.
+   * NOTE: the mockup's `--accent` is the BOLD green; it maps to `--accent-green`
+   * here (NOT shadcn's `--accent`, which is the soft tint). Port mockup CSS by
+   * rewriting only `var(--accent)` → `var(--accent-green)`; everything else matches.
+   */
+  --ground: var(--background);
+  --text: var(--foreground);
+  --line: var(--border);
+  --accent-green: var(--primary);
+  --serif: var(--font-serif);
+  --sans: var(--font-sans);
+  --mono: var(--font-mono);
 }
 
 /*
@@ -183,6 +198,433 @@
     *::after {
       transition: none !important;
       animation: none !important;
+    }
+  }
+}
+
+/*
+ * Sage app chrome — ported from design/app-mockup.html (header, nav, toggles,
+ * buttons, kbd, avatar menu, bottom tab bar, responsive). Screen-specific CSS
+ * (review/generate/deck/auth/landing) is added in its own phase.
+ */
+@layer components {
+  /* ---------- header ---------- */
+  .app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px clamp(20px, 5vw, 48px);
+    border-bottom: 1px solid var(--line);
+    background: rgba(255, 253, 248, 0.7);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+  html.dark .app-header {
+    background: rgba(33, 28, 21, 0.72);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .brand .logo {
+    filter: drop-shadow(0 4px 7px rgba(83, 129, 82, 0.32));
+  }
+  .brand .wordmark {
+    font-family: var(--serif);
+    font-size: 1.32rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+  .app-nav {
+    display: flex;
+    gap: 4px;
+  }
+  .app-nav .tab {
+    font-family: var(--sans);
+    font-size: 0.9rem;
+    color: var(--text-soft);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 11px;
+    transition:
+      background 0.15s,
+      color 0.15s;
+  }
+  .app-nav .tab:hover {
+    background: rgba(107, 160, 106, 0.12);
+    color: var(--text);
+  }
+  .app-nav .tab.active {
+    color: var(--accent-deep);
+    font-weight: 600;
+    background: rgba(107, 160, 106, 0.16);
+  }
+  .top-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 99px;
+    background: var(--accent-soft);
+    color: var(--accent-deep);
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    border: 1px solid var(--line);
+    cursor: pointer;
+  }
+
+  /* ---------- avatar menu (Sage addition; mockup avatar was a stub) ---------- */
+  .avatar-menu {
+    position: relative;
+  }
+  .avatar-menu > summary {
+    list-style: none;
+  }
+  .avatar-menu > summary::-webkit-details-marker {
+    display: none;
+  }
+  .avatar-pop {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    min-width: 190px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow-card);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 30;
+  }
+  .avatar-email {
+    font-size: 0.8rem;
+    color: var(--text-faint);
+    padding: 4px 8px;
+    word-break: break-all;
+  }
+  .avatar-signout {
+    font-family: var(--sans);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: left;
+    color: var(--text);
+    background: none;
+    border: none;
+    border-radius: 9px;
+    padding: 8px;
+    cursor: pointer;
+    transition:
+      background 0.15s,
+      color 0.15s;
+  }
+  .avatar-signout:hover {
+    background: #f7e7e2;
+    color: var(--r-again);
+  }
+  html.dark .avatar-signout:hover {
+    background: #3a2620;
+  }
+
+  /* ---------- main wrapper + page head ---------- */
+  .app-main {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: clamp(28px, 5vh, 56px) 20px 96px;
+  }
+  .page-head {
+    margin-bottom: 26px;
+  }
+  .page-head h1 {
+    font-family: var(--serif);
+    font-size: clamp(1.7rem, 4vw, 2.1rem);
+    font-weight: 600;
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+  }
+  .page-head p {
+    color: var(--text-soft);
+    margin: 0;
+    font-size: 0.98rem;
+  }
+  .label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  /* ---------- buttons + kbd ---------- */
+  .btn {
+    font-family: var(--sans);
+    font-size: 0.94rem;
+    font-weight: 600;
+    border-radius: 14px;
+    padding: 12px 20px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1px solid transparent;
+    transition:
+      transform 0.08s,
+      filter 0.15s,
+      background 0.15s,
+      border-color 0.15s;
+  }
+  .btn svg {
+    width: 17px;
+    height: 17px;
+  }
+  .btn:active {
+    transform: scale(0.98);
+  }
+  .btn-primary {
+    background: linear-gradient(145deg, var(--accent-green), var(--accent-deep));
+    color: #fff;
+    box-shadow: 0 12px 22px -12px var(--accent-deep);
+  }
+  .btn-primary:hover {
+    filter: brightness(1.04);
+  }
+  .btn-primary:disabled {
+    background: var(--ground-deep);
+    color: var(--text-faint);
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+  .btn-ghost {
+    background: var(--surface);
+    color: var(--text);
+    border-color: var(--line);
+  }
+  .btn-ghost:hover {
+    background: #fff;
+    border-color: #decdb6;
+  }
+  html.dark .btn-ghost:hover {
+    background: #322b22;
+    border-color: #4a4133;
+  }
+  .btn-block {
+    width: 100%;
+  }
+  kbd {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-soft);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-bottom-width: 2px;
+    border-radius: 6px;
+    padding: 2px 7px;
+    line-height: 1.4;
+  }
+
+  /* ---------- theme toggle ---------- */
+  .theme-toggle {
+    width: 34px;
+    height: 34px;
+    border-radius: 99px;
+    flex-shrink: 0;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--icon);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .theme-toggle:hover {
+    color: var(--text);
+    border-color: #decdb6;
+  }
+  html.dark .theme-toggle:hover {
+    border-color: #4a4133;
+  }
+  .theme-toggle svg {
+    width: 17px;
+    height: 17px;
+  }
+  .theme-toggle .moon {
+    display: none;
+  }
+  html.dark .theme-toggle .sun {
+    display: none;
+  }
+  html.dark .theme-toggle .moon {
+    display: block;
+  }
+
+  /* ---------- language toggle (EN / PL) ---------- */
+  .lang-toggle {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    border: 1px solid var(--line);
+    border-radius: 99px;
+    background: var(--surface);
+    overflow: hidden;
+  }
+  .lang-toggle button {
+    font-family: var(--sans);
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--text-faint);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px 11px;
+    transition:
+      background 0.15s,
+      color 0.15s;
+  }
+  .lang-toggle button:hover {
+    color: var(--text);
+  }
+  .lang-toggle button.on {
+    background: var(--accent-soft);
+    color: var(--accent-deep);
+  }
+
+  /* ---------- mobile bottom tab bar (hidden on desktop) ---------- */
+  .bottombar {
+    display: none;
+  }
+
+  @media (max-width: 720px) {
+    .how-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .app-header {
+      padding: 12px 16px;
+    }
+    .brand .wordmark {
+      font-size: 1.15rem;
+    }
+    .app-nav {
+      display: none;
+    }
+    .top-right > .btn {
+      display: none;
+    }
+    .top-right {
+      gap: 8px;
+    }
+    .app-main {
+      padding: 22px 16px 96px;
+    }
+    .page-head {
+      margin-bottom: 20px;
+    }
+    .ratings {
+      gap: 7px;
+    }
+    .rate {
+      padding: 13px 4px 10px;
+    }
+    kbd {
+      display: none;
+    }
+    .hint {
+      display: none;
+    }
+    .hero {
+      padding: 40px 18px 28px;
+    }
+    .hero .cta {
+      flex-direction: column;
+    }
+    .hero .cta .btn,
+    .closing-card .btn {
+      width: 100%;
+    }
+    .landing-nav {
+      padding: 14px 16px;
+    }
+    .how {
+      padding: 24px 16px 32px;
+    }
+    .savebar {
+      bottom: 84px;
+    }
+    .gen-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .gen-actions .btn {
+      width: 100%;
+    }
+    .bottombar {
+      display: flex;
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 20;
+      background: rgba(255, 253, 248, 0.93);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--line);
+      padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px));
+    }
+    html.dark .bottombar {
+      background: rgba(33, 28, 21, 0.93);
+    }
+    .bottombar .bb {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      min-height: 52px;
+      padding: 8px 4px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-radius: 12px;
+      color: var(--text-faint);
+      font-family: var(--sans);
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .bottombar .bb svg {
+      width: 22px;
+      height: 22px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .bottombar .bb.active {
+      color: var(--accent-deep);
+    }
+    .bottombar .bb:active {
+      background: var(--accent-soft);
     }
   }
 }

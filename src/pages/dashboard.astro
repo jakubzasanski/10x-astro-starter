@@ -1,5 +1,5 @@
 ---
-import Layout from "@/layouts/Layout.astro";
+import AppLayout from "@/layouts/AppLayout.astro";
 import { createClient } from "@/lib/supabase";
 
 const { user } = Astro.locals;
@@ -17,49 +17,38 @@ if (supabase) {
 }
 ---
 
-<Layout title="Dashboard">
-  <div class="bg-cosmic flex min-h-screen items-center justify-center p-4">
-    <div class="rounded-2xl border border-white/10 bg-white/10 p-8 text-center text-white backdrop-blur-xl">
-      <h1 class="mb-4 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
-        Dashboard
-      </h1>
-      <p class="text-blue-100/80">
-        Welcome, <span class="font-semibold text-white">{user?.email}</span>
-      </p>
-      <p class="mt-2 text-sm text-blue-100/50">This page is only for authenticated users.</p>
-
-      <div class="mt-6 flex flex-col items-center gap-2">
-        {
-          dueCount > 0 ? (
-            <a
-              href="/review"
-              class="inline-flex items-center gap-2 rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium transition-colors hover:bg-white/20"
-            >
-              Review {dueCount} {dueCount === 1 ? "card" : "cards"} due
-            </a>
-          ) : (
-            <p class="text-sm text-blue-100/40">No cards due for review right now.</p>
-          )
-        }
-        <a href="/cards" class="text-sm text-blue-100/60 underline-offset-2 hover:text-white hover:underline">
-          Browse your deck
-        </a>
-        <a href="/cards/new" class="text-sm text-blue-100/60 underline-offset-2 hover:text-white hover:underline">
-          Add a card manually
-        </a>
-        <a href="/generate" class="text-sm text-blue-100/60 underline-offset-2 hover:text-white hover:underline">
-          Generate flashcards
-        </a>
-      </div>
-
-      <form method="POST" action="/api/auth/signout" class="mt-6">
-        <button
-          type="submit"
-          class="rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm transition-colors hover:bg-white/20"
-        >
-          Sign out
-        </button>
-      </form>
-    </div>
+<AppLayout title="Dashboard">
+  <div class="page-head">
+    <h1>Dashboard</h1>
+    <p>Welcome, {user?.email}</p>
   </div>
-</Layout>
+
+  <div class="dash-actions">
+    {
+      dueCount > 0 ? (
+        <a class="btn btn-primary" href="/review">
+          Review {dueCount} {dueCount === 1 ? "card" : "cards"} due
+        </a>
+      ) : (
+        <p class="dash-empty">No cards due for review right now.</p>
+      )
+    }
+    <a class="btn btn-ghost" href="/cards">Browse your deck</a>
+    <a class="btn btn-ghost" href="/cards/new">Add a card manually</a>
+    <a class="btn btn-ghost" href="/generate">Generate flashcards</a>
+  </div>
+</AppLayout>
+
+<style>
+  .dash-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .dash-empty {
+    color: var(--text-soft);
+    margin: 0;
+    font-size: 0.95rem;
+  }
+</style>

@@ -829,33 +829,33 @@ validation gates, supplemented by per-screen manual render-verify.
 
 #### Automated
 
-- [x] 1.1 Astro types regenerate cleanly: `npx astro sync`
-- [x] 1.2 Linting passes: `npm run lint`
-- [x] 1.3 Production build succeeds: `npm run build`
+- [x] 1.1 Astro types regenerate cleanly: `npx astro sync` — 09ba152
+- [x] 1.2 Linting passes: `npm run lint` — 09ba152
+- [x] 1.3 Production build succeeds: `npm run build` — 09ba152
 
 #### Manual
 
-- [x] 1.4 Body shows the warm paper gradient (no white/cosmic background)
-- [x] 1.5 An existing shadcn button renders green; a card renders on warm surface with cozy radius
-- [x] 1.6 Adding `class="dark"` to `<html>` flips the same layout to the dark warm palette (no grayscale/off-palette)
-- [x] 1.7 No console errors about missing CSS custom properties
+- [x] 1.4 Body shows the warm paper gradient (no white/cosmic background) — 09ba152
+- [x] 1.5 An existing shadcn button renders green; a card renders on warm surface with cozy radius — 09ba152
+- [x] 1.6 Adding `class="dark"` to `<html>` flips the same layout to the dark warm palette (no grayscale/off-palette) — 09ba152
+- [x] 1.7 No console errors about missing CSS custom properties — 09ba152
 
 ### Phase 2: App Shell & Shared Primitives
 
 #### Automated
 
-- [ ] 2.1 Linting passes: `npm run lint`
-- [ ] 2.2 Build succeeds: `npm run build`
+- [x] 2.1 Linting passes: `npm run lint`
+- [x] 2.2 Build succeeds: `npm run build`
 
 #### Manual
 
-- [ ] 2.3 Sage header (leaf + "Sage Flashcards" wordmark + 3 tabs + New card + theme toggle + avatar) matches the mockup; active tab highlights per route
-- [ ] 2.4 Avatar menu opens and Sign out works
-- [ ] 2.5 Theme toggle flips light↔dark and persists across reload with no flash; OS preference honored when unset
-- [ ] 2.6 Language toggle flips EN↔PL: shell chrome + config banner re-label, `<html lang>` updates, choice persists
-- [ ] 2.7 Mobile (≤640px): top tabs/New-card hide, bottom tab bar appears with active state, content clears the bar, no horizontal scroll to 320px
-- [ ] 2.8 Browser tab shows "Sage Flashcards" + the leaf favicon
-- [ ] 2.9 No grayscale/cosmic remnants in the shared chrome in either theme
+- [x] 2.3 Sage header (leaf + "Sage Flashcards" wordmark + 3 tabs + New card + theme toggle + avatar) matches the mockup; active tab highlights per route
+- [x] 2.4 Avatar menu opens and Sign out works
+- [x] 2.5 Theme toggle flips light↔dark and persists across reload with no flash; OS preference honored when unset
+- [x] 2.6 Language toggle flips EN↔PL: shell chrome + config banner re-label, `<html lang>` updates, choice persists
+- [x] 2.7 Mobile (≤640px): top tabs/New-card hide, bottom tab bar appears with active state, content clears the bar, no horizontal scroll to 320px
+- [x] 2.8 Browser tab shows "Sage Flashcards" + the leaf favicon
+- [x] 2.9 No grayscale/cosmic remnants in the shared chrome in either theme
 
 ### Phase 3: Review Screen
 

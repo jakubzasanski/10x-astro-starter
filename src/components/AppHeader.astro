@@ -1,0 +1,58 @@
+---
+import SageLeaf from "@/components/brand/SageLeaf.astro";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { LanguageToggle } from "@/components/LanguageToggle";
+import { t } from "@/i18n";
+
+const { locale, user } = Astro.locals;
+const pathname = Astro.url.pathname;
+
+const isGenerate = pathname.startsWith("/generate");
+const isReview = pathname.startsWith("/review");
+const isNew = pathname.startsWith("/cards/new");
+const isDeck = pathname.startsWith("/cards") && !isNew;
+
+const initials = (user?.email ?? "?").slice(0, 2).toUpperCase();
+---
+
+<header class="app-header">
+  <a class="brand" href="/generate" aria-label="Sage Flashcards">
+    <SageLeaf class="logo" size={30} />
+    <span class="wordmark">Sage Flashcards</span>
+  </a>
+
+  <nav class="app-nav" aria-label="Primary">
+    <a class:list={["tab", { active: isGenerate }]} href="/generate" aria-current={isGenerate ? "page" : undefined}>
+      {t(locale, "nav.generate")}
+    </a>
+    <a class:list={["tab", { active: isReview }]} href="/review" aria-current={isReview ? "page" : undefined}>
+      {t(locale, "nav.review")}
+    </a>
+    <a class:list={["tab", { active: isDeck }]} href="/cards" aria-current={isDeck ? "page" : undefined}>
+      {t(locale, "nav.deck")}
+    </a>
+  </nav>
+
+  <div class="top-right">
+    <a class="btn btn-ghost" href="/cards/new">{t(locale, "btn.newCard")}</a>
+    <LanguageToggle locale={locale} client:load />
+    <ThemeToggle client:load />
+    {
+      user && (
+        <details class="avatar-menu">
+          <summary class="avatar" title={user.email ?? undefined}>
+            {initials}
+          </summary>
+          <div class="avatar-pop">
+            <span class="avatar-email">{user.email}</span>
+            <form method="POST" action="/api/auth/signout">
+              <button type="submit" class="avatar-signout">
+                {t(locale, "auth.signout")}
+              </button>
+            </form>
+          </div>
+        </details>
+      )
+    }
+  </div>
+</header>

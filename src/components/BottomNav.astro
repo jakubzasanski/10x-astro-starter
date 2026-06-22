@@ -1,0 +1,42 @@
+---
+import { t } from "@/i18n";
+
+const { locale } = Astro.locals;
+const pathname = Astro.url.pathname;
+
+const isGenerate = pathname.startsWith("/generate");
+const isReview = pathname.startsWith("/review");
+const isNew = pathname.startsWith("/cards/new");
+const isDeck = pathname.startsWith("/cards") && !isNew;
+---
+
+<nav class="bottombar" aria-label="Primary">
+  <a class:list={["bb", { active: isGenerate }]} href="/generate" aria-current={isGenerate ? "page" : undefined}>
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 3l1.6 5.4L19 10l-5.4 1.6L12 17l-1.6-5.4L5 10l5.4-1.6Z"></path>
+    </svg>
+    <span>{t(locale, "nav.generate")}</span>
+  </a>
+  <a class:list={["bb", { active: isReview }]} href="/review" aria-current={isReview ? "page" : undefined}>
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M21 12a9 9 0 1 1-2.64-6.36"></path>
+      <path d="M21 3v6h-6"></path>
+    </svg>
+    <span>{t(locale, "nav.review")}</span>
+  </a>
+  <a class:list={["bb", { active: isDeck }]} href="/cards" aria-current={isDeck ? "page" : undefined}>
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 2 2 7l10 5 10-5-10-5Z"></path>
+      <path d="M2 17l10 5 10-5"></path>
+      <path d="M2 12l10 5 10-5"></path>
+    </svg>
+    <span>{t(locale, "nav.deck")}</span>
+  </a>
+  <a class:list={["bb", { active: isNew }]} href="/cards/new" aria-current={isNew ? "page" : undefined}>
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <line x1="12" y1="5" x2="12" y2="19"></line>
+      <line x1="5" y1="12" x2="19" y2="12"></line>
+    </svg>
+    <span>{t(locale, "btn.add")}</span>
+  </a>
+</nav>

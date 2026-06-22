@@ -1,0 +1,18 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import AppHeader from "@/components/AppHeader.astro";
+import BottomNav from "@/components/BottomNav.astro";
+
+interface Props {
+  title?: string;
+}
+const { title } = Astro.props;
+---
+
+<Layout title={title}>
+  <AppHeader />
+  <main class="app-main">
+    <slot />
+  </main>
+  <BottomNav />
+</Layout>
