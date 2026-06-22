@@ -1,10 +1,10 @@
 ---
 change_id: testing-api-integration-access-control
 title: Testing api integration access control
-status: impl_reviewed
+status: archived
 created: 2026-06-20
-updated: 2026-06-21
-archived_at: null
+updated: 2026-06-22
+archived_at: 2026-06-22T12:25:17Z
 ---
 
 ## Notes
