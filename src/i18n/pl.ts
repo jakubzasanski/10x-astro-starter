@@ -140,7 +140,6 @@ export const pl: Record<string, string> = {
     "Powtórki w odstępach pokazują każdą fiszkę tuż zanim ją zapomnisz — dzięki temu zostaje na dłużej.",
   "landing.closing.h": "Zacznij swoją pierwszą talię już dziś",
   "landing.closing.p": "Za darmo na start. Przynieś notatki — Sage zajmie się resztą.",
-  "landing.h1": 'Zamień to, co czytasz, w pamięć, która <span class="accent">zostaje</span>',
   "landing.h1pre": "Zamień to, co czytasz, w pamięć, która ",
   "landing.h1accent": "zostaje",
   "dash.title": "Panel",

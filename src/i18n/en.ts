@@ -139,7 +139,6 @@ export const en: Record<string, string> = {
   "landing.step3.p": "Spaced repetition surfaces each card right before you'd forget it — so it sticks.",
   "landing.closing.h": "Start your first deck today",
   "landing.closing.p": "Free to begin. Bring your notes — Sage does the drafting.",
-  "landing.h1": 'Turn what you read into memory that <span class="accent">lasts</span>',
   "landing.h1pre": "Turn what you read into memory that ",
   "landing.h1accent": "lasts",
   "dash.title": "Dashboard",
