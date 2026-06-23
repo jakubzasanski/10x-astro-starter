@@ -201,11 +201,11 @@ No data migration. The only "migration" is dependency resolution: the clean rein
 
 #### Automated
 
-- [x] 2.1 Dev/preview server starts in workerd without error (`npm run dev` / `npm run preview`)
+- [x] 2.1 Dev/preview server starts in workerd without error (`npm run dev` / `npm run preview`) — 2cab6c4
 
 #### Manual
 
-- [x] 2.2 Sign-in → dashboard auth round-trip + protected-route redirect work
-- [x] 2.3 React islands hydrate and respond; no browser console errors
-- [x] 2.4 Key pages render with no visible layout/spacing regressions vs. pre-upgrade Sage UI
-- [x] 2.5 Production build artifact is the Cloudflare Workers shape (wrangler `main` entrypoint resolves)
+- [x] 2.2 Sign-in → dashboard auth round-trip + protected-route redirect work — 2cab6c4
+- [x] 2.3 React islands hydrate and respond; no browser console errors — 2cab6c4
+- [x] 2.4 Key pages render with no visible layout/spacing regressions vs. pre-upgrade Sage UI — 2cab6c4
+- [x] 2.5 Production build artifact is the Cloudflare Workers shape (wrangler `main` entrypoint resolves) — 2cab6c4
