@@ -5,14 +5,29 @@ import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import cloudflare from "@astrojs/cloudflare";
+import { createLogger } from "vite";
+
+// Filter one upstream-only Vite 8 deprecation: @astrojs/cloudflare@14 still sets
+// `optimizeDeps.esbuildOptions` (an esbuild banner/plugin workaround that can't be naively
+// remapped to Rolldown's options). It's harmless dev-time dep-optimization noise — drop just
+// that line until the adapter migrates, leaving every other warning intact.
+const logger = createLogger();
+const baseWarn = logger.warn.bind(logger);
+/** @type {typeof logger.warn} */
+logger.warn = (msg, options) => {
+  if (msg.includes("optimizeDeps.esbuildOptions")) return;
+  baseWarn(msg, options);
+};
 
 // https://astro.build/config
 export default defineConfig({
+  site: "https://10x-cards.bdfuh4vy77s3rwqi.workers.dev",
   output: "server",
   compressHTML: true,
   integrations: [react(), sitemap()],
   vite: {
     plugins: [tailwindcss()],
+    customLogger: logger,
   },
   adapter: cloudflare(),
   env: {

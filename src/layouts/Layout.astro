@@ -3,6 +3,7 @@ import "../styles/global.css";
 import Banner from "@/components/Banner.astro";
 import { missingConfigs } from "@/lib/config-status";
 import { t } from "@/i18n";
+import { version } from "../../package.json";
 
 interface Props {
   title?: string;
@@ -50,7 +51,7 @@ const year = new Date().getFullYear();
       ))
     }
     <slot />
-    <footer class="site-footer">© {year} Jakub Zasański</footer>
+    <footer class="site-footer">© {year} Jakub Zasański <span class="site-footer__version">v{version}</span></footer>
   </body>
 </html>
 

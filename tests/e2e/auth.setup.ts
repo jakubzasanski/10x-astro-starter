@@ -19,7 +19,7 @@ setup("authenticate", async ({ page }) => {
 
   // Prove the session is real: the protected route now renders instead of redirecting.
   await page.goto("/generate");
-  await expect(page.getByRole("heading", { name: "Generate flashcards" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Turn your notes into cards" })).toBeVisible();
 
   await page.context().storageState({ path: AUTH_FILE });
 });

@@ -1406,6 +1406,11 @@
     font-size: 0.8rem;
     color: var(--text-faint);
   }
+  .site-footer__version {
+    margin-left: 0.5em;
+    opacity: 0.7;
+    font-variant-numeric: tabular-nums;
+  }
 
   /* Auth screens: card area + footer share a single viewport so there's no
      scroll (the 100vh wrapper + footer used to overflow). */
