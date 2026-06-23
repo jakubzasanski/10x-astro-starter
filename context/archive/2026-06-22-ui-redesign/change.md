@@ -1,10 +1,10 @@
 ---
 change_id: ui-redesign
 title: UI redesign — warm "Sage" visual identity across all screens
-status: impl_reviewed
+status: archived
 created: 2026-06-22
 updated: 2026-06-23
-archived_at: null
+archived_at: 2026-06-23T12:01:37Z
 ---
 
 ## Notes
