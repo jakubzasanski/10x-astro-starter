@@ -185,27 +185,27 @@ No data migration. The only "migration" is dependency resolution: the clean rein
 
 #### Automated
 
-- [x] 1.1 Clean install succeeds with no peer-dependency or override conflicts (`npm install`)
-- [x] 1.2 Resolved Vite is a single v8 major (`npm ls vite` shows `vite@8.x`, no `vite@7`)
-- [x] 1.3 Resolved Astro stack on v7 (`npm ls astro @astrojs/cloudflare @astrojs/react`)
-- [x] 1.4 Generated types regenerate without error (`npx astro sync`)
-- [x] 1.5 Linting passes (`npm run lint`)
-- [x] 1.6 Production build succeeds (`npm run build`)
+- [x] 1.1 Clean install succeeds with no peer-dependency or override conflicts (`npm install`) — 398b446
+- [x] 1.2 Resolved Vite is a single v8 major (`npm ls vite` shows `vite@8.x`, no `vite@7`) — 398b446
+- [x] 1.3 Resolved Astro stack on v7 (`npm ls astro @astrojs/cloudflare @astrojs/react`) — 398b446
+- [x] 1.4 Generated types regenerate without error (`npx astro sync`) — 398b446
+- [x] 1.5 Linting passes (`npm run lint`) — 398b446
+- [x] 1.6 Production build succeeds (`npm run build`) — 398b446
 
 #### Manual
 
-- [x] 1.7 `package.json` diff limited to 5 bumps + removed `overrides` + `compressHTML: true`; no unintended rewrites
-- [x] 1.8 Any `.astro` edits are minimal HTML corrections, not behavioral changes
+- [x] 1.7 `package.json` diff limited to 5 bumps + removed `overrides` + `compressHTML: true`; no unintended rewrites — 398b446
+- [x] 1.8 Any `.astro` edits are minimal HTML corrections, not behavioral changes — 398b446
 
 ### Phase 2: Runtime & visual verification
 
 #### Automated
 
-- [ ] 2.1 Dev/preview server starts in workerd without error (`npm run dev` / `npm run preview`)
+- [x] 2.1 Dev/preview server starts in workerd without error (`npm run dev` / `npm run preview`)
 
 #### Manual
 
-- [ ] 2.2 Sign-in → dashboard auth round-trip + protected-route redirect work
-- [ ] 2.3 React islands hydrate and respond; no browser console errors
-- [ ] 2.4 Key pages render with no visible layout/spacing regressions vs. pre-upgrade Sage UI
-- [ ] 2.5 Production build artifact is the Cloudflare Workers shape (wrangler `main` entrypoint resolves)
+- [x] 2.2 Sign-in → dashboard auth round-trip + protected-route redirect work
+- [x] 2.3 React islands hydrate and respond; no browser console errors
+- [x] 2.4 Key pages render with no visible layout/spacing regressions vs. pre-upgrade Sage UI
+- [x] 2.5 Production build artifact is the Cloudflare Workers shape (wrangler `main` entrypoint resolves)
