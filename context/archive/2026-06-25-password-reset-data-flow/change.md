@@ -1,10 +1,10 @@
 ---
 change_id: password-reset-data-flow
 title: Password-reset data-flow — trace, test gaps, blast radius
-status: new
+status: archived
 created: 2026-06-25
 updated: 2026-06-25
-archived_at: null
+archived_at: 2026-06-25T20:40:07Z
 ---
 
 ## Notes
