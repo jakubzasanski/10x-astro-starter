@@ -5,7 +5,7 @@ import { makeApiContext } from "../support/api-context";
 
 // FR-006 (completion half) handler properties. The route runs with the recovery session already in
 // cookies (minted by the reset-password page's verifyOtp). Contract:
-//   - zod: password min 6 AND password === confirmPassword; invalid → 302 ?error= and updateUser NOT called
+//   - zod: password min length AND password === confirmPassword; invalid → 302 ?error= and updateUser NOT called
 //   - valid → updateUser({ password }), then signOut, then 302 /auth/signin?reset=1
 //   - updateUser error (e.g. recovery session expired) → 302 ?error=
 //   - unconfigured client → 302 ?error=Supabase is not configured

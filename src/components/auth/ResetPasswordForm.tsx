@@ -5,8 +5,7 @@ import { PasswordToggle } from "@/components/auth/PasswordToggle";
 import { SubmitButton } from "@/components/auth/SubmitButton";
 import { ServerError } from "@/components/auth/ServerError";
 import { t, type Locale } from "@/i18n";
-
-const MIN_PASSWORD_LENGTH = 8;
+import { MIN_PASSWORD_LENGTH } from "@/lib/constants";
 
 interface Props {
   serverError?: string | null;

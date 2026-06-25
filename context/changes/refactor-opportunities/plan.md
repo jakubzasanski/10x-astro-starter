@@ -199,37 +199,37 @@ No data or API migration. The value stays 8 throughout, so there is no behaviora
 
 #### Automated
 
-- [ ] 1.1 Type check + generated types resolve (`astro sync && astro check`)
-- [ ] 1.2 Linting passes (`npm run lint`)
-- [ ] 1.3 Production build passes (`npm run build`)
-- [ ] 1.4 Existing unit + handler tests pass locally (`npm test`)
-- [ ] 1.5 No remaining "min 6" comment (both sites) in src/test
-- [ ] 1.6 `MIN_PASSWORD_LENGTH = 8` defined only in `src/lib/constants.ts`
+- [x] 1.1 Type check + generated types resolve (`astro sync && astro check`) — c6ef279
+- [x] 1.2 Linting passes (`npm run lint`) — c6ef279
+- [x] 1.3 Production build passes (`npm run build`) — c6ef279
+- [x] 1.4 Existing unit + handler tests pass locally (`npm test`) — c6ef279
+- [x] 1.5 No remaining "min 6" comment (both sites) in src/test — c6ef279
+- [x] 1.6 `MIN_PASSWORD_LENGTH = 8` defined only in `src/lib/constants.ts` — c6ef279
 
 #### Manual
 
-- [ ] 1.7 Forms reject 7-char / accept 8-char password in running app
+- [x] 1.7 Forms reject 7-char / accept 8-char password in running app — c6ef279
 
 ### Phase 2: Add the config.toml drift guard (green locally)
 
 #### Automated
 
-- [ ] 2.1 New test runs in unit project and passes (`npm test`)
-- [ ] 2.2 Guard bites on a deliberate `config.toml` tweak, green when restored
-- [ ] 2.3 Linting passes on the new test file
+- [x] 2.1 New test runs in unit project and passes (`npm test`) — eeed2fa
+- [x] 2.2 Guard bites on a deliberate `config.toml` tweak, green when restored — eeed2fa
+- [x] 2.3 Linting passes on the new test file — eeed2fa
 
 #### Manual
 
-- [ ] 2.4 Failure message clearly names config-vs-constant drift
+- [x] 2.4 Failure message clearly names config-vs-constant drift — eeed2fa
 
 ### Phase 3: Turn on enforcement — wire `npm test` into CI
 
 #### Automated
 
-- [ ] 3.1 `npm test` step present in `.github/workflows/ci.yml`
-- [ ] 3.2 PR CI run shows `npm test` executing and passing
-- [ ] 3.3 `lint` and `build` steps still pass in the same run
+- [x] 3.1 `npm test` step present in `.github/workflows/ci.yml` — cb703de
+- [x] 3.2 PR CI run shows `npm test` executing and passing — cb703de
+- [x] 3.3 `lint` and `build` steps still pass in the same run — cb703de
 
 #### Manual
 
-- [ ] 3.4 Confirm the gate is real (a guard failure would block merge)
+- [x] 3.4 Confirm the gate is real (a guard failure would block merge) — cb703de
