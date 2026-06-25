@@ -199,28 +199,28 @@ No data or API migration. The value stays 8 throughout, so there is no behaviora
 
 #### Automated
 
-- [x] 1.1 Type check + generated types resolve (`astro sync && astro check`)
-- [x] 1.2 Linting passes (`npm run lint`)
-- [x] 1.3 Production build passes (`npm run build`)
-- [x] 1.4 Existing unit + handler tests pass locally (`npm test`)
-- [x] 1.5 No remaining "min 6" comment (both sites) in src/test
-- [x] 1.6 `MIN_PASSWORD_LENGTH = 8` defined only in `src/lib/constants.ts`
+- [x] 1.1 Type check + generated types resolve (`astro sync && astro check`) — c6ef279
+- [x] 1.2 Linting passes (`npm run lint`) — c6ef279
+- [x] 1.3 Production build passes (`npm run build`) — c6ef279
+- [x] 1.4 Existing unit + handler tests pass locally (`npm test`) — c6ef279
+- [x] 1.5 No remaining "min 6" comment (both sites) in src/test — c6ef279
+- [x] 1.6 `MIN_PASSWORD_LENGTH = 8` defined only in `src/lib/constants.ts` — c6ef279
 
 #### Manual
 
-- [x] 1.7 Forms reject 7-char / accept 8-char password in running app
+- [x] 1.7 Forms reject 7-char / accept 8-char password in running app — c6ef279
 
 ### Phase 2: Add the config.toml drift guard (green locally)
 
 #### Automated
 
-- [ ] 2.1 New test runs in unit project and passes (`npm test`)
-- [ ] 2.2 Guard bites on a deliberate `config.toml` tweak, green when restored
-- [ ] 2.3 Linting passes on the new test file
+- [x] 2.1 New test runs in unit project and passes (`npm test`)
+- [x] 2.2 Guard bites on a deliberate `config.toml` tweak, green when restored
+- [x] 2.3 Linting passes on the new test file
 
 #### Manual
 
-- [ ] 2.4 Failure message clearly names config-vs-constant drift
+- [x] 2.4 Failure message clearly names config-vs-constant drift
 
 ### Phase 3: Turn on enforcement — wire `npm test` into CI
 
