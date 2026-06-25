@@ -227,9 +227,9 @@ No data or API migration. The value stays 8 throughout, so there is no behaviora
 #### Automated
 
 - [x] 3.1 `npm test` step present in `.github/workflows/ci.yml` — cb703de
-- [ ] 3.2 PR CI run shows `npm test` executing and passing
-- [ ] 3.3 `lint` and `build` steps still pass in the same run
+- [x] 3.2 PR CI run shows `npm test` executing and passing — cb703de
+- [x] 3.3 `lint` and `build` steps still pass in the same run — cb703de
 
 #### Manual
 
-- [ ] 3.4 Confirm the gate is real (a guard failure would block merge)
+- [x] 3.4 Confirm the gate is real (a guard failure would block merge) — cb703de
