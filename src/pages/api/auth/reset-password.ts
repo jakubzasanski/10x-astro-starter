@@ -1,13 +1,12 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase";
+import { MIN_PASSWORD_LENGTH } from "@/lib/constants";
 
 export const prerender = false;
 
-const MIN_PASSWORD_LENGTH = 8;
-
-// Mirror the client-side ResetPasswordForm + minimum_password_length = 6: a min-length new password
-// that matches its confirmation. The server is not the only layer trusting the client.
+// Mirror the client-side ResetPasswordForm: a min-length new password that matches its
+// confirmation. The server is not the only layer trusting the client.
 const resetSchema = z
   .object({
     password: z.string().min(MIN_PASSWORD_LENGTH),
