@@ -226,7 +226,7 @@ No data or API migration. The value stays 8 throughout, so there is no behaviora
 
 #### Automated
 
-- [x] 3.1 `npm test` step present in `.github/workflows/ci.yml`
+- [x] 3.1 `npm test` step present in `.github/workflows/ci.yml` — cb703de
 - [ ] 3.2 PR CI run shows `npm test` executing and passing
 - [ ] 3.3 `lint` and `build` steps still pass in the same run
 
