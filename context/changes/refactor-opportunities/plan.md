@@ -214,19 +214,19 @@ No data or API migration. The value stays 8 throughout, so there is no behaviora
 
 #### Automated
 
-- [x] 2.1 New test runs in unit project and passes (`npm test`)
-- [x] 2.2 Guard bites on a deliberate `config.toml` tweak, green when restored
-- [x] 2.3 Linting passes on the new test file
+- [x] 2.1 New test runs in unit project and passes (`npm test`) — eeed2fa
+- [x] 2.2 Guard bites on a deliberate `config.toml` tweak, green when restored — eeed2fa
+- [x] 2.3 Linting passes on the new test file — eeed2fa
 
 #### Manual
 
-- [x] 2.4 Failure message clearly names config-vs-constant drift
+- [x] 2.4 Failure message clearly names config-vs-constant drift — eeed2fa
 
 ### Phase 3: Turn on enforcement — wire `npm test` into CI
 
 #### Automated
 
-- [ ] 3.1 `npm test` step present in `.github/workflows/ci.yml`
+- [x] 3.1 `npm test` step present in `.github/workflows/ci.yml`
 - [ ] 3.2 PR CI run shows `npm test` executing and passing
 - [ ] 3.3 `lint` and `build` steps still pass in the same run
 
