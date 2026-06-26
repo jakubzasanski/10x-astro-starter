@@ -74,7 +74,9 @@ jobs:
         uses: ./.github/actions/ai-review
         with:
           api-key: ${{ secrets.OPENAI_API_KEY }}
-          diff-path: payload/pr.diff
+          # Absolute path: the action runs with working-directory packages/code-reviewer,
+          # so a path relative to the workspace root must be made absolute here.
+          diff-path: ${{ github.workspace }}/payload/pr.diff
           pr-title: ${{ env.PR_TITLE }}
           pr-body: ${{ env.PR_BODY }}
 
