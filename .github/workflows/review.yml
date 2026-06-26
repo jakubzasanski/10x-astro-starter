@@ -1,0 +1,134 @@
+name: AI Code Review
+
+# Advisory AI code review on every PR to master, plus an on-demand re-run via the
+# `ai-cr:review` label and a manual workflow_dispatch dry-run. Not a merge gate yet
+# (branch protection is roadmap S-02) — it posts a comment, sets one ai-cr:* label,
+# and shows red on a `fail` verdict / green on `pass`.
+
+on:
+  pull_request:
+    branches: [master]
+    types: [opened, synchronize, labeled]
+  workflow_dispatch:
+    inputs:
+      base_ref:
+        description: Base ref to diff HEAD against (dispatch dry-run only).
+        required: false
+        default: master
+      pr_number:
+        description: PR number to comment on / label (dispatch only; omit to just log the summary).
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+env:
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  ai-review:
+    runs-on: ubuntu-latest
+    # Run for a manual dispatch, for ordinary PR events (opened/synchronize), and for
+    # a `labeled` event ONLY when the label is ai-cr:review — so adding the verdict
+    # labels (ai-cr:passed / ai-cr:failed) below does not re-trigger the workflow.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' && github.event.action != 'labeled') ||
+      (github.event_name == 'pull_request' && github.event.action == 'labeled' && github.event.label.name == 'ai-cr:review')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Compute PR diff
+        id: diff
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            # Diff against the base SHA (reachable thanks to fetch-depth: 0), NOT a
+            # named remote-tracking branch which may not exist on the runner.
+            base_sha="${{ github.event.pull_request.base.sha }}"
+          else
+            # Dispatch dry-run: resolve the named base ref to a SHA.
+            git fetch --no-tags origin "${{ github.event.inputs.base_ref }}"
+            base_sha="$(git rev-parse FETCH_HEAD)"
+          fi
+          echo "Diffing ${base_sha}...HEAD"
+          git diff "${base_sha}...HEAD" > "$RUNNER_TEMP/pr.diff"
+          echo "diff-path=$RUNNER_TEMP/pr.diff" >> "$GITHUB_OUTPUT"
+
+      - name: Ensure ai-cr labels exist
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh label create "ai-cr:passed" --color 0E8A16 --description "AI code review passed" --force --repo "${{ github.repository }}"
+          gh label create "ai-cr:failed" --color B60205 --description "AI code review failed" --force --repo "${{ github.repository }}"
+          gh label create "ai-cr:review" --color 1D76DB --description "Re-run AI code review" --force --repo "${{ github.repository }}"
+
+      - name: AI review
+        id: review
+        uses: ./.github/actions/ai-review
+        with:
+          api-key: ${{ secrets.OPENAI_API_KEY }}
+          diff-path: ${{ steps.diff.outputs.diff-path }}
+          pr-title: ${{ github.event.pull_request.title }}
+          pr-body: ${{ github.event.pull_request.body }}
+
+      - name: Resolve PR number
+        id: pr
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            num="${{ github.event.pull_request.number }}"
+          else
+            num="${{ github.event.inputs.pr_number }}"
+          fi
+          echo "number=$num" >> "$GITHUB_OUTPUT"
+
+      - name: Post review comment
+        if: steps.pr.outputs.number != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh pr comment "${{ steps.pr.outputs.number }}" \
+            --repo "${{ github.repository }}" \
+            --body-file "${{ steps.review.outputs.summary-path }}"
+
+      - name: Log summary (no PR context)
+        if: steps.pr.outputs.number == ''
+        shell: bash
+        run: |
+          echo "No PR number (dispatch dry-run) — review summary:"
+          cat "${{ steps.review.outputs.summary-path }}"
+
+      - name: Set verdict label
+        if: steps.pr.outputs.number != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Clear any prior verdict/retry labels (ignore if absent), then apply the new one.
+          gh pr edit "${{ steps.pr.outputs.number }}" --repo "${{ github.repository }}" \
+            --remove-label "ai-cr:passed" --remove-label "ai-cr:failed" --remove-label "ai-cr:review" || true
+          if [ "${{ steps.review.outputs.verdict }}" = "pass" ]; then
+            gh pr edit "${{ steps.pr.outputs.number }}" --repo "${{ github.repository }}" --add-label "ai-cr:passed"
+          else
+            gh pr edit "${{ steps.pr.outputs.number }}" --repo "${{ github.repository }}" --add-label "ai-cr:failed"
+          fi
+
+      - name: Fail check on negative verdict
+        if: steps.review.outputs.verdict == 'fail'
+        shell: bash
+        run: |
+          echo "AI review verdict: fail — failing the check (advisory until branch protection lands)."
+          exit 1

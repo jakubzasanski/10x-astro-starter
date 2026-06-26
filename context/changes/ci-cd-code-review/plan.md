@@ -218,8 +218,8 @@ Manual GitHub setup required before the Phase 3 PR run:
 
 #### Automated
 
-- [x] 2.1 `action.yml` valid YAML, `using: composite`, every `run` step has `shell: bash`
-- [x] 2.2 `actionlint` (if available) reports no errors on the action — actionlint not installed; conditional check skipped
+- [x] 2.1 `action.yml` valid YAML, `using: composite`, every `run` step has `shell: bash` — 092a77d
+- [x] 2.2 `actionlint` (if available) reports no errors on the action — actionlint not installed; conditional check skipped — 092a77d
 
 #### Manual
 
@@ -229,8 +229,8 @@ Manual GitHub setup required before the Phase 3 PR run:
 
 #### Automated
 
-- [ ] 3.1 `review.yml` valid YAML; `actionlint` (if available) passes
-- [ ] 3.2 Action path `./.github/actions/ai-review` resolves
+- [x] 3.1 `review.yml` valid YAML; `actionlint` (if available) passes — actionlint not installed; YAML validated
+- [x] 3.2 Action path `./.github/actions/ai-review` resolves
 
 #### Manual
 
