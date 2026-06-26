@@ -205,21 +205,21 @@ Manual GitHub setup required before the Phase 3 PR run:
 
 #### Automated
 
-- [x] 1.1 Typecheck passes: `npm run --prefix packages/code-reviewer typecheck`
-- [x] 1.2 `review:sample` prints valid JSON with all six criteria including `documentation`
-- [x] 1.3 `REVIEW_FAIL_ON_VERDICT=1` exits non-zero (code 2) on fail; exit 0 otherwise
+- [x] 1.1 Typecheck passes: `npm run --prefix packages/code-reviewer typecheck` — b3bfdc5
+- [x] 1.2 `review:sample` prints valid JSON with all six criteria including `documentation` — b3bfdc5
+- [x] 1.3 `REVIEW_FAIL_ON_VERDICT=1` exits non-zero (code 2) on fail; exit 0 otherwise — b3bfdc5
 
 #### Manual
 
-- [x] 1.4 Run with `PR_TITLE`/`PR_BODY` reflects PR intent in `summary`
+- [x] 1.4 Run with `PR_TITLE`/`PR_BODY` reflects PR intent in `summary` — b3bfdc5
 - [ ] 1.5 `REVIEW_MODEL` switches the model (observable in usage/logs)
 
 ### Phase 2: Composite action .github/actions/ai-review/
 
 #### Automated
 
-- [ ] 2.1 `action.yml` valid YAML, `using: composite`, every `run` step has `shell: bash`
-- [ ] 2.2 `actionlint` (if available) reports no errors on the action
+- [x] 2.1 `action.yml` valid YAML, `using: composite`, every `run` step has `shell: bash`
+- [x] 2.2 `actionlint` (if available) reports no errors on the action — actionlint not installed; conditional check skipped
 
 #### Manual
 
