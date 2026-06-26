@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./public/icon-dark.svg" width="96" alt="Sage Flashcards" />
+<img src="./public/favicon.svg" width="88" alt="Sage Flashcards" />
 
 # Sage Flashcards
 
