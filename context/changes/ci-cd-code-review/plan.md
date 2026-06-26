@@ -28,7 +28,7 @@ Opening (or pushing to) a PR against `master` triggers `AI Code Review`: a job c
 - **Not** making the review a required/blocking merge gate (no branch protection yet — that's S-02). Advisory only.
 - **Not** moving comment/label posting into the agent as tools (the "drabina sprawczości" — deferred to M5L3 Deep Dive / later).
 - **Not** publishing the action to a separate repo or the Marketplace — local `.github/actions/ai-review/` for now (lesson's recommended option 2).
-- **Not** handling forked-PR secret isolation (`pull_request_target`/`workflow_run` split) — MVP targets internal branch PRs on plain `pull_request`.
+- ~~**Not** handling forked-PR secret isolation~~ — **revised in Phase 4**: impl-review F6 showed plain `pull_request` also leaks the secret to same-repo-branch PR authors, so the `pull_request` → `workflow_run` split is now in scope.
 - **Not** adding numeric score thresholds — we trust the agent's `verdict` field.
 - **Not** de-duplicating PR comments (accepted MVP limitation): `gh pr comment` posts a fresh comment per run, so an active PR accumulates one comment per push. A sticky/upserted comment (find-by-marker → edit) is a later refinement.
 - **Not** touching the existing `ci.yml`.
@@ -163,6 +163,46 @@ The workflow that triggers on PRs, does the diff plumbing, calls the action, and
 
 ---
 
+## Phase 4: Secure the secret — two-phase `pull_request` → `workflow_run`
+
+### Overview
+
+Close the secret-exfiltration hole found in impl-review (F6): on plain `pull_request`, a same-repo-branch PR receives `OPENAI_API_KEY` and runs PR-head code (`npm ci`, `npm run review`, the local action, and `review.yml` itself), so any push-capable author can leak the key. Fix by splitting into a **secretless producer** (`pull_request`) and a **trusted consumer** (`workflow_run`) that runs the default-branch version of the workflow + agent and is therefore immutable by the PR author. The composite `ai-review` action (Phase 2) is reused unchanged — only *where* it runs moves into the trusted phase.
+
+### Changes Required:
+
+#### 1. Demote `review.yml` to a secretless producer
+
+**File**: `.github/workflows/review.yml`
+
+**Intent**: Run in the untrusted PR context but touch NO secret and run NO PR-controlled agent code — only compute the diff (data) and hand it off.
+
+**Contract**: Keep the triggers (`pull_request` opened/synchronize/labeled + the `ai-cr:review` guard) and `workflow_dispatch`. `permissions: { contents: read }` only — no `pull-requests`/`issues` write, no secret. Steps: checkout (`fetch-depth: 0`); compute diff vs `base.sha` (as today) to `$RUNNER_TEMP/pr.diff`; write a small `pr-meta.json` with `{ number, title, body, head_sha }` from the event; upload both as an artifact via `actions/upload-artifact` (SHA-pinned). REMOVE: the `OPENAI_API_KEY` input, the `uses: ./.github/actions/ai-review` call, `npm` execution, `gh pr comment`, label edits, and the verdict exit step — all of that moves to Phase 4.2. Do not run `setup-node`/`npm ci` here.
+
+#### 2. Add the trusted consumer `review-run.yml`
+
+**File**: `.github/workflows/review-run.yml` (new)
+
+**Intent**: Run from the default branch (trusted, PR-author cannot modify), with the secret, to actually review and report.
+
+**Contract**: `on: workflow_run: { workflows: ["AI Code Review"], types: [completed] }`. `permissions: { contents: read, actions: read, pull-requests: write, issues: write, statuses: write }`. Guard the job on `github.event.workflow_run.event` being `pull_request`/`workflow_dispatch`. Steps: download the producer's artifact (`actions/download-artifact` with `run-id: ${{ github.event.workflow_run.id }}` + `github-token`); read `pr-meta.json`; `setup-node` (`node-version-file: .nvmrc`, `cache: npm`) + the `ai-review` composite action invoked HERE with `api-key: ${{ secrets.OPENAI_API_KEY }}`, `diff-path` (from artifact), `pr-title`/`pr-body` (from meta, via env — never shell-interpolated); `gh label create --force` for the three labels; `gh pr comment <number> --body-file <summary>`; cycle the verdict label; and — because a `workflow_run` job is NOT attached to the PR's checks — **publish a commit status** on `head_sha` via `gh api -X POST repos/{repo}/statuses/{head_sha} -f state=<success|failure> -f context="AI Code Review"` so the PR shows green/red. Third-party/first-party actions SHA-pinned.
+
+### Success Criteria:
+
+#### Automated Verification:
+
+- [ ] 4.1 `review.yml` + `review-run.yml` valid YAML; `review.yml` contains NO `secrets.` reference, no `uses: ./.github/actions/ai-review`, and `permissions:` is `contents: read` only
+- [ ] 4.2 `review-run.yml` triggers on `workflow_run`, references `secrets.OPENAI_API_KEY`, downloads the artifact, and POSTs a commit status
+
+#### Manual Verification:
+
+- [ ] 4.3 On a test PR (after `review-run.yml` is on `master`): producer runs with no secret, consumer runs from the default branch, and comment + label + red/green commit status appear on the PR
+- [ ] 4.4 A step added to `review.yml` on a PR branch cannot read the secret (secret is referenced only in `review-run.yml`, which runs the default-branch version) — the security property holds
+
+**Implementation Note**: Like 2.3, `workflow_run` only fires from the default branch's copy, so 4.3/4.4 are fully verifiable only after this lands on `master`. Automated 4.1/4.2 are checkable now.
+
+---
+
 ## Testing Strategy
 
 ### Unit / local:
@@ -238,3 +278,15 @@ Manual GitHub setup required before the Phase 3 PR run:
 - [x] 3.4 Correct label set + check green on pass / red on fail — both paths proven: run 1 pass→green→ai-cr:passed; re-run fail→red→ai-cr:failed
 - [x] 3.5 Adding `ai-cr:review` re-runs the review — run 28268797618 triggered by label
 - [x] 3.6 Job log shows agent invocation + token usage (10xChampion proof) — usage input=28227/output=441
+
+### Phase 4: Secure the secret — two-phase pull_request → workflow_run
+
+#### Automated
+
+- [x] 4.1 `review.yml` no `secrets.`/no local action, `permissions: contents: read` only; both workflows valid YAML
+- [x] 4.2 `review-run.yml` triggers on `workflow_run`, uses the secret, downloads artifact, POSTs commit status
+
+#### Manual
+
+- [ ] 4.3 Test PR (post-merge): producer secretless, consumer from default branch, comment + label + red/green status on PR
+- [ ] 4.4 A step added to `review.yml` on a PR branch cannot read the secret (property holds)
