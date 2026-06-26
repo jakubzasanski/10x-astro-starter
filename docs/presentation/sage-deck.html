@@ -1,0 +1,430 @@
+<style>
+  :root {
+    --paper: #f6f4ed;
+    --paper-2: #efece1;
+    --ink: #232e27;
+    --ink-soft: #3a473f;
+    --sage: #5e8a6e;
+    --sage-deep: #3d5e48;
+    --sage-tint: #e7eee5;
+    --muted: #6e7c72;
+    --line: #d9d8cb;
+    --clay: #b0533f;
+    --gold: #b08a3f;
+    --serif: Georgia, "Iowan Old Style", "Times New Roman", serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  .deck {
+    height: 100dvh;
+    overflow-y: auto;
+    scroll-snap-type: y proximity;
+    scroll-behavior: smooth;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+    scrollbar-width: none;
+  }
+  .deck::-webkit-scrollbar { display: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .deck { scroll-behavior: auto; }
+    .reveal { transition: none !important; transform: none !important; opacity: 1 !important; }
+    .flip { animation: none !important; }
+  }
+
+  /* progress bar */
+  .progress {
+    position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+    background: linear-gradient(90deg, var(--sage), var(--sage-deep));
+    z-index: 60; transition: width .35s ease;
+  }
+
+  /* side nav */
+  .nav {
+    position: fixed; right: clamp(14px, 2.5vw, 34px); top: 50%;
+    transform: translateY(-50%); z-index: 50;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .nav button {
+    display: flex; align-items: center; gap: 10px; justify-content: flex-end;
+    background: none; border: none; cursor: pointer; padding: 0;
+    color: var(--muted); font-family: var(--mono); font-size: 11px;
+    letter-spacing: .04em; text-transform: uppercase;
+  }
+  .nav .label {
+    opacity: 0; transform: translateX(6px); transition: .25s ease;
+    white-space: nowrap;
+  }
+  .nav button:hover .label, .nav button:focus-visible .label { opacity: 1; transform: none; }
+  .nav .dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    border: 1.5px solid var(--muted); background: transparent; transition: .25s ease;
+    flex: none;
+  }
+  .nav button[aria-current="true"] .dot { background: var(--sage); border-color: var(--sage); transform: scale(1.25); }
+  .nav button[aria-current="true"] .label { opacity: 1; color: var(--ink); }
+  .nav button:focus-visible { outline: 2px solid var(--sage); outline-offset: 4px; border-radius: 4px; }
+
+  /* slide shell */
+  .slide {
+    min-height: 100dvh; scroll-snap-align: start;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: clamp(40px, 7vh, 96px) clamp(22px, 8vw, 132px);
+    position: relative;
+  }
+  .slide + .slide { border-top: 1px solid var(--line); }
+  .wrap { width: 100%; max-width: 1080px; margin: 0 auto; }
+
+  .eyebrow {
+    font-family: var(--mono); font-size: 12px; letter-spacing: .18em;
+    text-transform: uppercase; color: var(--sage-deep);
+    display: flex; align-items: center; gap: 12px; margin-bottom: 22px;
+  }
+  .eyebrow .num {
+    background: var(--sage-tint); color: var(--sage-deep);
+    border: 1px solid #cfe0d2; border-radius: 6px;
+    padding: 3px 9px; font-weight: 600;
+  }
+  .eyebrow .rule { height: 1px; flex: 1; background: var(--line); max-width: 220px; }
+
+  h1.title {
+    font-family: var(--serif); font-weight: 600;
+    font-size: clamp(48px, 9vw, 104px); line-height: .98; letter-spacing: -.02em;
+    margin: 0 0 18px; text-wrap: balance;
+  }
+  h2 {
+    font-family: var(--serif); font-weight: 600;
+    font-size: clamp(30px, 4.6vw, 52px); line-height: 1.05; letter-spacing: -.015em;
+    margin: 0 0 8px; text-wrap: balance;
+  }
+  .lede {
+    font-size: clamp(16px, 1.9vw, 21px); line-height: 1.5; color: var(--ink-soft);
+    max-width: 60ch; margin: 0 0 30px;
+  }
+  .kicker { color: var(--sage-deep); font-style: italic; }
+
+  /* reveal */
+  .reveal { opacity: 0; transform: translateY(14px); transition: opacity .6s ease, transform .6s ease; }
+  .slide.in .reveal { opacity: 1; transform: none; }
+  .slide.in .reveal:nth-child(2) { transition-delay: .06s; }
+  .slide.in .reveal:nth-child(3) { transition-delay: .12s; }
+  .slide.in .reveal:nth-child(4) { transition-delay: .18s; }
+  .slide.in .reveal:nth-child(5) { transition-delay: .24s; }
+
+  /* lists */
+  ul.points { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 13px; }
+  ul.points li {
+    position: relative; padding-left: 26px;
+    font-size: clamp(15px, 1.6vw, 18px); line-height: 1.45; color: var(--ink-soft);
+  }
+  ul.points li::before {
+    content: ""; position: absolute; left: 0; top: .5em;
+    width: 9px; height: 9px; border-radius: 2px;
+    background: var(--sage); transform: rotate(45deg);
+  }
+  ul.points li b { color: var(--ink); font-weight: 650; }
+  ul.points li span { color: var(--ink-soft); }
+
+  /* grids */
+  .grid { display: grid; gap: 16px; }
+  .g2 { grid-template-columns: repeat(2, 1fr); }
+  .g3 { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 760px) { .g2, .g3 { grid-template-columns: 1fr; } }
+
+  .card {
+    background: #fffefb; border: 1px solid var(--line); border-radius: 12px;
+    padding: 18px 20px; display: flex; flex-direction: column; gap: 6px;
+  }
+  .card h3 {
+    margin: 0; font-size: 15px; font-family: var(--sans); font-weight: 650; color: var(--ink);
+    display: flex; align-items: center; gap: 9px;
+  }
+  .card p { margin: 0; font-size: 14.5px; line-height: 1.45; color: var(--ink-soft); }
+  .card .tag { font-family: var(--mono); font-size: 11px; color: var(--sage-deep); letter-spacing: .03em; }
+
+  /* metrics */
+  .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 8px; }
+  @media (max-width: 760px) { .metrics { grid-template-columns: 1fr; } }
+  .metric { border-left: 3px solid var(--sage); padding: 4px 0 4px 16px; }
+  .metric .v { font-family: var(--serif); font-size: clamp(30px, 4vw, 44px); font-weight: 600; line-height: 1; color: var(--sage-deep); font-variant-numeric: tabular-nums; }
+  .metric .k { font-size: 13.5px; color: var(--ink-soft); margin-top: 8px; line-height: 1.35; }
+
+  /* tech table */
+  .stack { display: grid; grid-template-columns: 1fr; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #fffefb; }
+  .stack .row { display: grid; grid-template-columns: 168px 1fr; gap: 16px; padding: 13px 20px; border-top: 1px solid var(--line); align-items: baseline; }
+  .stack .row:first-child { border-top: none; }
+  .stack .row .l { font-family: var(--mono); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--sage-deep); }
+  .stack .row .r { font-size: 15.5px; color: var(--ink); }
+  .stack .row .r small { color: var(--muted); }
+  @media (max-width: 620px) { .stack .row { grid-template-columns: 1fr; gap: 3px; } }
+
+  /* chips */
+  .chips { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 26px; }
+  .chip { font-family: var(--mono); font-size: 12.5px; color: var(--ink-soft);
+    border: 1px solid var(--line); background: #fffefb; border-radius: 999px; padding: 6px 13px; }
+  .chip b { color: var(--sage-deep); font-weight: 600; }
+
+  /* hero flashcard */
+  .hero { display: grid; grid-template-columns: 1.25fr .85fr; gap: 48px; align-items: center; }
+  @media (max-width: 860px) { .hero { grid-template-columns: 1fr; gap: 36px; } }
+  .fcard {
+    aspect-ratio: 3 / 2; perspective: 1400px; max-width: 380px; width: 100%; justify-self: center;
+  }
+  .fcard-inner {
+    position: relative; width: 100%; height: 100%; transform-style: preserve-3d;
+    animation: flip 9s ease-in-out infinite;
+  }
+  @keyframes flip {
+    0%, 38% { transform: rotateY(0deg); }
+    50%, 88% { transform: rotateY(180deg); }
+    100% { transform: rotateY(360deg); }
+  }
+  .face {
+    position: absolute; inset: 0; backface-visibility: hidden; border-radius: 16px;
+    border: 1px solid var(--line); padding: 24px; display: flex; flex-direction: column;
+    box-shadow: 0 18px 40px -24px rgba(35,46,39,.5);
+  }
+  .face .ft { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
+  .face .fq { font-family: var(--serif); font-size: 23px; line-height: 1.2; margin-top: auto; }
+  .face.front { background: #fffefb; }
+  .face.front .ft { color: var(--gold); }
+  .face.back { background: var(--sage-deep); color: #f3f7f1; transform: rotateY(180deg); }
+  .face.back .ft { color: #bcd6c2; }
+  .face .meta { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 14px; }
+  .face.back .meta { color: #9fc0a7; }
+
+  .live {
+    display: inline-flex; align-items: center; gap: 9px; margin-top: 26px;
+    font-family: var(--mono); font-size: 13.5px; color: var(--sage-deep);
+    text-decoration: none; border-bottom: 1px solid #bcd6c2; padding-bottom: 2px;
+  }
+  .live:hover { color: var(--ink); border-color: var(--sage); }
+  .live .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--sage); box-shadow: 0 0 0 0 rgba(94,138,110,.5); }
+  @media (prefers-reduced-motion: no-preference) { .live .pulse { animation: pulse 2.4s infinite; } }
+  @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(94,138,110,.5);} 70%{box-shadow:0 0 0 8px rgba(94,138,110,0);} 100%{box-shadow:0 0 0 0 rgba(94,138,110,0);} }
+
+  .status-chip { font-family: var(--mono); font-size: 11px; padding: 2px 8px; border-radius: 5px; font-weight: 600; }
+  .pass { background: var(--sage-tint); color: var(--sage-deep); border: 1px solid #cfe0d2; }
+  .fail { background: #f3e2dd; color: var(--clay); border: 1px solid #e3c7bf; }
+
+  .foot { position: fixed; bottom: 16px; left: clamp(22px, 8vw, 132px); z-index: 40;
+    font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: .04em; }
+  .hint { position: fixed; bottom: 16px; right: clamp(46px, 7vw, 96px); z-index: 40;
+    font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  @media (max-width: 640px) { .hint { display: none; } }
+
+  .note { font-size: 13px; color: var(--muted); margin-top: 22px; font-style: italic; }
+  .big-q { font-family: var(--serif); font-size: clamp(22px, 3vw, 30px); line-height: 1.3; color: var(--ink); max-width: 26ch; }
+</style>
+
+<div class="progress" id="progress"></div>
+
+<nav class="nav" id="nav" aria-label="Slajdy"></nav>
+
+<div class="deck" id="deck" tabindex="0">
+
+  <!-- 0 — TITLE -->
+  <section class="slide" data-label="Start">
+    <div class="wrap">
+      <div class="hero">
+        <div>
+          <div class="eyebrow reveal"><span class="num">Demo</span> Prezentacja projektu · 2026</div>
+          <h1 class="title reveal">Sage<br>Flashcards</h1>
+          <p class="lede reveal">Wklej notatki. <span class="kicker">AI</span> drafuje fiszki. Ucz się w rytmie powtórek rozłożonych w czasie.</p>
+          <div class="chips reveal">
+            <span class="chip"><b>Astro 7</b> SSR</span>
+            <span class="chip"><b>React 19</b></span>
+            <span class="chip"><b>Supabase</b></span>
+            <span class="chip"><b>Cloudflare</b> Workers</span>
+          </div>
+          <a class="live reveal" href="https://sage-flashcards.zasanski.workers.dev" target="_blank" rel="noopener"><span class="pulse"></span>sage-flashcards.zasanski.workers.dev</a>
+        </div>
+        <div class="fcard reveal" aria-hidden="true">
+          <div class="fcard-inner flip">
+            <div class="face front">
+              <span class="ft">Pytanie</span>
+              <div class="fq">Co odwraca koszt tworzenia fiszek?</div>
+              <span class="meta">tap to flip · FSRS</span>
+            </div>
+            <div class="face back">
+              <span class="ft">Odpowiedź</span>
+              <div class="fq">AI przekroczyło próg „wystarczająco dobre".</div>
+              <span class="meta">accept · edit · reject</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1 — BIZNES -->
+  <section class="slide" data-label="Biznes">
+    <div class="wrap">
+      <div class="eyebrow reveal"><span class="num">01</span> Biznesowo — po co to jest <span class="rule"></span></div>
+      <h2 class="reveal">Najskuteczniejsza metoda nauki, której nikt nie używa pod deadline</h2>
+      <p class="lede reveal">Profesjonaliści (dev / lekarz / prawnik) wiedzą, że powtórki działają — ale <b>ręczne tworzenie fiszek jest tak drogie w czasie</b>, że rezygnują z nich dokładnie wtedy, gdy są najbardziej potrzebne.</p>
+      <ul class="points reveal">
+        <li><b>Insight:</b><span> fiszki z AI przekroczyły próg „good enough" — kompromis „wolne ręczne vs. żadne" się odwrócił.</span></li>
+        <li><b>Wartość:</b><span> próg wejścia spada z godzin do minut — wklej tekst, zaakceptuj karty, ucz się.</span></li>
+        <li><b>Persona:</b><span> „upskilling professional" w oknie przed-deadline'owym z dużym backlogiem materiałów.</span></li>
+      </ul>
+      <div class="metrics reveal">
+        <div class="metric"><div class="v">75%</div><div class="k">fiszek AI akceptowanych bez edycji</div></div>
+        <div class="metric"><div class="v">75%</div><div class="k">wszystkich kart powstaje ścieżką AI</div></div>
+        <div class="metric"><div class="v">7 dni</div><div class="k">retencja powrotu do drugiej sesji</div></div>
+      </div>
+      <p class="note reveal">Guardraile: prywatność tekstu źródłowego (nie logowany, nie do treningu) · brak utraty danych (karty i sesja w toku przeżywają refresh).</p>
+    </div>
+  </section>
+
+  <!-- 2 — PRODUKT -->
+  <section class="slide" data-label="Produkt">
+    <div class="wrap">
+      <div class="eyebrow reveal"><span class="num">02</span> Produktowo — co realnie robi <span class="rule"></span></div>
+      <h2 class="reveal">Od surowego tekstu do talii, którą da się powtarzać</h2>
+      <div class="grid g2 reveal" style="margin-top:26px">
+        <div class="card"><h3>✶ Generacja AI</h3><p>Wklejasz fragment — Sage drafuje kandydatów na fiszki Q/A z materiału.</p></div>
+        <div class="card"><h3>✶ Review: accept / edit / reject</h3><p>Decydujesz per-kandydat. Nic nie wchodzi do talii, dopóki nie zapiszesz; sesja przeżywa odświeżenie strony.</p></div>
+        <div class="card"><h3>✶ Spaced repetition (FSRS)</h3><p>Zapisane karty planowane algorytmem <span class="tag">ts-fsrs v5</span> — powtórki w sam moment przed zapomnieniem.</p></div>
+        <div class="card"><h3>✶ Konta i auth</h3><p>Email/hasło: rejestracja, logowanie, reset hasła. Sesje cookie-based SSR (Supabase).</p></div>
+        <div class="card"><h3>✶ Dwujęzyczność EN / PL</h3><p>UI rozwiązywane server-side — bez migotania języka przy starcie.</p></div>
+        <div class="card"><h3>✶ Pełne SSR</h3><p>Wszystkie strony renderowane na serwerze; trasy chronione przez middleware.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 — TECH -->
+  <section class="slide" data-label="Technologie">
+    <div class="wrap">
+      <div class="eyebrow reveal"><span class="num">03</span> Technologie <span class="rule"></span></div>
+      <h2 class="reveal">Stack dobrany pod agentów AI: typowany, konwencjonalny, popularny</h2>
+      <div class="stack reveal" style="margin-top:24px">
+        <div class="row"><span class="l">Framework</span><span class="r">Astro 7 — pełne SSR <small>(<code>output: "server"</code>)</small></span></div>
+        <div class="row"><span class="l">Interaktywność</span><span class="r">React 19 — wyspy (islands), tylko gdzie potrzebne</span></div>
+        <div class="row"><span class="l">Styl</span><span class="r">Tailwind CSS 4 + shadcn/ui <small>(new-york), helper <code>cn()</code></small></span></div>
+        <div class="row"><span class="l">Auth & dane</span><span class="r">Supabase — <code>@supabase/ssr</code>, Postgres, <small>RLS per-operacja/per-rola</small></span></div>
+        <div class="row"><span class="l">Nauka</span><span class="r">ts-fsrs (FSRS v5) — harmonogram powtórek</span></div>
+        <div class="row"><span class="l">LLM</span><span class="r">endpoint zgodny z OpenAI <small>(domyślnie gpt-5-mini, konfigurowalny)</small></span></div>
+        <div class="row"><span class="l">Język</span><span class="r">TypeScript · Node 24 · zod <small>(walidacja wejścia API)</small></span></div>
+        <div class="row"><span class="l">Jakość</span><span class="r">ESLint 9 type-checked · Prettier · husky + lint-staged</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 — INFRA -->
+  <section class="slide" data-label="Infrastruktura">
+    <div class="wrap">
+      <div class="eyebrow reveal"><span class="num">04</span> Infrastruktura <span class="rule"></span></div>
+      <h2 class="reveal">Serverless na brzegu sieci, dane w Supabase</h2>
+      <div class="grid g2 reveal" style="margin-top:26px">
+        <div class="card"><h3>☁ Cloudflare Workers</h3><p>Runtime workerd, adapter <span class="tag">@astrojs/cloudflare v14</span> — auto-bindings IMAGES + SESSION. Worker <b>sage-flashcards</b>, live na <code>*.workers.dev</code>.</p></div>
+        <div class="card"><h3>⛁ Supabase</h3><p>Postgres + PostgREST + RLS. Migracje w <code>supabase/migrations/</code> (flashcards + harmonogram FSRS), RLS na każdej tabeli.</p></div>
+        <div class="card"><h3>⚷ Sekrety</h3><p><code>astro:env/server</code> → Worker secrets w produkcji (<code>wrangler secret put</code>). <code>SUPABASE_*</code>, <code>LLM_API_KEY</code> — nigdy w repo.</p></div>
+        <div class="card"><h3>⚙ Dev & deploy</h3><p>Lokalnie: Docker → Supabase + Mailpit, <code>.dev.vars</code> dla workerd. Deploy: <code>build</code> → <code>wrangler deploy</code>.</p></div>
+      </div>
+      <p class="note reveal">Mała skala, niski QPS, świadomie lean — MVP, który da się utrzymać po godzinach.</p>
+    </div>
+  </section>
+
+  <!-- 5 — AUTOMATYZACJA -->
+  <section class="slide" data-label="Automatyzacja">
+    <div class="wrap">
+      <div class="eyebrow reveal"><span class="num">05</span> Repo — automatyzacja, review, testy <span class="rule"></span></div>
+      <h2 class="reveal">CI, piramida testów i agent AI recenzujący każdy PR</h2>
+      <div class="grid g3 reveal" style="margin-top:24px">
+        <div class="card"><h3>CI pipeline</h3><p>lint + test + build na każdy push i PR do <code>master</code>.</p></div>
+        <div class="card"><h3>Piramida testów</h3><p>Unit (Vitest) · Integration (Vitest + Supabase, RLS) · E2E (Playwright + Mailpit) · Mutation (Stryker).</p></div>
+        <div class="card"><h3>Workflow „10x"</h3><p>plan → plan-review → implement → impl-review → archive. Każda zmiana ma ślad decyzyjny w <code>context/</code>.</p></div>
+      </div>
+
+      <div class="card reveal" style="margin-top:16px; border-color:#cfe0d2; background:linear-gradient(180deg,#fffefb,var(--sage-tint))">
+        <h3>★ Automatyczny AI code-review na PR-ach <span class="status-chip pass">ai-cr:passed</span> <span class="status-chip fail">ai-cr:failed</span></h3>
+        <p style="margin-top:4px">Agent <code>@sage/code-reviewer</code> (Codex SDK) ocenia diff w <b>6 kryteriach</b> — poprawność, idiomatyczność, złożoność, pokrycie testami, dokumentacja, bezpieczeństwo → werdykt pass/fail + komentarz + etykieta + commit status. Re-run etykietą <code>ai-cr:review</code>. Advisory (gate przyjdzie z branch protection).</p>
+        <p style="margin-top:10px"><b>Izolacja sekretu (dwie fazy):</b> producer <code>pull_request</code> bez sekretu (tylko diff → artefakt) → consumer <code>workflow_run</code> z gałęzi domyślnej, z sekretem. PR-autor nie wykradnie <code>OPENAI_API_KEY</code> — zaufany kod jest niemodyfikowalny z poziomu PR-a.</p>
+      </div>
+      <p class="note reveal">Roadmapa CI/CD: piramida testów → release-automation → CD migracje→deploy → Dependabot.</p>
+    </div>
+  </section>
+
+  <!-- 6 — CLOSING -->
+  <section class="slide" data-label="Koniec">
+    <div class="wrap" style="text-align:left">
+      <div class="eyebrow reveal"><span class="num">✓</span> Podsumowanie <span class="rule"></span></div>
+      <p class="big-q reveal" style="margin-bottom:28px">Realny produkt z AI, postawiony lean — z dyscypliną planowania, testów i automatycznego review na poziomie zespołowym.</p>
+      <ul class="points reveal" style="max-width:62ch">
+        <li><b>Biznes:</b><span> usuwa koszt wejścia w spaced repetition pod deadline.</span></li>
+        <li><b>Tech:</b><span> Astro 7 SSR + React 19 + Supabase RLS na Cloudflare Workers.</span></li>
+        <li><b>Proces:</b><span> piramida testów + agent AI recenzujący PR-y z izolacją sekretu.</span></li>
+      </ul>
+      <a class="live reveal" href="https://sage-flashcards.zasanski.workers.dev" target="_blank" rel="noopener"><span class="pulse"></span>sage-flashcards.zasanski.workers.dev</a>
+    </div>
+  </section>
+
+</div>
+
+<div class="foot">Sage Flashcards</div>
+<div class="hint">↑ ↓ / scroll — nawigacja</div>
+
+<script>
+  (function () {
+    var deck = document.getElementById('deck');
+    var slides = Array.prototype.slice.call(deck.querySelectorAll('.slide'));
+    var nav = document.getElementById('nav');
+    var progress = document.getElementById('progress');
+
+    // build side nav
+    slides.forEach(function (s, i) {
+      var b = document.createElement('button');
+      b.innerHTML = '<span class="label">' + s.dataset.label + '</span><span class="dot"></span>';
+      b.setAttribute('aria-label', 'Slajd ' + (i + 1) + ': ' + s.dataset.label);
+      b.addEventListener('click', function () {
+        s.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      nav.appendChild(b);
+    });
+    var dots = Array.prototype.slice.call(nav.querySelectorAll('button'));
+
+    // reveal + active tracking
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          var idx = slides.indexOf(e.target);
+          dots.forEach(function (d, di) { d.setAttribute('aria-current', di === idx ? 'true' : 'false'); });
+        }
+      });
+    }, { threshold: 0.55 });
+    slides.forEach(function (s) { io.observe(s); });
+
+    // progress bar
+    deck.addEventListener('scroll', function () {
+      var max = deck.scrollHeight - deck.clientHeight;
+      progress.style.width = (max > 0 ? (deck.scrollTop / max) * 100 : 0) + '%';
+    }, { passive: true });
+
+    // keyboard nav
+    function current() {
+      var c = deck.scrollTop + deck.clientHeight * 0.5;
+      for (var i = 0; i < slides.length; i++) {
+        if (slides[i].offsetTop <= c && slides[i].offsetTop + slides[i].offsetHeight > c) return i;
+      }
+      return 0;
+    }
+    function go(i) {
+      i = Math.max(0, Math.min(slides.length - 1, i));
+      slides[i].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    deck.focus();
+    window.addEventListener('keydown', function (e) {
+      if (['ArrowDown', 'PageDown', ' '].indexOf(e.key) > -1) { e.preventDefault(); go(current() + 1); }
+      else if (['ArrowUp', 'PageUp'].indexOf(e.key) > -1) { e.preventDefault(); go(current() - 1); }
+      else if (e.key === 'Home') { e.preventDefault(); go(0); }
+      else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+    });
+  })();
+</script>
