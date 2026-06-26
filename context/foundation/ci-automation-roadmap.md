@@ -1,8 +1,7 @@
 # Roadmap: Better CI/CD & Automation — Sage Flashcards
 
-> Stack: Astro 7 (SSR) · @astrojs/cloudflare v14 · React 19 · Tailwind 4 · Supabase · Cloudflare Workers (`sage-flashcards`) · Node 24.
+> Stack: Astro 7 (SSR) · @astrojs/cloudflare v14 · React 19 · Tailwind 4 · Supabase · Cloudflare Workers (`10x-cards`) · Node 24.
 > Source: parallel research workflow `ci-automation-research` (2026-06-25). This doc is the plan; each phase is sized to hand to `/10x-plan` → `/10x-implement`.
-> **Status last audited: 2026-06-26** (evidence-based repo audit via workflow). Legend: ✅ done in repo · 🟡 partial · ⬜ not started · 🔧 external/manual (Cloudflare/Supabase/GitHub settings) pending.
 
 ## TL;DR — the shape of the work
 
@@ -11,43 +10,19 @@ Today CI is a single job: `lint + unit + build` on push/PR to master. No e2e/int
 The 7 asks collapse into **5 dependency-ordered phases**. The big realization: **asks #3 (version bump on merge), #4 (changelog), and #5 (branch-per-change) are one solution** — Conventional Commits + squash-merge + branch-protection ruleset + **release-please**. Don't build them separately.
 
 ```
-Phase 0  Rebrand & identity        (M)  ✅ in-repo done (PR #4) · 🔧 external ops pending
-Phase 1  CI: full test pyramid     (M)  ⬜ not started
-Phase 2  Branch flow + releases    (M)  ⬜ not started
-Phase 3  CD: deploy on release     (M)  ⬜ not started
-Phase 4  Dependency automation     (S)  ⬜ not started
-Phase 5  Extra tooling (optional)  (M)  ⬜ not started  (🟡 Stryker already installed, not wired to CI)
+Phase 0  Rebrand & identity        (M)  ── independent; includes Worker rename migration (decided)
+Phase 1  CI: full test pyramid     (M)  ── foundation; gates + deploy depend on green CI
+Phase 2  Branch flow + releases    (M)  ── asks #3+#4+#5 as ONE thing (release-please)
+Phase 3  CD: deploy on release     (M)  ── asks #1(deploy) + #2 (Supabase→Cloudflare, ordered)
+Phase 4  Dependency automation     (S)  ── ask #6 (Dependabot + auto-merge)
+Phase 5  Extra tooling (optional)  (M)  ── what else I recommend (prioritized top-5)
 ```
 
 Asks #1(tests) → Phase 1 · #2 → Phase 3 · #3/#4 → Phase 2 · #5 → Phase 2 · #6 → Phase 4 · #7(icon) → Phase 0 · rename → Phase 0 · "co jeszcze" → Phase 5.
 
-## Progress at a glance  (audited 2026-06-26)
-
-| Phase | Status | What's left |
-|---|---|---|
-| 0 · Rebrand & identity | ✅ **in-repo complete** (on PR #4) · 🔧 external ops pending | Merge PR #4; then the Cloudflare/Supabase/GitHub manual steps (below) |
-| 1 · CI test pyramid | ⬜ not started | `ci.yml` is still the original single `lint + unit + build` job |
-| 2 · Branch flow + releases | ⬜ not started | no release-please / commitlint / PR-title-lint / ruleset |
-| 3 · CD deploy | ⬜ not started | no `deploy.yml`; deploys still manual |
-| 4 · Dependency automation | ⬜ not started | no `.github/dependabot.yml` (only a ready-to-paste draft inside this doc) |
-| 5 · Extra tooling | ⬜ not started · 🟡 Stryker installed but not in CI | CodeQL, coverage, CODEOWNERS, templates, secret-scanning toggle |
-
-**Open PRs:** #4 `chore/rebrand-sage-flashcards` (OPEN, mergeable) carries all Phase-0 work. PRs #1–#3 merged.
-**Next up:** merge PR #4 + finish the Phase-0 external checklist, then start **Phase 1** (`/10x-plan`).
-
 ---
 
-## Phase 0 — Rebrand to "Sage Flashcards" + GitHub identity  `[M]`  — ✅ in-repo complete (PR #4)
-
-**Status (audited 2026-06-26):**
-- ✅ **In-repo identifiers:** `package.json` + `package-lock.json`, `wrangler.jsonc`, `supabase/config.toml`, `astro.config.mjs` `site` (`https://sage-flashcards.zasanski.workers.dev`), `CLAUDE.md` — all `sage-flashcards`.
-- ✅ **GitHub repo renamed** → `jakubzasanski/sage-flashcards` (remote re-pointed); **workers.dev subdomain** → `zasanski`.
-- ✅ **Branding:** two-leaf logo swapped everywhere (`SageLeaf.astro`/`.tsx` → header, landing, all auth pages), `favicon.svg/png`, `og-image.png` (serif wordmark, no tech chip), README full rewrite + screenshot hero + badges; "Sage" wordmark in `--primary`, hero "lasts" italicized.
-- ✅ **PWA:** `manifest.webmanifest` + maskable `192`/`512` + `apple-touch-icon` wired in `Layout.astro` (+ `og:image`, `theme-color`). Removed `template.png`, `icon-dark.svg`, `avatar-dark.png`.
-- ⏳ **Merge PR #4** to land all of the above on `master`.
-- 🔧 **External ops still pending** (need Cloudflare/Supabase/GitHub access — see Track B + Branding below): deploy renamed Worker → re-add 5 secrets → new SESSION KV → delete old `10x-cards` Worker → update Supabase Auth Site/Redirect URLs → upload `og-image.png` as repo Social preview + avatar.
-
-<sub>The original plan for this phase is preserved below for reference.</sub>
+## Phase 0 — Rebrand to "Sage Flashcards" + GitHub identity  `[S]`
 
 Do the rename in **two tracks** (research-recommended).
 
@@ -95,9 +70,7 @@ The current `README.md` is the **generic starter template** (titled "10x Astro S
 
 ---
 
-## Phase 1 — CI: full test pyramid  `[M]`  — ⬜ not started
-
-> Audit 2026-06-26: `.github/workflows/ci.yml` is still the original single `ci` job (checkout → setup-node → npm ci → astro sync → lint → `npm test` unit → build). No integration/e2e jobs, no `concurrency`, no `supabase/setup-cli`, no artifact upload/Playwright cache, no `nightly-e2e.yml`.
+## Phase 1 — CI: full test pyramid  `[M]`
 
 Expand `.github/workflows/ci.yml` into **three parallel jobs** off a fast base + a nightly safety net. Use `supabase/setup-cli` + `supabase start` (NOT a bare `services: postgres` — the tests need GoTrue admin API, PostgREST **and** Mailpit on :54324, all of which `supabase start` provisions with the exact demo keys `test/support/config.ts` hardcodes). **No GitHub secrets required for the test jobs.**
 
@@ -120,9 +93,7 @@ Plus:
 
 ---
 
-## Phase 2 — Branch-per-change + version bump + changelog (asks #3 + #4 + #5)  `[M]`  — ⬜ not started
-
-> Audit 2026-06-26: none present — no `release-please-config.json`, `.release-please-manifest.json`, `release.yml`, commitlint config, `.husky/commit-msg`, or PR-title-lint workflow. (`.husky/` has only `pre-commit` → lint-staged.)
+## Phase 2 — Branch-per-change + version bump + changelog (asks #3 + #4 + #5)  `[M]`
 
 One coherent system. The repo already writes **100% Conventional Commits**, so this is mostly wiring.
 
@@ -141,9 +112,7 @@ One coherent system. The repo already writes **100% Conventional Commits**, so t
 
 ---
 
-## Phase 3 — CD: migrations → Worker deploy, gated on a release (asks #1-deploy + #2)  `[M]`  — ⬜ not started
-
-> Audit 2026-06-26: no `deploy.yml` / `preview.yml`; deploys still manual. `wrangler.jsonc` does **not** yet declare the `kv_namespaces` (SESSION) / `images` (IMAGES) bindings explicitly (relies on adapter auto-provisioning). GitHub `production` environment + secrets not set.
+## Phase 3 — CD: migrations → Worker deploy, gated on a release (asks #1-deploy + #2)  `[M]`
 
 New `.github/workflows/deploy.yml`, triggered by `workflow_run` of **CI** success on `master` (`conclusion == 'success'` AND `head_branch == 'master'`) — or gated on release-please's `release_created` (tag-then-deploy). **Two sequential jobs in one file so ordering is guaranteed:**
 
@@ -160,9 +129,7 @@ New `.github/workflows/deploy.yml`, triggered by `workflow_run` of **CI** succes
 
 ---
 
-## Phase 4 — Dependency automation (ask #6)  `[S]`  — ⬜ not started
-
-> Audit 2026-06-26: no `.github/dependabot.yml` and no `dependabot-automerge.yml` committed. The only config is the ready-to-paste draft in this doc (below) — that is intentionally NOT active yet.
+## Phase 4 — Dependency automation (ask #6)  `[S]`
 
 **Dependabot** (not Renovate): native to GitHub, zero infra, and every constraint maps to a native field. `.github/dependabot.yml`:
 - ecosystems: `npm` + `github-actions`.
@@ -258,9 +225,7 @@ jobs:
 
 ---
 
-## Phase 5 — Additional tooling I recommend (the "co jeszcze")  `[M, optional]`  — ⬜ not started
-
-> Audit 2026-06-26: ✅ README status badges already added (Phase 0). 🟡 Stryker is installed (`@stryker-mutator/*` + `stryker.conf.json`) but not wired into any CI cron. ⬜ Everything else — CodeQL, vitest coverage/Codecov, CODEOWNERS, issue/PR templates, secret-scanning toggle — not present.
+## Phase 5 — Additional tooling I recommend (the "co jeszcze")  `[M, optional]`
 
 Prioritized top-5 (ship in order; the first two are nearly free):
 
@@ -287,7 +252,7 @@ Then, as appetite allows: **Stryker** mutation testing (already configured) on a
 | D7 | Auto-merge scope (Dependabot) | Patches + dev-dep minors |
 | D8 | SHA-pin actions vs floating `@vN` | SHA-pin (public fork) |
 
-**Execution status (2026-06-26):** **Phase 0 implemented in-repo** (on PR #4, awaiting merge) + GitHub repo & workers.dev subdomain renamed. Phase 0 external ops + **Phases 1–5 not started**. Resume by merging PR #4, finishing the Phase-0 external checklist, then handing **Phase 1** to `/10x-plan` → `/10x-implement`.
+**Execution status:** roadmap approved as the document; implementation **not started** (per your choice "na razie tylko roadmapa"). Resume by handing a phase to `/10x-plan` → `/10x-implement`.
 
 ## Secrets checklist (one-time setup)
 - **CI test jobs:** none (local Supabase demo keys are hardcoded + reproduced by `supabase start`).
