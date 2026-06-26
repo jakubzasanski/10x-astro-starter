@@ -1,0 +1,22 @@
+{
+  "name": "@sage/code-reviewer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Scripted code-review agent built on the Codex SDK (10xDevs M5L2). Reads a git diff on stdin, returns a structured JSON review.",
+  "scripts": {
+    "review": "tsx src/index.ts",
+    "review:sample": "tsx src/index.ts < fixtures/sample.diff",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@openai/codex": "^0.142.2",
+    "@openai/codex-sdk": "^0.142.2",
+    "zod": "^3.25.76",
+    "zod-to-json-schema": "^3.25.2"
+  },
+  "devDependencies": {
+    "@types/node": "^26.0.1",
+    "tsx": "^4.22.4"
+  }
+}

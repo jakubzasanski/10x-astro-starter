@@ -82,7 +82,9 @@ export default tseslint.config(
   // linting them is futile (in-file fixes get wiped) and they don't match prettier/strict rules.
   // `.claude/` holds Claude Code harness scripts (hooks) that live outside any tsconfig, so the
   // typed `projectService` can't resolve them — they're tooling, not app source, so skip them.
-  { ignores: ["src/db/database.types.ts", ".claude/**"] },
+  // `packages/` are independent sub-packages with their own tsconfig + node_modules (e.g. the
+  // Codex-SDK code-review agent); the app's typed lint can't resolve their deps, so skip them.
+  { ignores: ["src/db/database.types.ts", ".claude/**", "packages/**"] },
   baseConfig,
   reactConfig,
   eslintPluginAstro.configs["flat/recommended"],
