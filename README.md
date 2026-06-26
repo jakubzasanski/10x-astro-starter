@@ -13,7 +13,7 @@
 
 [Live app](https://sage-flashcards.zasanski.workers.dev)
 
-<img src="./public/og-image.png" width="820" alt="Sage Flashcards" />
+<img src="./public/screenshot.png" alt="Sage Flashcards landing page" width="800" />
 
 </div>
 
@@ -26,14 +26,6 @@ Sage turns raw study material into a reviewable deck and helps you remember it:
 - **Spaced repetition** — saved cards are scheduled with [FSRS](https://github.com/open-spaced-repetition/ts-fsrs) so reviews are timed to beat forgetting.
 - **Accounts & auth** — email/password sign-in, sign-up, and self-serve password reset, backed by Supabase with cookie-based SSR sessions.
 - **Bilingual UI** — English and Polish, resolved server-side (no flash).
-
-## Screenshot
-
-<div align="center">
-
-<img src="./public/screenshot.png" alt="Sage Flashcards — landing page (dark theme)" width="820" />
-
-</div>
 
 ## Tech stack
 
