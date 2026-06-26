@@ -252,7 +252,7 @@ Manual GitHub setup required before the Phase 3 PR run:
 #### Manual
 
 - [x] 1.4 Run with `PR_TITLE`/`PR_BODY` reflects PR intent in `summary` — b3bfdc5
-- [ ] 1.5 `REVIEW_MODEL` switches the model (observable in usage/logs)
+- [x] 1.5 `REVIEW_MODEL` switches the model (observable in usage/logs) — REVIEW_MODEL=zzz-nonexistent-model-9999 → API 400 model_not_found naming that model (proves env→startThread→model); default-model runs succeed
 
 ### Phase 2: Composite action .github/actions/ai-review/
 
