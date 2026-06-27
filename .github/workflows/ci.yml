@@ -11,6 +11,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# Least privilege: these jobs only read the repo (checkout). No write scopes.
+permissions:
+  contents: read
+
 jobs:
   lint-unit-build:
     runs-on: ubuntu-latest

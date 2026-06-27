@@ -6,6 +6,11 @@ name: E2E (reusable)
 on:
   workflow_call: {}
 
+# Least privilege: only reads the repo. In a reusable workflow this also caps what
+# a caller can grant, so the e2e recipe can never escalate beyond read.
+permissions:
+  contents: read
+
 jobs:
   e2e:
     runs-on: ubuntu-latest
