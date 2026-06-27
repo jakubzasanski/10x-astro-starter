@@ -227,21 +227,21 @@ Migrations are **forward-only and destructive-capable**. Safety net: `db push --
 
 #### Automated
 
-- [x] 1.1 `wrangler deploy --dry-run` exits 0 with no interactive prompt
-- [x] 1.2 Type-checked lint passes (`npm run lint`)
-- [x] 1.3 Build succeeds (`npx astro sync && npm run build`)
+- [x] 1.1 `wrangler deploy --dry-run` exits 0 with no interactive prompt — 9e8825a
+- [x] 1.2 Type-checked lint passes (`npm run lint`) — 9e8825a
+- [x] 1.3 Build succeeds (`npx astro sync && npm run build`) — 9e8825a
 
 #### Manual
 
-- [x] 1.4 `wrangler kv namespace list` confirms the namespace id matches the live `sage-flashcards` session namespace
-- [x] 1.5 Local deploy/dry-run shows `SESSION` + `IMAGES` bindings resolved, no provisioning prompt
+- [x] 1.4 `wrangler kv namespace list` confirms the namespace id matches the live `sage-flashcards` session namespace — 9e8825a
+- [x] 1.5 Local deploy/dry-run shows `SESSION` + `IMAGES` bindings resolved, no provisioning prompt — 9e8825a
 
 ### Phase 2: The CD workflow (migrate → secrets → deploy)
 
 #### Automated
 
-- [ ] 2.1 `deploy.yml` is valid YAML / recognized as a workflow
-- [ ] 2.2 `npm run lint` and `npx astro sync && npm run build` still pass
+- [x] 2.1 `deploy.yml` is valid YAML / recognized as a workflow
+- [x] 2.2 `npm run lint` and `npx astro sync && npm run build` still pass
 
 #### Manual
 
