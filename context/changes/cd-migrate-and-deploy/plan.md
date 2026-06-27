@@ -240,8 +240,8 @@ Migrations are **forward-only and destructive-capable**. Safety net: `db push --
 
 #### Automated
 
-- [x] 2.1 `deploy.yml` is valid YAML / recognized as a workflow
-- [x] 2.2 `npm run lint` and `npx astro sync && npm run build` still pass
+- [x] 2.1 `deploy.yml` is valid YAML / recognized as a workflow — ebd6c32
+- [x] 2.2 `npm run lint` and `npx astro sync && npm run build` still pass — ebd6c32
 
 #### Manual
 
