@@ -38,6 +38,16 @@ jobs:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
       - run: npx playwright install --with-deps chromium
+      - name: Provision .dev.vars for the Cloudflare preview runtime
+        # `astro preview` serves the build on workerd, which reads runtime vars from
+        # .dev.vars — NOT the job env / process.env. Without this the previewed app's
+        # createClient() is null and UI login never reaches /dashboard. Same local demo
+        # values as the env above (single source); .dev.vars is gitignored.
+        run: |
+          {
+            echo "SUPABASE_URL=$SUPABASE_URL"
+            echo "SUPABASE_KEY=$SUPABASE_KEY"
+          } > .dev.vars
       - run: supabase start
       - run: npm run test:e2e
       - name: Upload Playwright report
