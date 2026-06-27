@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/jakubzasanski/sage-flashcards/compare/v1.2.0...v1.3.0) (2026-06-27)
+
+
+### Features
+
+* CD — migrate Supabase → deploy Worker on green master (S-03) ([#26](https://github.com/jakubzasanski/sage-flashcards/issues/26)) ([3dff7ac](https://github.com/jakubzasanski/sage-flashcards/commit/3dff7acc656ec602d5f7739a9090af09de18e808))
+
 ## [1.2.0](https://github.com/jakubzasanski/sage-flashcards/compare/v1.1.0...v1.2.0) (2026-06-27)
 
 
