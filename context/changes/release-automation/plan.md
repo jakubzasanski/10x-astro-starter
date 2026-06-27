@@ -297,15 +297,15 @@ Negligible — adds a lightweight PR-title job and a release-please job (runs on
 
 #### Automated
 
-- [x] 3.1 `master.json` valid JSON
-- [x] 3.2 Active ruleset on `master` listed via `gh api .../rulesets`
-- [x] 3.3 Repo merge settings show squash-only + `squash_merge_commit_title=PR_TITLE`
+- [x] 3.1 `master.json` valid JSON — 82ff4eb
+- [x] 3.2 Active ruleset on `master` listed via `gh api .../rulesets` — 82ff4eb
+- [x] 3.3 Repo merge settings show squash-only + `squash_merge_commit_title=PR_TITLE` — 82ff4eb
 
 #### Manual
 
-- [x] 3.4 Direct `git push` to `master` is rejected
-- [x] 3.5 PR UI offers only "Squash and merge"
-- [x] 3.6 PR shows the three required checks as required before merge
+- [x] 3.4 Direct `git push` to `master` is rejected — 82ff4eb
+- [x] 3.5 PR UI offers only "Squash and merge" — 82ff4eb
+- [x] 3.6 PR shows the three required checks as required before merge — 82ff4eb
 
 ### Phase 4: End-to-end verification
 
