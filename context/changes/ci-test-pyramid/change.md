@@ -1,9 +1,9 @@
 ---
 change_id: ci-test-pyramid
 title: CI — full test pyramid gating every PR
-status: planned
+status: implementing
 created: 2026-06-26
-updated: 2026-06-26
+updated: 2026-06-27
 archived_at: null
 ---
 

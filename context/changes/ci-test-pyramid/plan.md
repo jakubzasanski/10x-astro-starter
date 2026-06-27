@@ -192,7 +192,7 @@ Pure additive CI change; no app/runtime/data impact. The existing `build` step a
 
 #### Automated
 
-- [ ] 1.1 Workflow YAML valid / parses on push
+- [x] 1.1 Workflow YAML valid / parses on push
 - [ ] 1.2 `lint-unit-build` job runs and passes on a PR
 
 #### Manual
