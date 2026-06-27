@@ -59,7 +59,7 @@ jobs:
       # a flaky test that passes on retry won't leave its trace — re-run to reproduce.
       - name: Upload Playwright report
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-report
           path: playwright-report/
@@ -67,7 +67,7 @@ jobs:
           if-no-files-found: ignore
       - name: Upload Playwright traces
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-results
           path: test-results/
