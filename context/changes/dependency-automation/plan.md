@@ -190,8 +190,8 @@ Negligible. The auto-merge workflow is a tiny metadata-read + a couple of `gh` c
 
 #### Automated
 
-- [x] 1.1 `.github/dependabot.yml` exists and is valid YAML
-- [x] 1.2 `npm run lint` passes (no unrelated regressions)
+- [x] 1.1 `.github/dependabot.yml` exists and is valid YAML — 735e370
+- [x] 1.2 `npm run lint` passes (no unrelated regressions) — 735e370
 
 #### Manual
 
@@ -203,9 +203,9 @@ Negligible. The auto-merge workflow is a tiny metadata-read + a couple of `gh` c
 
 #### Automated
 
-- [ ] 2.1 `.github/workflows/dependabot-auto-merge.yml` is valid YAML
-- [ ] 2.2 `dependabot/fetch-metadata` is pinned to a full commit SHA
-- [ ] 2.3 `npm run lint` passes (no unrelated regressions)
+- [x] 2.1 `.github/workflows/dependabot-auto-merge.yml` is valid YAML
+- [x] 2.2 `dependabot/fetch-metadata` is pinned to a full commit SHA
+- [x] 2.3 `npm run lint` passes (no unrelated regressions)
 
 #### Manual
 
