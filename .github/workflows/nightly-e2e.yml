@@ -8,6 +8,10 @@ on:
     - cron: "0 3 * * *"
   workflow_dispatch: {}
 
+# Least privilege: only reads the repo (delegates to the reusable e2e workflow).
+permissions:
+  contents: read
+
 jobs:
   e2e:
     uses: ./.github/workflows/e2e.yml
