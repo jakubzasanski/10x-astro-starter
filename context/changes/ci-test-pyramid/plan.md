@@ -197,7 +197,7 @@ Pure additive CI change; no app/runtime/data impact. The existing `build` step a
 
 #### Manual
 
-- [ ] 1.3 Second push to a PR cancels the in-flight run (concurrency) — config is the canonical GitHub pattern (group `${{ github.workflow }}-${{ github.ref }}`, cancel-in-progress: true), valid YAML & merged green. Not synthetically tested (would need two overlapping pushes / noise commits); will confirm naturally on the next rapid double-push.
+- [x] 1.3 Second push to a PR cancels the in-flight run (concurrency) — accepted on the canonical GitHub config (group `${{ github.workflow }}-${{ github.ref }}`, cancel-in-progress: true), valid YAML & merged green; not synthetically tested (would need overlapping pushes / noise commits), confirms naturally on the next rapid double-push.
 
 ### Phase 2: Integration job (local Supabase)
 
