@@ -6,8 +6,13 @@ on:
   pull_request:
     branches: [master]
 
+# A newer push to the same ref cancels the in-flight run (saves CI minutes).
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  ci:
+  lint-unit-build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
