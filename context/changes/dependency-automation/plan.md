@@ -203,9 +203,9 @@ Negligible. The auto-merge workflow is a tiny metadata-read + a couple of `gh` c
 
 #### Automated
 
-- [x] 2.1 `.github/workflows/dependabot-auto-merge.yml` is valid YAML
-- [x] 2.2 `dependabot/fetch-metadata` is pinned to a full commit SHA
-- [x] 2.3 `npm run lint` passes (no unrelated regressions)
+- [x] 2.1 `.github/workflows/dependabot-auto-merge.yml` is valid YAML — d0421ff
+- [x] 2.2 `dependabot/fetch-metadata` is pinned to a full commit SHA — d0421ff
+- [x] 2.3 `npm run lint` passes (no unrelated regressions) — d0421ff
 
 #### Manual
 
