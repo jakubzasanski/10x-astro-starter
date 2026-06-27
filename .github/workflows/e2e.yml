@@ -50,8 +50,10 @@ jobs:
           } > .dev.vars
       - run: supabase start
       - run: npm run test:e2e
+      # Upload only on failure: a green run's report/traces are noise and cost. Trade-off:
+      # a flaky test that passes on retry won't leave its trace — re-run to reproduce.
       - name: Upload Playwright report
-        if: ${{ !cancelled() }}
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
@@ -59,7 +61,7 @@ jobs:
           retention-days: 14
           if-no-files-found: ignore
       - name: Upload Playwright traces
-        if: ${{ !cancelled() }}
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: test-results
