@@ -28,3 +28,25 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+
+  integration:
+    needs: [lint-unit-build]
+    runs-on: ubuntu-latest
+    # No SUPABASE_* env: integration tests use the well-known local demo keys that
+    # `supabase start` reproduces deterministically (test/support/config.ts). Passing
+    # real secrets here would point the suite at production.
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx astro sync
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - run: supabase start
+      - run: npm run test:integration
+      - if: always()
+        run: supabase stop
