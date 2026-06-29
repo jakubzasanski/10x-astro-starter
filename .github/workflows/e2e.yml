@@ -38,7 +38,7 @@ jobs:
           # locally) — config.toml uses keys an older CLI rejects ('failed to parse config').
           version: 2.107.0
       - name: Cache Playwright browsers
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
